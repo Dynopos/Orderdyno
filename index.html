@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OrderDyno — Order Online Untuk Penjaja Kecil</title>
+<meta name="description" content="Menu online dengan cart dan checkout terus ke WhatsApp. Sesuai untuk gerai burger, fries dan air minuman.">
+<meta name="theme-color" content="#7b2ff7">
+<meta property="og:title" content="OrderDyno — Order Online">
+<meta property="og:description" content="Pilih menu, masuk cart, hantar order terus ke WhatsApp penjaja.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="latar" aria-hidden="true"></div>
+<div class="buih" aria-hidden="true" style="width:180px;height:180px;background:#ffd93d;top:12%;left:-40px;"></div>
+<div class="buih" aria-hidden="true" style="width:120px;height:120px;background:#4dd0e1;top:42%;right:-30px;animation-delay:-4s;"></div>
+<div class="buih" aria-hidden="true" style="width:150px;height:150px;background:#ff6ec7;bottom:8%;left:8%;animation-delay:-8s;"></div>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero bekas">
+  <div class="hero__logo" id="logo">🍔</div>
+  <h1 id="namaKedai">Warung Jaja</h1>
+  <p class="hero__tagline" id="tagline">Sedap Panas-Panas</p>
+  <p class="hero__slogan" id="slogan"></p>
+  <div class="lencana-baris">
+    <span class="lencana" id="statusBuka"><span class="titik"></span><span>—</span></span>
+    <a class="lencana" id="pautanLokasi" href="#" target="_blank" rel="noopener">📍 <span id="alamat"></span></a>
+  </div>
+</header>
+
+<!-- ========================== BAR SEMAK ORDER ======================== -->
+<div class="bar">
+  <div class="bekas">
+    <button class="btn-semak" id="btnSemak" type="button">
+      🛒 <span>Semak Order</span> <span class="kira" id="kiraCart">0</span>
+    </button>
+  </div>
+  <nav class="chips bekas" id="chips" aria-label="Kategori menu"></nav>
+</div>
+
+<!-- ============================== MENU ============================== -->
+<main class="bekas" id="menu"></main>
+
+<footer class="footer">
+  <p><strong id="footerNama">Warung Jaja</strong> — order terus ke WhatsApp, tiada yuran platform.</p>
+  <p>Dikuasakan oleh <a href="#" onclick="return false;">OrderDyno</a> · Menu generik untuk penjaja kecil</p>
+</footer>
+
+<!-- ============================== SHEETS ============================ -->
+<div class="tirai" id="tirai"></div>
+
+<!-- Sheet: pilih item -->
+<section class="sheet" id="sheetItem" role="dialog" aria-modal="true" aria-labelledby="tajukItem" hidden>
+  <div class="sheet__pemegang"></div>
+  <div class="sheet__kepala">
+    <h3 id="tajukItem">Item</h3>
+    <button class="sheet__tutup" type="button" data-tutup aria-label="Tutup">✕</button>
+  </div>
+  <div class="sheet__badan" id="badanItem"></div>
+  <div class="sheet__kaki">
+    <button class="btn-utama" id="btnTambah" type="button">Tambah ke Order</button>
+  </div>
+</section>
+
+<!-- Sheet: cart -->
+<section class="sheet" id="sheetCart" role="dialog" aria-modal="true" aria-labelledby="tajukCart" hidden>
+  <div class="sheet__pemegang"></div>
+  <div class="sheet__kepala">
+    <h3 id="tajukCart">Order Anda</h3>
+    <button class="sheet__tutup" type="button" data-tutup aria-label="Tutup">✕</button>
+  </div>
+  <div class="sheet__badan" id="badanCart"></div>
+  <div class="sheet__kaki" id="kakiCart"></div>
+</section>
+
+<div class="toast-bekas" id="toast" aria-live="polite"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/art.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
