@@ -63,23 +63,25 @@ function had_kadar(string $nama, int $maks, int $tempohDetik): bool
         return true; // gagal buat folder — jangan halang pelanggan sah
     }
 
-    $kunci = $dir . '/' . $nama . '-' . hash('sha256', ip_pelawat()) . '.json';
+    $kunci = $dir . '/' . $nama . '-' . hash('sha256', ip_pelawat()) . '.php';
     $sekarang = time();
 
     $rekod = ['mula' => $sekarang, 'kira' => 0];
-    if (is_file($kunci)) {
-        $lama = json_decode((string) file_get_contents($kunci), true);
-        if (is_array($lama) && ($sekarang - (int) ($lama['mula'] ?? 0)) < $tempohDetik) {
-            $rekod = ['mula' => (int) $lama['mula'], 'kira' => (int) $lama['kira']];
-        }
+    $lama = SimpananSelamat::baca($kunci);
+    if (is_array($lama) && ($sekarang - (int) ($lama['mula'] ?? 0)) < $tempohDetik) {
+        $rekod = ['mula' => (int) $lama['mula'], 'kira' => (int) $lama['kira']];
     }
 
     $rekod['kira']++;
-    @file_put_contents($kunci, json_encode($rekod), LOCK_EX);
+    try {
+        SimpananSelamat::tulis($kunci, $rekod, false);
+    } catch (Throwable $e) {
+        return true; // gagal tulis — jangan halang pelanggan sah
+    }
 
     // Buang fail lama sekali-sekala
     if (random_int(1, 50) === 1) {
-        foreach (glob($dir . '/*.json') ?: [] as $f) {
+        foreach (SimpananSelamat::senarai($dir) as $f) {
             if (filemtime($f) < $sekarang - 86400) {
                 @unlink($f);
             }

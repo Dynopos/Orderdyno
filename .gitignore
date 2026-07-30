@@ -2,9 +2,11 @@ node_modules/
 package-lock.json
 .DS_Store
 
-# Kredensial & data tempatan Bayarcash — jangan commit
+# Kredensial & data tempatan Bayarcash — jangan commit.
+# Abaikan SEGALA yang ada dalam api/data/ kecuali fail struktur, supaya
+# fail data baharu pada masa depan tidak terlepas masuk git secara tidak
+# sengaja. Fail ini mengandungi API Secret Key dan rekod order pelanggan.
 api/config.php
-api/data/bayarcash.json
-api/data/menu.json
-api/data/orders/
-api/data/kadar/
+api/data/*
+!api/data/.gitkeep
+!api/data/.htaccess

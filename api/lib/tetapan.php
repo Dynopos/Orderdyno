@@ -5,15 +5,19 @@
    Keutamaan sumber kredensial (tinggi ke rendah):
      1. Environment variable  (BAYARCASH_PAT, ...)
      2. api/config.php
-     3. api/data/bayarcash.json  — yang disimpan dari tab "Bayaran"
+     3. api/data/bayarcash.php  — yang disimpan dari tab "Bayaran"
 
-   `api/data/` mengandungi kunci rahsia dan rekod order, jadi ia dihalang
-   dari capaian web oleh api/data/.htaccess.
+   `api/data/` mengandungi kunci rahsia dan rekod order. Setiap fail di sana
+   disimpan sebagai .php bermula dengan `<?php exit; ?>` supaya ia tidak
+   boleh dibaca melalui pelayar walaupun web server menghidangkannya —
+   lihat lib/simpanan.php. Ini penting kerana nginx (Laravel Forge, Ploi,
+   dan hampir semua VPS) mengabaikan .htaccess sepenuhnya.
    ========================================================================== */
 
 declare(strict_types=1);
 
 require_once __DIR__ . '/bayarcash.php';
+require_once __DIR__ . '/simpanan.php';
 
 final class Tetapan
 {
@@ -49,12 +53,12 @@ final class Tetapan
 
     private static function failSimpanan(): string
     {
-        return self::dirData() . '/bayarcash.json';
+        return self::dirData() . '/bayarcash.php';
     }
 
     public static function failMenu(): string
     {
-        return self::dirData() . '/menu.json';
+        return self::dirData() . '/menu.php';
     }
 
     /* Pastikan folder data ada dan dilindungi */
@@ -84,12 +88,11 @@ final class Tetapan
 
     private function muatSimpanan(): array
     {
-        $fail = self::failSimpanan();
-        if (!is_file($fail)) {
+        $fail = SimpananSelamat::cari(self::failSimpanan());
+        if ($fail === null) {
             return [];
         }
-        $data = json_decode((string) file_get_contents($fail), true);
-        return is_array($data) ? $data : [];
+        return SimpananSelamat::baca($fail) ?? [];
     }
 
     /* ============================= NILAI =============================== */
@@ -186,7 +189,7 @@ final class Tetapan
         return $this->pat() !== ''
             && $this->secretKey() !== ''
             && $this->portalKey() !== ''
-            && is_file(self::failMenu());
+            && SimpananSelamat::cari(self::failMenu()) !== null;
     }
 
     /* Kenapa belum siap — untuk dipaparkan dalam panel Bayaran */
@@ -201,7 +204,7 @@ final class Tetapan
         if ($this->pat() === '')        { $h[] = 'pat_kosong'; }
         if ($this->secretKey() === '')  { $h[] = 'secret_key_kosong'; }
         if ($this->portalKey() === '')  { $h[] = 'portal_key_kosong'; }
-        if (!is_file(self::failMenu())) { $h[] = 'menu_belum_segerak'; }
+        if (SimpananSelamat::cari(self::failMenu()) === null) { $h[] = 'menu_belum_segerak'; }
         return $h;
     }
 
@@ -266,17 +269,14 @@ final class Tetapan
 
         $baru['dikemas'] = gmdate('c');
 
-        $this->tulisJson(self::failSimpanan(), $baru);
+        SimpananSelamat::tulis(self::failSimpanan(), $baru);
         $this->simpanan = $baru;
     }
 
     /* Buang kredensial yang disimpan dari panel */
     public function lupakanKredensial(): void
     {
-        $fail = self::failSimpanan();
-        if (is_file($fail)) {
-            @unlink($fail);
-        }
+        SimpananSelamat::buang(self::failSimpanan());
         $this->simpanan = [];
     }
 
@@ -293,11 +293,13 @@ final class Tetapan
         }
 
         self::sediakanDirData();
-        $fail = self::failMenu();
-        if (file_put_contents($fail, $mentah, LOCK_EX) === false) {
-            throw new RuntimeException('Gagal tulis menu ke server');
+        SimpananSelamat::tulisMentah(self::failMenu(), $mentah);
+
+        /* Buang fail .json lama supaya tiada salinan tidak terlindung tinggal */
+        $lama = SimpananSelamat::laluanLama(self::failMenu());
+        if (is_file($lama)) {
+            @unlink($lama);
         }
-        @chmod($fail, 0640);
 
         return [
             'hash'    => hash('sha256', $mentah),
@@ -308,15 +310,20 @@ final class Tetapan
 
     public function menuTersimpan(): ?array
     {
-        $fail = self::failMenu();
-        if (!is_file($fail)) {
+        $fail = SimpananSelamat::cari(self::failMenu());
+        if ($fail === null) {
             return null;
         }
-        $mentah = (string) file_get_contents($fail);
+        $mentah = SimpananSelamat::bacaMentah($fail);
+        if ($mentah === null) {
+            return null;
+        }
         $data = json_decode($mentah, true);
         if (!is_array($data)) {
             return null;
         }
+        /* Hash dikira atas JSON sahaja supaya ia sepadan dengan hash yang
+           dikira pelayar sebelum menghantar. */
         $data['__hash']    = hash('sha256', $mentah);
         $data['__dikemas'] = gmdate('c', (int) filemtime($fail));
         return $data;
@@ -363,15 +370,6 @@ final class Tetapan
     }
 
     /* ============================== UTILITI ============================= */
-
-    private function tulisJson(string $fail, array $data): void
-    {
-        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        if ($json === false || file_put_contents($fail, $json, LOCK_EX) === false) {
-            throw new RuntimeException('Gagal simpan tetapan');
-        }
-        @chmod($fail, 0600);
-    }
 
     /* Papar hujung kunci sahaja — untuk pengesahan visual, bukan rahsia */
     public static function topeng(string $rahsia): string

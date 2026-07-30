@@ -174,7 +174,7 @@ Selesai. Butang **Bayar Online** akan muncul dalam cart pelanggan.
 
 ### Penting: segerakkan menu setiap kali harga berubah
 
-Harga yang dicaj dikira di **server** dari snapshot menu (`api/data/menu.json`),
+Harga yang dicaj dikira di **server** dari snapshot menu (`api/data/menu.php`),
 bukan dari data yang dihantar pelayar. Ini yang menghalang orang membuka
 devtools dan membayar RM 0.01. Kalau anda tukar harga tetapi lupa segerakkan,
 panel akan beri amaran bahawa menu di server berbeza.
@@ -205,7 +205,8 @@ kunci admin anda.
 
 - Personal Access Token dan API Secret Key **tidak pernah** dihantar ke pelayar.
   Panel hanya menunjukkan 4 aksara terakhir untuk pengesahan visual.
-- Jumlah bayaran sentiasa dikira di server. Harga dari pelayar diabaikan.
+- Jumlah bayaran sentiasa dikira di server dari `api/data/menu.php`. Harga
+  dari pelayar diabaikan.
 - Checksum callback disahkan dengan `hash_equals` sebelum apa-apa dipercayai.
 - Dokumentasi rasmi Bayarcash menyuruh `trim()` setiap nilai sebelum mengira
   checksum, tetapi SDK PHP rasmi mereka tidak melakukannya. Callback masuk
@@ -214,19 +215,121 @@ kunci admin anda.
   kerana penyerang masih memerlukan secret key.
 - Order hanya ditanda **dibayar** bila status `3` **dan** amaun sepadan tepat.
 - Order yang sudah berjaya tidak boleh diturunkan statusnya oleh callback lewat.
-- `api/data/` (kunci + rekod order) dan `api/config.php` dihalang oleh
-  `.htaccess`. **Kalau hosting anda guna nginx**, `.htaccess` diabaikan — tambah
-  ini dalam konfigurasi server anda:
-
-  ```nginx
-  location ~ ^/api/(data|lib)/  { deny all; return 404; }
-  location ~ ^/api/config.*\.php$ { deny all; return 404; }
-  ```
-
+- **Fail data tidak boleh dibaca melalui pelayar walaupun web server
+  menghidangkannya.** Setiap fail dalam `api/data/` disimpan sebagai `.php`
+  yang bermula dengan `<?php exit; ?>`, jadi kalau sesiapa buka
+  `kedai.com/api/data/bayarcash.php` mereka dapat halaman kosong — PHP
+  melaksanakan `exit` sebelum sampai ke data. Ini penting kerana **nginx
+  (Laravel Forge, Ploi, hampir semua VPS) mengabaikan `.htaccess`
+  sepenuhnya**; kalau data disimpan sebagai `.json` biasa, API Secret Key
+  anda boleh dimuat turun oleh sesiapa. Lihat `api/lib/simpanan.php`.
+- `.htaccess` masih disertakan sebagai lapisan tambahan untuk Apache, dan
+  README ini ada blok nginx di bahagian Forge di bawah.
 - Jangan upload folder `api/` ke hosting yang **tidak** menjalankan PHP — fail
-  sumber (termasuk kredensial) boleh dihidangkan sebagai teks biasa.
+  sumber boleh dihidangkan sebagai teks biasa, dan pengawal `<?php exit; ?>`
+  hanya berfungsi bila PHP benar-benar dilaksanakan.
 - `api/config.php` dan `api/data/` sudah ada dalam `.gitignore` supaya kunci
   anda tidak masuk ke Git.
+
+---
+
+## 🚀 Deploy dengan Laravel Forge
+
+Forge provision nginx + PHP-FPM, jadi semua yang diperlukan ada. Ikut langkah ni.
+
+### 1. Cipta site
+
+Dalam Forge → **New Site**:
+
+| Tetapan | Nilai |
+|---|---|
+| Domain | domain anda, contoh `menu.kedaisaya.com` |
+| Project Type | **Static HTML / No Framework** |
+| **Web Directory** | **`/`** ⚠️ bukan `/public` |
+
+> **Web Directory mesti `/`.** Forge letak `/public` secara lalai kerana itu
+> struktur Laravel. Projek ini letak `index.html` di akar repo dengan `api/`
+> di sebelahnya, jadi kalau anda biarkan `/public` site akan pulangkan 404.
+
+### 2. Sambung repository
+
+Site → **Git Repository**:
+
+- Provider: GitHub
+- Repository: `Dynopos/Orderdyno`
+- Branch: branch default repo anda
+- **Jangan** tanda "Install Composer Dependencies" — projek ini tiada dependency
+
+Deploy script boleh dibiarkan sebagai `git pull` sahaja.
+
+### 3. Aktifkan HTTPS
+
+Site → **SSL** → **Let's Encrypt** → Obtain Certificate.
+
+**Wajib.** Bayarcash menghantar callback ke server anda, dan callback melalui
+HTTP tanpa sulit tidak boleh dipercayai.
+
+### 4. Cipta `api/config.php`
+
+Fail ini dalam `.gitignore`, jadi deploy **tidak** akan menimpanya — ia kekal
+merentas semua deploy akan datang. Cipta sekali sahaja.
+
+Site → **Files** → **Edit Files** → cipta `api/config.php`:
+
+```php
+<?php return ['kunci_admin' => 'kata-kunci-rahsia-anda-yang-panjang'];
+```
+
+Atau melalui SSH:
+
+```bash
+cd /home/forge/menu.kedaisaya.com
+printf '<?php return ["kunci_admin" => "%s"];\n' "$(openssl rand -hex 24)" > api/config.php
+cat api/config.php   # simpan kunci ini
+```
+
+### 5. Tambah blok nginx (lapisan tambahan)
+
+Fail data sudah dilindungi oleh pengawal `<?php exit; ?>`, jadi ini bukan
+wajib — tetapi ia menutup folder itu sepenuhnya. Site → **Edit Nginx
+Configuration**, tambah dalam blok `server`:
+
+```nginx
+# Folder data & pustaka dalaman OrderDyno — tiada capaian awam
+location ~ ^/api/(data|lib)/ {
+    deny all;
+    return 404;
+}
+
+# Fail tetapan
+location ~ ^/api/config.*\.php$ {
+    deny all;
+    return 404;
+}
+```
+
+Kemudian **Save** (Forge akan reload nginx sendiri).
+
+### 6. Isi kredensial Bayarcash
+
+Buka `https://domain-anda.com` → **⚙ Edit Menu** → tab **Bayaran** →
+masukkan kunci admin dari langkah 4 → tampal PAT / Secret Key / Portal Key →
+**Simpan kredensial** → **Uji sambungan** → **Segerakkan menu**.
+
+### Nota penting untuk Forge
+
+- **`api/data/` kekal merentas deploy.** Forge buat `git pull` di tempat yang
+  sama, dan folder itu dalam `.gitignore`, jadi kredensial dan rekod order
+  anda tidak hilang bila anda deploy semula.
+- **Kebenaran fail:** folder disebabkan `git pull` dimiliki oleh pengguna
+  `forge`, dan PHP-FPM juga berjalan sebagai `forge`, jadi ia sudah boleh
+  ditulis. Kalau anda dapat ralat "Gagal simpan", jalankan:
+  ```bash
+  chown -R forge:forge /home/forge/domain-anda.com/api/data
+  chmod -R 750 /home/forge/domain-anda.com/api/data
+  ```
+- **PHP 8.0 atau lebih baharu** diperlukan. Forge lalai sudah lebih tinggi.
+- Tiada `composer install`, tiada langkah build, tiada queue worker, tiada cron.
 
 ---
 
@@ -253,6 +356,7 @@ api/                          backend pembayaran (pilihan — perlu PHP)
 ├── lib/bayarcash.php         klien API v3 + checksum HMAC SHA256
 ├── lib/tetapan.php           muat/simpan tetapan & menu dipercayai
 ├── lib/order.php             pengesahan cart + simpanan order
+├── lib/simpanan.php          fail data terlindung (<?php exit; ?> guard)
 └── data/                     kunci, snapshot menu, rekod order (dilindungi)
 ```
 

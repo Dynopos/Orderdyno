@@ -3,7 +3,7 @@
    Order — pengesahan cart & simpanan rekod order
    --------------------------------------------------------------------------
    PENTING: jumlah bayaran dikira SEMULA di sini daripada menu yang
-   tersimpan di server (api/data/menu.json). Jumlah yang dihantar oleh
+   tersimpan di server (api/data/menu.php). Jumlah yang dihantar oleh
    pelayar tidak pernah dipercayai — kalau tidak, sesiapa boleh ubah harga
    dalam devtools dan bayar RM 0.01.
    ========================================================================== */
@@ -42,7 +42,7 @@ final class Order
 
     private static function fail(string $nombor): string
     {
-        return self::dir() . '/' . $nombor . '.json';
+        return self::dir() . '/' . $nombor . '.php';
     }
 
     public static function nomborBaru(): string
@@ -224,11 +224,7 @@ final class Order
         if (!self::nomborSah($nombor)) {
             throw new InvalidArgumentException('Nombor order tidak sah');
         }
-        $json = json_encode($order, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        if ($json === false || file_put_contents(self::fail($nombor), $json, LOCK_EX) === false) {
-            throw new RuntimeException('Gagal simpan order');
-        }
-        @chmod(self::fail($nombor), 0640);
+        SimpananSelamat::tulis(self::fail($nombor), $order);
     }
 
     public function ambil(string $nombor): ?array
@@ -236,12 +232,11 @@ final class Order
         if (!self::nomborSah($nombor)) {
             return null;
         }
-        $fail = self::fail($nombor);
-        if (!is_file($fail)) {
+        $fail = SimpananSelamat::cari(self::fail($nombor));
+        if ($fail === null) {
             return null;
         }
-        $data = json_decode((string) file_get_contents($fail), true);
-        return is_array($data) ? $data : null;
+        return SimpananSelamat::baca($fail);
     }
 
     /**
@@ -293,12 +288,12 @@ final class Order
         if (!is_dir($dir)) {
             return [];
         }
-        $fail = glob($dir . '/*.json') ?: [];
+        $fail = SimpananSelamat::senarai($dir);
         usort($fail, static fn ($a, $b) => filemtime($b) <=> filemtime($a));
         $keluar = [];
         foreach (array_slice($fail, 0, $had) as $f) {
-            $data = json_decode((string) file_get_contents($f), true);
-            if (is_array($data)) {
+            $data = SimpananSelamat::baca($f);
+            if ($data !== null) {
                 $keluar[] = $data;
             }
         }
@@ -313,12 +308,12 @@ final class Order
             return;
         }
         $hadMasa = time() - ($this->tetapan->minitLuput() * 60);
-        foreach (glob($dir . '/*.json') ?: [] as $f) {
+        foreach (SimpananSelamat::senarai($dir) as $f) {
             if (filemtime($f) > $hadMasa) {
                 continue;
             }
-            $data = json_decode((string) file_get_contents($f), true);
-            if (is_array($data) && (int) ($data['status'] ?? 0) === Bayarcash::BARU) {
+            $data = SimpananSelamat::baca($f);
+            if ($data !== null && (int) ($data['status'] ?? 0) === Bayarcash::BARU) {
                 @unlink($f);
             }
         }
