@@ -7,7 +7,7 @@
      • boleh di-Export jadi fail JSON (backup / pindah peranti)
      • boleh dikongsi sebagai satu link panjang (#menu=...)
 
-   Tab: Kedai · Menu · Tema · Order · Simpan
+   Tab: Kedai · Menu · Tema · Order · Bayaran · Kongsi
    ========================================================================== */
 
 const Editor = (() => {
@@ -24,7 +24,7 @@ const Editor = (() => {
   let bcMesejOk = true;
   let bcSibuk = '';          // aksi yang sedang berjalan
   let bcHashTempatan = null; // hash menu tempatan, untuk banding dengan server
-  let bcDraf = { pat: '', secret_key: '', portal_key: '' };
+  let bcUji = null;          // keputusan terakhir "Uji sambungan"
 
   const esc = App.esc;
 
@@ -616,11 +616,20 @@ const Editor = (() => {
           </button>
         </div>
         <p class="f__nota">Kredensial dihantar ke server anda sendiri dan disimpan di sana. Ia tidak pernah dipulangkan semula ke pelayar.</p>
+        ${blokUji()}
       </div>
 
       <div class="ed-blok">
         <div class="ed-blok__kepala"><h4>Saluran pembayaran</h4></div>
         <p class="f__nota" style="margin-top:0">Tandakan hanya saluran yang sudah <b>diaktifkan</b> dalam console Bayarcash anda. Secara lalai hanya FPX aktif.</p>
+        ${
+          bcUji && bcUji.portalJumpa && (bcUji.saluranPortal || []).length
+            ? `<div class="amaran" style="color:#b7f0c8;background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3)">
+                 Portal <b>${esc(bcUji.portalNama)}</b> ada ${bcUji.saluranPortal.length} saluran aktif.
+                 <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-guna-saluran-portal" style="margin-top:10px">Tandakan saluran portal ini</button>
+               </div>`
+            : ''
+        }
         <div style="margin-top:12px">
           ${(a.saluranAda || [])
             .map(
@@ -673,6 +682,35 @@ const Editor = (() => {
       ${kadDaftar()}`;
   }
 
+  /* Keputusan "Uji sambungan" — termasuk senarai portal dalam akaun,
+     supaya pemilik boleh cari Portal Key yang betul tanpa meneka. */
+  function blokUji() {
+    if (!bcUji) return '';
+
+    if (bcUji.portalJumpa) {
+      return `<p class="f__nota" style="color:#b7f0c8">✓ Portal <b>${esc(bcUji.portalNama)}</b> disahkan.</p>`;
+    }
+
+    const senarai = bcUji.portalAda || [];
+    if (!senarai.length) return '';
+
+    return `
+      <div style="margin-top:14px">
+        <p class="f__nota" style="margin-top:0">Portal dalam akaun anda:</p>
+        ${senarai
+          .map(
+            (p) => `<div class="ed-item" style="margin-bottom:6px">
+                      <div class="ed-item__isi">
+                        <div class="ed-item__nama">${esc(p.nama)}</div>
+                        <div class="ed-item__harga">Portal Key berakhir dengan ${esc(p.topeng)}</div>
+                      </div>
+                    </div>`
+          )
+          .join('')}
+        <p class="f__nota">Ambil Portal Key penuh dari menu <b>Portals</b> dalam console Bayarcash, kemudian tampal di atas.</p>
+      </div>`;
+  }
+
   /* ------------------------ Tindakan tab Bayaran -------------------------- */
 
   async function bcJalan(aksi, kerja) {
@@ -681,7 +719,9 @@ const Editor = (() => {
     renderBadan();
     try {
       const hasil = await kerja();
-      bcMesejOk = true;
+      // "Uji sambungan" boleh berjaya hubungi API tetapi portal key salah —
+      // itu satu amaran, bukan kejayaan.
+      bcMesejOk = !(hasil && hasil.portalJumpa === false);
       bcMesej = hasil && hasil.mesej ? hasil.mesej : 'Selesai';
     } catch (e) {
       bcMesejOk = false;
@@ -1135,6 +1175,7 @@ const Editor = (() => {
 
         case 'bc-env': {
           const env = btn.dataset.env;
+          bcUji = null;   // kredensial sandbox & production berbeza
           bcJalan('env', () => Bayar.admin('simpan', { persekitaran: env }, bcKunci));
           break;
         }
@@ -1151,13 +1192,29 @@ const Editor = (() => {
             renderBadan();
             break;
           }
+          bcUji = null;   // keputusan ujian lama tidak lagi sah
           bcJalan('simpan', () => Bayar.admin('simpan', data, bcKunci));
           break;
         }
 
         case 'bc-uji':
-          bcJalan('uji', () => Bayar.admin('uji', { pat: medanBc('bcPat') }, bcKunci));
+          bcJalan('uji', async () => {
+            const d = await Bayar.admin(
+              'uji',
+              { pat: medanBc('bcPat'), portal_key: medanBc('bcPortal') },
+              bcKunci
+            );
+            bcUji = d;
+            return d;
+          });
           break;
+
+        case 'bc-guna-saluran-portal': {
+          const kod = (bcUji && bcUji.saluranPortal) || [];
+          if (!kod.length) break;
+          bcJalan('saluran', () => Bayar.admin('simpan', { saluran: kod }, bcKunci));
+          break;
+        }
 
         case 'bc-saluran': {
           const kod = saluranDitanda();

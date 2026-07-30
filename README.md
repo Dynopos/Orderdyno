@@ -157,9 +157,16 @@ Tiada nilai lain perlu diisi dalam fail itu.
 **Bayaran** → masukkan kunci admin → tampal tiga nilai dari langkah 1 →
 **Simpan kredensial** → **Uji sambungan**.
 
-**5. Aktifkan saluran** yang anda sudah hidupkan dalam console Bayarcash.
-Secara lalai hanya FPX aktif di sana; jangan tandakan saluran yang belum
-diaktifkan kerana permintaan akan ditolak.
+**Uji sambungan** menyemak tiga perkara sekali gus melalui `GET /v3/portals`:
+token diterima, Portal Key benar-benar wujud dalam akaun anda, dan saluran mana
+yang diaktifkan pada portal itu. Kalau Portal Key salah (atau anda tersilap
+campur kredensial sandbox dengan production), ia akan beritahu dan menyenaraikan
+portal yang ada dalam akaun anda.
+
+**5. Aktifkan saluran.** Selepas Uji sambungan berjaya, tekan **Tandakan saluran
+portal ini** — saluran diambil terus dari portal anda, jadi tiada tekaan. Anda
+juga boleh tanda sendiri, tetapi jangan tandakan saluran yang belum diaktifkan
+dalam console Bayarcash kerana permintaan akan ditolak.
 
 **6. Segerakkan menu ke server** — tekan **Segerakkan menu sekarang**.
 
@@ -200,6 +207,11 @@ kunci admin anda.
   Panel hanya menunjukkan 4 aksara terakhir untuk pengesahan visual.
 - Jumlah bayaran sentiasa dikira di server. Harga dari pelayar diabaikan.
 - Checksum callback disahkan dengan `hash_equals` sebelum apa-apa dipercayai.
+- Dokumentasi rasmi Bayarcash menyuruh `trim()` setiap nilai sebelum mengira
+  checksum, tetapi SDK PHP rasmi mereka tidak melakukannya. Callback masuk
+  disahkan terhadap **kedua-dua** varian supaya callback sah tidak ditolak
+  hanya kerana satu medan ada ruang di hujung; checksum palsu tetap ditolak
+  kerana penyerang masih memerlukan secret key.
 - Order hanya ditanda **dibayar** bila status `3` **dan** amaun sepadan tepat.
 - Order yang sudah berjaya tidak boleh diturunkan statusnya oleh callback lewat.
 - `api/data/` (kunci + rekod order) dan `api/config.php` dihalang oleh

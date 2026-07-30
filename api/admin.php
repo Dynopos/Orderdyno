@@ -53,8 +53,13 @@ switch ($aksi) {
 
     /* ---------------------------------------------------------------- uji */
     case 'uji': {
-        // Uji dengan nilai yang dihantar kalau ada, kalau tidak nilai tersimpan
-        $pat = trim((string) ($masuk['pat'] ?? '')) ?: $tetapan->pat();
+        /*
+         * Guna GET /v3/portals kerana ia menyemak tiga perkara sekali gus:
+         * token diterima, portal key benar-benar wujud dalam akaun, dan
+         * saluran mana yang diaktifkan pada portal itu.
+         */
+        $pat       = trim((string) ($masuk['pat'] ?? '')) ?: $tetapan->pat();
+        $portalKey = trim((string) ($masuk['portal_key'] ?? '')) ?: $tetapan->portalKey();
         $env = ($masuk['persekitaran'] ?? $tetapan->persekitaran()) === 'production' ? 'production' : 'sandbox';
 
         if ($pat === '') {
@@ -62,21 +67,65 @@ switch ($aksi) {
         }
 
         try {
-            $klien = new Bayarcash($pat, $tetapan->secretKey(), $env);
-            $bank  = $klien->bankFpx();
-            $bil   = is_array($bank['data'] ?? null) ? count($bank['data']) : (is_array($bank) ? count($bank) : 0);
-            json_keluar([
-                'ok'           => true,
-                'mesej'        => 'Sambungan berjaya — Bayarcash menerima token anda.',
-                'persekitaran' => $env,
-                'bilanganBank' => $bil,
-            ]);
+            $klien  = new Bayarcash($pat, $tetapan->secretKey(), $env);
+            $portal = $klien->portals();
         } catch (Throwable $e) {
             json_keluar([
                 'ok'    => false,
                 'mesej' => 'Sambungan gagal: ' . $e->getMessage(),
             ], 502);
         }
+
+        $namaEnv = $env === 'production' ? 'production' : 'sandbox';
+
+        if (!$portal) {
+            json_keluar([
+                'ok'    => true,
+                'mesej' => 'Token diterima (' . $namaEnv . '), tetapi tiada portal dijumpai dalam akaun ini. Cipta satu portal dalam console Bayarcash dahulu.',
+                'portalJumpa' => false,
+                'portalAda'   => [],
+            ]);
+        }
+
+        /* Cari portal yang sepadan dengan portal key */
+        $jumpa = null;
+        foreach ($portal as $p) {
+            if (hash_equals((string) ($p['portal_key'] ?? ''), $portalKey)) {
+                $jumpa = $p;
+                break;
+            }
+        }
+
+        /* Senarai portal untuk membantu pemilik pilih yang betul */
+        $senarai = array_map(static fn ($p) => [
+            'nama'    => (string) ($p['portal_name'] ?? '—'),
+            'topeng'  => Tetapan::topeng((string) ($p['portal_key'] ?? '')),
+            'saluran' => array_map('intval', array_column($p['payment_channels'] ?? [], 'id')),
+        ], $portal);
+
+        if ($jumpa === null) {
+            json_keluar([
+                'ok'    => true,
+                'mesej' => $portalKey === ''
+                    ? 'Token diterima (' . $namaEnv . '). Portal Key belum diisi — pilih satu dari senarai di bawah.'
+                    : 'Token diterima (' . $namaEnv . '), tetapi Portal Key itu tidak dijumpai dalam akaun ini. Periksa semula, atau pastikan anda tidak mencampur kredensial sandbox dengan production.',
+                'portalJumpa' => false,
+                'portalAda'   => $senarai,
+            ]);
+        }
+
+        $saluranPortal = array_values(array_unique(array_map('intval', array_column($jumpa['payment_channels'] ?? [], 'id'))));
+        $namaSaluran = array_map(static fn ($k) => Tetapan::SALURAN[$k] ?? ('Kod ' . $k), $saluranPortal);
+
+        json_keluar([
+            'ok'    => true,
+            'mesej' => 'Sambungan berjaya (' . $namaEnv . ') — portal "' . ($jumpa['portal_name'] ?? '—') . '" dijumpai dengan '
+                     . count($saluranPortal) . ' saluran aktif: ' . (implode(', ', $namaSaluran) ?: 'tiada'),
+            'portalJumpa'   => true,
+            'portalNama'    => (string) ($jumpa['portal_name'] ?? ''),
+            'saluranPortal' => $saluranPortal,
+            'portalAda'     => $senarai,
+        ]);
     }
 
     /* ------------------------------------------------------------- simpan */

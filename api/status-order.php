@@ -45,8 +45,18 @@ if ($belumPasti && $intentId !== '' && $tetapan->siap()) {
     try {
         $intent = $tetapan->klien()->paymentIntent($intentId);
 
-        /* Cari percubaan terbaru yang berjaya, kalau tidak ambil yang pertama */
+        /*
+         * Satu payment intent boleh ada beberapa `attempts` (pelanggan cuba
+         * lagi selepas gagal). Utamakan percubaan yang BERJAYA; kalau tiada,
+         * ambil yang terbaru. Bayarcash menghantar yang terbaru dahulu, tetapi
+         * kita susun sendiri supaya tidak bergantung pada susunan itu.
+         */
         $attempts = is_array($intent['attempts'] ?? null) ? $intent['attempts'] : [];
+        usort($attempts, static fn ($a, $b) => strcmp(
+            (string) ($b['created_at'] ?? ''),
+            (string) ($a['created_at'] ?? '')
+        ));
+
         $pilih = null;
         foreach ($attempts as $a) {
             if ((int) ($a['status'] ?? 0) === Bayarcash::BERJAYA) {
@@ -58,9 +68,19 @@ if ($belumPasti && $intentId !== '' && $tetapan->siap()) {
             $pilih = $attempts[0];
         }
 
+        /* Sandaran: intent bertanda "paid" tetapi tiada percubaan disenaraikan */
+        if ($pilih === null && (string) ($intent['status'] ?? '') === 'paid') {
+            $pilih = [
+                'status'             => Bayarcash::BERJAYA,
+                'status_description' => 'Approved',
+                'amount'             => $intent['amount'] ?? '',
+                'currency'           => $intent['currency'] ?? 'MYR',
+            ];
+        }
+
         if ($pilih !== null) {
             $statusBaru   = (int) ($pilih['status'] ?? Bayarcash::BARU);
-            $amaunDibayar = (float) ($pilih['amount'] ?? 0);
+            $amaunDibayar = (float) ($pilih['amount'] ?? ($intent['amount'] ?? 0));
             $amaunDijangka = (float) ($rekod['jumlah'] ?? 0);
 
             if ($statusBaru === Bayarcash::BERJAYA && abs($amaunDibayar - $amaunDijangka) > 0.009) {

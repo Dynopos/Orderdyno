@@ -38,12 +38,35 @@ final class Bayarcash
      *   2. ksort() — susun ikut kunci
      *   3. implode('|') — cantum nilai dengan '|'
      *   4. hash_hmac('sha256', $rentetan, $secretKey)
+     *
+     * Nota: dokumentasi rasmi menyuruh trim setiap nilai, tetapi SDK PHP
+     * rasmi (webimpian/bayarcash-php-sdk) tidak melakukannya. Untuk
+     * permintaan keluar kita ikut dokumentasi — nilai kita memang sudah
+     * bersih, jadi kedua-duanya menghasilkan hasil sama. Untuk callback
+     * masuk kita sahkan kedua-dua varian; lihat sahkanSalahSatu().
      */
-    public function checksum(array $payload): string
+    public function checksum(array $payload, bool $trim = true): string
     {
-        $payload = array_map(static fn ($v) => trim((string) $v), $payload);
+        $payload = array_map(
+            static fn ($v) => $trim ? trim((string) $v) : (string) $v,
+            $payload
+        );
         ksort($payload);
         return hash_hmac('sha256', implode('|', $payload), $this->secretKey);
+    }
+
+    /*
+     * Sahkan checksum terhadap varian trim DAN tanpa trim, supaya callback
+     * sah tidak ditolak hanya kerana satu medan mengandungi ruang di hujung.
+     * Penyerang masih memerlukan secret key untuk lulus mana-mana varian.
+     */
+    private function sahkanSalahSatu(array $payload, string $diberi): bool
+    {
+        if ($diberi === '') {
+            return false;
+        }
+        return hash_equals($this->checksum($payload, true), $diberi)
+            || hash_equals($this->checksum($payload, false), $diberi);
     }
 
     /* Checksum untuk payload Payment Intent */
@@ -64,11 +87,7 @@ final class Bayarcash
      */
     public function sahkanCallbackV3(array $cb): bool
     {
-        if (empty($cb['checksum'])) {
-            return false;
-        }
-
-        $dikira = $this->checksum([
+        return $this->sahkanSalahSatu([
             'transaction_id'            => $cb['transaction_id'] ?? '',
             'exchange_reference_number' => $cb['exchange_reference_number'] ?? '',
             'exchange_transaction_id'   => $cb['exchange_transaction_id'] ?? '',
@@ -78,9 +97,7 @@ final class Bayarcash
             'payer_bank_name'           => $cb['payer_bank_name'] ?? '',
             'status'                    => $cb['status'] ?? '',
             'status_description'        => $cb['status_description'] ?? '',
-        ]);
-
-        return hash_equals($dikira, (string) $cb['checksum']);
+        ], (string) ($cb['checksum'] ?? ''));
     }
 
     /*
@@ -89,11 +106,7 @@ final class Bayarcash
      */
     public function sahkanCallbackTransaksi(array $cb): bool
     {
-        if (empty($cb['checksum'])) {
-            return false;
-        }
-
-        $dikira = $this->checksum([
+        return $this->sahkanSalahSatu([
             'record_type'               => $cb['record_type'] ?? '',
             'transaction_id'            => $cb['transaction_id'] ?? '',
             'exchange_reference_number' => $cb['exchange_reference_number'] ?? '',
@@ -107,9 +120,7 @@ final class Bayarcash
             'status'                    => $cb['status'] ?? '',
             'status_description'        => $cb['status_description'] ?? '',
             'datetime'                  => $cb['datetime'] ?? '',
-        ]);
-
-        return hash_equals($dikira, (string) $cb['checksum']);
+        ], (string) ($cb['checksum'] ?? ''));
     }
 
     /*
@@ -148,10 +159,46 @@ final class Bayarcash
         return $this->minta('GET', '/transactions?order_number=' . rawurlencode($orderNumber));
     }
 
-    /* GET /v3/banks — senarai bank FPX */
+    /* GET /v3/banks — senarai bank FPX (pulangkan array tulen, bukan {data}) */
     public function bankFpx(): array
     {
         return $this->minta('GET', '/banks');
+    }
+
+    /*
+     * GET /v3/portals — senarai portal dalam akaun.
+     * Setiap portal menyertakan `portal_key` dan `payment_channels`, jadi ini
+     * cara terbaik untuk sahkan kredensial: ia membuktikan token berfungsi,
+     * membuktikan portal key wujud, dan memberitahu saluran mana yang benar-
+     * benar diaktifkan pada portal itu.
+     */
+    public function portals(int $maksHalaman = 5): array
+    {
+        $semua = [];
+        $laluan = '/portals';
+
+        for ($i = 0; $i < $maksHalaman; $i++) {
+            $jawapan = $this->minta('GET', $laluan);
+            $data = is_array($jawapan['data'] ?? null) ? $jawapan['data'] : [];
+            foreach ($data as $portal) {
+                $semua[] = $portal;
+            }
+
+            $seterusnya = $jawapan['links']['next'] ?? null;
+            if (!is_string($seterusnya) || $seterusnya === '') {
+                break;
+            }
+            // Ambil bahagian selepas '/v3' supaya laluan relatif kekal betul
+            $bahagian = parse_url($seterusnya);
+            $laluanPenuh = ($bahagian['path'] ?? '') . (isset($bahagian['query']) ? '?' . $bahagian['query'] : '');
+            $potong = strpos($laluanPenuh, '/portals');
+            if ($potong === false) {
+                break;
+            }
+            $laluan = substr($laluanPenuh, $potong);
+        }
+
+        return $semua;
     }
 
     /* ============================== HTTP ================================ */
