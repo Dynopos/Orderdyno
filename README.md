@@ -316,6 +316,73 @@ Buka `https://domain-anda.com` → **⚙ Edit Menu** → tab **Bayaran** →
 masukkan kunci admin dari langkah 4 → tampal PAT / Secret Key / Portal Key →
 **Simpan kredensial** → **Uji sambungan** → **Segerakkan menu**.
 
+### Custom domain
+
+**1. Tunjuk DNS ke server.** Di pendaftar domain anda (Spaceship, Namecheap,
+Cloudflare, Exabytes…), tambah rekod:
+
+| Jenis | Nama | Nilai |
+|---|---|---|
+| `A` | `@` | IP server Forge anda |
+| `A` | `www` | IP server Forge anda |
+
+IP server ada di halaman server dalam Forge. Kalau anda guna subdomain sahaja
+(contoh `menu.kedaisaya.com`), satu rekod `A` dengan nama `menu` sudah cukup.
+
+Tunggu DNS merebak — biasanya beberapa minit, boleh sampai sejam. Semak dengan
+`dig +short domain-anda.com` atau [dnschecker.org](https://dnschecker.org).
+
+**2. Dalam Forge:** site → **Settings** → letak domain sebagai domain utama,
+dan tambah `www.domain-anda.com` dalam **Aliases** kalau anda mahu kedua-duanya
+berfungsi.
+
+**3. Dapatkan SSL semula.** Sertifikat lama hanya sah untuk domain lama.
+Site → **SSL** → **Let's Encrypt** → masukkan kedua-dua `domain-anda.com` dan
+`www.domain-anda.com` → Obtain Certificate.
+
+**4. Set `url_asas` dalam `api/config.php`** — ini yang penting:
+
+```php
+<?php return [
+    'kunci_admin' => 'kunci-rahsia-anda',
+    'url_asas'    => 'https://domain-anda.com',   // tanpa '/' di hujung
+];
+```
+
+Kenapa perlu? OrderDyno menghantar `return_url` dan `callback_url` kepada
+Bayarcash pada setiap pembayaran. Tanpa `url_asas`, ia meneka URL itu dari
+header `Host` permintaan. Itu berfungsi untuk pelanggan biasa, tetapi header
+`Host` datang dari pelayar — jadi seseorang boleh menghantar permintaan dengan
+`Host` palsu dan menyebabkan callback dihantar ke domain lain. Mereka **tidak**
+boleh mencuri duit (checksum masih memerlukan secret key anda), tetapi order
+itu mungkin tidak ditanda sebagai dibayar. Menetapkan `url_asas` menutup
+kemungkinan itu sepenuhnya.
+
+**Tiada apa perlu dikemas kini dalam console Bayarcash.** Callback URL dihantar
+bersama setiap permintaan, bukan didaftarkan di sana. Selepas menukar domain,
+buka tab **Bayaran** dan sahkan URL yang dipaparkan di bawah "URL untuk
+rujukan" sudah menggunakan domain baru.
+
+**Kalau anda guna Cloudflare** (proxy oren): gunakan mod SSL **Full (strict)**,
+bukan Flexible. Kod ini membaca `X-Forwarded-Proto` jadi ia tahu permintaan
+asalnya HTTPS, tetapi Flexible bermakna trafik antara Cloudflare dan server
+anda tidak disulitkan.
+
+### Custom domain untuk GitHub Pages
+
+Kalau anda masih mahu versi statik di GitHub Pages pada domain sendiri
+(tanpa pembayaran):
+
+1. DNS: rekod `CNAME` dari `menu` → `dynopos.github.io`
+   (atau untuk domain akar, empat rekod `A` ke `185.199.108.153`,
+   `185.199.109.153`, `185.199.110.153`, `185.199.111.153`)
+2. GitHub → repo → **Settings → Pages → Custom domain** → masukkan domain →
+   Save. Ini mencipta fail `CNAME` dalam repo.
+3. Tanda **Enforce HTTPS** selepas sertifikat siap.
+
+Ingat: tab Bayaran tetap akan kata "perlu hosting PHP" di sana — custom domain
+tidak mengubah hakikat GitHub Pages tidak menjalankan PHP.
+
 ### Nota penting untuk Forge
 
 - **`api/data/` kekal merentas deploy.** Forge buat `git pull` di tempat yang
