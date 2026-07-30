@@ -1,0 +1,7 @@
+# Folder ini mengandungi kunci rahsia dan rekod order.
+# Jangan sekali-kali benarkan capaian melalui web.
+Require all denied
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

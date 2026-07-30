@@ -3,56 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>OrderDyno — Order Online Untuk Penjaja Kecil</title>
-<meta name="description" content="Menu online dengan cart dan checkout terus ke WhatsApp. Sesuai untuk gerai burger, fries dan air minuman.">
-<meta name="theme-color" content="#7b2ff7">
-<meta property="og:title" content="OrderDyno — Order Online">
-<meta property="og:description" content="Pilih menu, masuk cart, hantar order terus ke WhatsApp penjaja.">
+<title>Menu Online — OrderDyno</title>
+<meta name="description" content="Template menu online dengan cart dan checkout terus ke WhatsApp. Isi menu anda sendiri tanpa coding.">
+<meta name="theme-color" content="#0b0616">
+<meta property="og:title" content="Menu Online">
+<meta property="og:description" content="Pilih menu, masuk cart, hantar order terus ke WhatsApp.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kaushan+Script&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<div class="latar" aria-hidden="true"></div>
-<div class="buih" aria-hidden="true" style="width:180px;height:180px;background:#ffd93d;top:12%;left:-40px;"></div>
-<div class="buih" aria-hidden="true" style="width:120px;height:120px;background:#4dd0e1;top:42%;right:-30px;animation-delay:-4s;"></div>
-<div class="buih" aria-hidden="true" style="width:150px;height:150px;background:#ff6ec7;bottom:8%;left:8%;animation-delay:-8s;"></div>
+<!-- ===================== LATAR BELAKANG BERANIMASI ====================== -->
+<div class="aurora" aria-hidden="true">
+  <span class="aurora__blob aurora__blob--1"></span>
+  <span class="aurora__blob aurora__blob--2"></span>
+  <span class="aurora__blob aurora__blob--3"></span>
+  <span class="aurora__blob aurora__blob--4"></span>
+  <span class="aurora__bintik"></span>
+</div>
 
-<!-- ============================== HERO ============================== -->
-<header class="hero bekas">
-  <div class="hero__logo" id="logo">🍔</div>
-  <h1 id="namaKedai">Warung Jaja</h1>
-  <p class="hero__tagline" id="tagline">Sedap Panas-Panas</p>
-  <p class="hero__slogan" id="slogan"></p>
-  <div class="lencana-baris">
-    <span class="lencana" id="statusBuka"><span class="titik"></span><span>—</span></span>
-    <a class="lencana" id="pautanLokasi" href="#" target="_blank" rel="noopener">📍 <span id="alamat"></span></a>
+<!-- ============================ BUTANG EDIT ============================= -->
+<button class="btn-edit" id="btnEdit" type="button" title="Isi menu & tetapan kedai anda">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5m7.43-2.53a7.9 7.9 0 0 0 0-1.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.6 7.6 0 0 0-1.68-.97l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.49.42l-.36 2.54c-.6.25-1.16.58-1.68.97l-2.39-.96a.5.5 0 0 0-.6.22L2.42 8.81a.5.5 0 0 0 .11.64l2.03 1.58a7.9 7.9 0 0 0 0 1.94l-2.03 1.58a.5.5 0 0 0-.11.64l1.92 3.32c.12.22.38.3.6.22l2.39-.96c.52.39 1.08.72 1.68.97l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.6-.25 1.16-.58 1.68-.97l2.39.96c.22.08.48 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64z"/></svg>
+  <span>Edit Menu</span>
+</button>
+
+<!-- ================================ HERO ================================ -->
+<header class="hero">
+  <div class="hero__isi">
+    <div class="hero__logo kosong" id="logo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2M8.5 11a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 8.5 11m10 7h-13l3.25-4.33 2.25 3 3.25-4.34z"/></svg>
+    </div>
+
+    <h1 class="hero__nama" id="namaKedai">Nama Kedai Anda</h1>
+    <p class="hero__tagline" id="tagline">Tagline kedai anda di sini</p>
+
+    <div class="hero__butang">
+      <a class="btn btn--wa" id="btnWa" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91a9.8 9.8 0 0 0 1.36 4.98L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m5.8 14.02c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.05.24-3.53-.73s-4.05-3.5-4.18-3.66c-.12-.17-.83-1.11-.83-2.12 0-1 .53-1.5.72-1.7.19-.22.41-.27.55-.27h.4c.12 0 .3-.05.46.36l.63 1.53c.05.1.09.22.02.36l-.27.4-.19.22c-.09.09-.18.19-.08.36.1.17.44.73.95 1.18.65.58 1.19.76 1.36.85.17.08.27.07.37-.05l.53-.61c.14-.17.25-.13.42-.07l1.2.57c.4.2.66.29.76.46.09.17.09.97-.15 1.65z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <a class="btn btn--utama" id="btnOrderNow" href="#menu">
+        <span id="labelOrderNow">Order Now</span>
+        <svg class="btn__luar" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM19 19H5V5h5V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5h-2z"/></svg>
+      </a>
+    </div>
   </div>
 </header>
 
-<!-- ========================== BAR SEMAK ORDER ======================== -->
-<div class="bar">
-  <div class="bekas">
-    <button class="btn-semak" id="btnSemak" type="button">
-      🛒 <span>Semak Order</span> <span class="kira" id="kiraCart">0</span>
-    </button>
-  </div>
-  <nav class="chips bekas" id="chips" aria-label="Kategori menu"></nav>
+<!-- =========================== BAR SEMAK ORDER ========================== -->
+<div class="bar" id="bar">
+  <button class="btn-semak" id="btnSemak" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2m10 0a2 2 0 1 0 2 2 2 2 0 0 0-2-2M7.16 14.26l.03-.12.9-1.64h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49-1.75-.96-3.58 6.48H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44A1.99 1.99 0 0 0 7 17h12v-2H7.42a.25.25 0 0 1-.26-.25z"/></svg>
+    <span>Semak Order</span>
+    <span class="kira" id="kiraCart">0</span>
+  </button>
+  <nav class="chips" id="chips" aria-label="Kategori menu"></nav>
 </div>
 
-<!-- ============================== MENU ============================== -->
+<!-- ================================ MENU ================================ -->
 <main class="bekas" id="menu"></main>
 
+<!-- =============================== FOOTER =============================== -->
 <footer class="footer">
-  <p><strong id="footerNama">Warung Jaja</strong> — order terus ke WhatsApp, tiada yuran platform.</p>
-  <p>Dikuasakan oleh <a href="#" onclick="return false;">OrderDyno</a> · Menu generik untuk penjaja kecil</p>
+  <div class="bekas">
+    <div class="info">
+      <a class="info__kad" id="kadLokasi" href="#" target="_blank" rel="noopener">
+        <span class="info__ikon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7m0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5"/></svg></span>
+        <span class="info__teks"><b>Lokasi</b><span id="alamat">Alamat kedai anda</span></span>
+      </a>
+      <div class="info__kad">
+        <span class="info__ikon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m4.24 14.24L11 13V7h1.5v5.25l4.5 2.67z"/></svg></span>
+        <span class="info__teks"><b>Waktu Operasi</b><span id="waktu">Setiap hari · 10:00 AM – 10:00 PM</span></span>
+      </div>
+      <a class="info__kad" id="kadTelefon" href="#">
+        <span class="info__ikon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.1 15.1 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.4 11.4 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .57 3.57 1 1 0 0 1-.25 1.02z"/></svg></span>
+        <span class="info__teks"><b>Hubungi</b><span id="telefon">+60 12-000 0000</span></span>
+      </a>
+    </div>
+    <p class="footer__hak">© <span id="tahun">2026</span> <span id="footerNama">Nama Kedai Anda</span> · dibina dengan <b>OrderDyno</b></p>
+  </div>
 </footer>
 
-<!-- ============================== SHEETS ============================ -->
+<!-- =============================== LAPISAN ============================== -->
 <div class="tirai" id="tirai"></div>
 
 <!-- Sheet: pilih item -->
@@ -60,11 +97,11 @@
   <div class="sheet__pemegang"></div>
   <div class="sheet__kepala">
     <h3 id="tajukItem">Item</h3>
-    <button class="sheet__tutup" type="button" data-tutup aria-label="Tutup">✕</button>
+    <button class="bulat-tutup" type="button" data-tutup aria-label="Tutup">✕</button>
   </div>
   <div class="sheet__badan" id="badanItem"></div>
   <div class="sheet__kaki">
-    <button class="btn-utama" id="btnTambah" type="button">Tambah ke Order</button>
+    <button class="btn-blok" id="btnTambah" type="button">Tambah ke Order</button>
   </div>
 </section>
 
@@ -73,16 +110,32 @@
   <div class="sheet__pemegang"></div>
   <div class="sheet__kepala">
     <h3 id="tajukCart">Order Anda</h3>
-    <button class="sheet__tutup" type="button" data-tutup aria-label="Tutup">✕</button>
+    <button class="bulat-tutup" type="button" data-tutup aria-label="Tutup">✕</button>
   </div>
   <div class="sheet__badan" id="badanCart"></div>
   <div class="sheet__kaki" id="kakiCart"></div>
 </section>
 
+<!-- Sheet: keputusan pembayaran -->
+<section class="sheet" id="sheetHasil" role="dialog" aria-modal="true" aria-labelledby="tajukHasil" hidden>
+  <div class="sheet__pemegang"></div>
+  <div class="sheet__kepala">
+    <h3 id="tajukHasil">Keputusan Pembayaran</h3>
+    <button class="bulat-tutup" type="button" data-tutup aria-label="Tutup">✕</button>
+  </div>
+  <div class="sheet__badan" id="badanHasil"></div>
+  <div class="sheet__kaki" id="kakiHasil"></div>
+</section>
+
+<!-- Panel editor (dibina oleh editor.js) -->
+<div id="editorTempat"></div>
+
 <div class="toast-bekas" id="toast" aria-live="polite"></div>
 
 <script src="assets/js/config.js"></script>
-<script src="assets/js/art.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/bayar.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/editor.js"></script>
 </body>
 </html>
