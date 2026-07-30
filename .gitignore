@@ -1,3 +1,10 @@
 node_modules/
 package-lock.json
 .DS_Store
+
+# Kredensial & data tempatan Bayarcash — jangan commit
+api/config.php
+api/data/bayarcash.json
+api/data/menu.json
+api/data/orders/
+api/data/kadar/

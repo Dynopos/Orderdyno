@@ -15,7 +15,8 @@ const App = (() => {
   let CART = Store.muatCart();
   let draf = null;            // item yang sedang dipilih dalam sheet
   let caraOrder = 'pickup';
-  const pelanggan = { nama: '', telefon: '', alamat: '', nota: '' };
+  const pelanggan = { nama: '', email: '', telefon: '', alamat: '', nota: '' };
+  let saluranPilih = 0;   // saluran Bayarcash yang dipilih pelanggan
 
   /* ------------------------------ Pintasan -------------------------------- */
 
@@ -25,6 +26,7 @@ const App = (() => {
   const IKON = {
     gambar: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2M8.5 11a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 8.5 11m10 7h-13l3.25-4.33 2.25 3 3.25-4.34z"/></svg>',
     campur: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>',
+    kad: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H4v-6h16zm0-10H4V6h16z"/></svg>',
     wa: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91a9.8 9.8 0 0 0 1.36 4.98L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m5.8 14.02c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.05.24-3.53-.73s-4.05-3.5-4.18-3.66c-.12-.17-.83-1.11-.83-2.12 0-1 .53-1.5.72-1.7.19-.22.41-.27.55-.27h.4c.12 0 .3-.05.46.36l.63 1.53c.05.1.09.22.02.36l-.27.4-.19.22c-.09.09-.18.19-.08.36.1.17.44.73.95 1.18.65.58 1.19.76 1.36.85.17.08.27.07.37-.05l.53-.61c.14-.17.25-.13.42-.07l1.2.57c.4.2.66.29.76.46.09.17.09.97-.15 1.65z"/></svg>',
   };
 
@@ -505,10 +507,17 @@ const App = (() => {
 
       ${blokCara}
 
+      ${blokSaluran()}
+
       <div class="blok">
         <p class="blok__tajuk">Maklumat anda</p>
         <div class="f"><input class="medan" id="cNama" placeholder="Nama anda" value="${esc(pelanggan.nama)}"></div>
         <div class="f"><input class="medan" id="cTel" type="tel" placeholder="Nombor telefon" value="${esc(pelanggan.telefon)}"></div>
+        ${
+          bolehBayar()
+            ? `<div class="f"><input class="medan" id="cEmail" type="email" placeholder="Alamat emel (untuk resit pembayaran)" value="${esc(pelanggan.email)}"></div>`
+            : ''
+        }
         ${
           caraOrder === 'delivery'
             ? `<div class="f"><textarea class="medan" id="cAlamat" placeholder="Alamat penghantaran penuh">${esc(pelanggan.alamat)}</textarea></div>`
@@ -524,12 +533,54 @@ const App = (() => {
           : ''
       }`;
 
+    const butangBayar = bolehBayar()
+      ? `<button class="btn-blok" id="btnBayar" type="button"${kurang ? ' disabled' : ''}>
+           ${IKON.kad} Bayar Online — ${wang(st + caj)}
+         </button>`
+      : '';
+
     kaki.innerHTML = `
-      <button class="btn-blok btn-hantar" id="btnHantar" type="button"${kurang ? ' disabled' : ''}>
-        ${IKON.wa} Hantar Order via WhatsApp
+      ${butangBayar}
+      <button class="btn-blok btn-hantar${butangBayar ? ' btn-blok--kedua' : ''}" id="btnHantar" type="button"${kurang ? ' disabled' : ''}>
+        ${IKON.wa} ${butangBayar ? 'Order dulu, bayar kemudian' : 'Hantar Order via WhatsApp'}
       </button>
       <button class="cart-buang" type="button" data-kosongkan
               style="display:block;margin:12px auto 0">Kosongkan order</button>`;
+  }
+
+  /* Pembayaran online tersedia? */
+  function bolehBayar() {
+    return typeof Bayar !== 'undefined' && Bayar.sedia();
+  }
+
+  /* Pemilih saluran pembayaran (FPX, DuitNow, …) */
+  function blokSaluran() {
+    if (!bolehBayar()) return '';
+
+    const senarai = Bayar.keadaan().saluran;
+    if (!saluranPilih && senarai.length) saluranPilih = senarai[0].kod;
+
+    const amaranSandbox = Bayar.keadaan().sandbox
+      ? '<div class="amaran">Mod ujian (sandbox) — pembayaran tidak melibatkan duit sebenar.</div>'
+      : '';
+
+    if (senarai.length < 2) {
+      return amaranSandbox
+        ? `<div class="blok">${amaranSandbox}</div>`
+        : '';
+    }
+
+    return `<div class="blok">
+      <p class="blok__tajuk">Cara bayar</p>
+      <div class="pil-baris">
+        ${senarai
+          .map(
+            (s) => `<button class="pil${s.kod === saluranPilih ? ' aktif' : ''}" type="button" data-saluran="${s.kod}">${esc(s.nama)}</button>`
+          )
+          .join('')}
+      </div>
+      ${amaranSandbox}
+    </div>`;
   }
 
   function ubahKuantiti(i, delta) {
@@ -544,6 +595,7 @@ const App = (() => {
 
   function simpanMedanPelanggan() {
     if ($('#cNama')) pelanggan.nama = $('#cNama').value;
+    if ($('#cEmail')) pelanggan.email = $('#cEmail').value;
     if ($('#cTel')) pelanggan.telefon = $('#cTel').value;
     if ($('#cAlamat')) pelanggan.alamat = $('#cAlamat').value;
     if ($('#cNota')) pelanggan.nota = $('#cNota').value;
@@ -607,6 +659,60 @@ const App = (() => {
 
     window.open(`https://wa.me/${no}?text=${encodeURIComponent(binaMesej())}`, '_blank', 'noopener');
     toast('WhatsApp dibuka — tekan hantar ya!', 'baik');
+  }
+
+  /* ========================== BAYAR ONLINE ============================== */
+
+  async function bayarOnline() {
+    simpanMedanPelanggan();
+
+    if (!CART.length) return toast('Order masih kosong', 'silap');
+    if (!pelanggan.nama.trim()) {
+      toast('Isi nama anda dahulu', 'silap');
+      if ($('#cNama')) $('#cNama').focus();
+      return;
+    }
+    if (!pelanggan.telefon.trim()) {
+      toast('Isi nombor telefon anda', 'silap');
+      if ($('#cTel')) $('#cTel').focus();
+      return;
+    }
+    // Bayarcash memerlukan emel yang sah untuk resit
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(pelanggan.email.trim())) {
+      toast('Isi alamat emel yang sah untuk resit', 'silap');
+      if ($('#cEmail')) $('#cEmail').focus();
+      return;
+    }
+    if (caraOrder === 'delivery' && !pelanggan.alamat.trim()) {
+      toast('Isi alamat penghantaran', 'silap');
+      if ($('#cAlamat')) $('#cAlamat').focus();
+      return;
+    }
+
+    const btn = $('#btnBayar');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Menyediakan pembayaran…';
+    }
+
+    try {
+      await Bayar.bayar({
+        cart: CART,
+        cara: caraOrder,
+        saluran: saluranPilih,
+        pelanggan: {
+          nama: pelanggan.nama.trim(),
+          email: pelanggan.email.trim(),
+          telefon: pelanggan.telefon.trim(),
+          alamat: pelanggan.alamat.trim(),
+          nota: pelanggan.nota.trim(),
+        },
+      });
+      // Berjaya → pelayar sedang redirect ke Bayarcash
+    } catch (e) {
+      toast(e.message || 'Gagal mulakan pembayaran', 'silap');
+      paparCart();
+    }
   }
 
   /* ============================== PERISTIWA ============================== */
@@ -683,6 +789,17 @@ const App = (() => {
         toast('Order dikosongkan');
         return;
       }
+      const sal = e.target.closest('[data-saluran]');
+      if (sal) {
+        simpanMedanPelanggan();
+        saluranPilih = Number(sal.dataset.saluran);
+        paparCart();
+        return;
+      }
+      if (e.target.closest('#btnBayar')) {
+        bayarOnline();
+        return;
+      }
       if (e.target.closest('#btnHantar')) hantarOrder();
     });
 
@@ -743,6 +860,15 @@ const App = (() => {
     if (location.hash.indexOf('edit') !== -1) {
       setTimeout(() => window.Editor && Editor.buka(), 400);
     }
+
+    // Semak sama ada backend pembayaran tersedia (senyap kalau tiada)
+    if (window.Bayar) Bayar.mula();
+  }
+
+  function kosongkanCart() {
+    CART = [];
+    Store.simpanCart(CART);
+    paparKira();
   }
 
   return {
@@ -751,10 +877,16 @@ const App = (() => {
     gunaConfig,
     toast,
     tutupSheet,
+    bukaCart,
+    kosongkanCart,
+    paparCartSemula: paparCart,
+    bukaSheetHasil: () => bukaSheet('#sheetHasil'),
     config: () => C,
     wang,
     esc,
   };
 })();
+
+window.App = App;
 
 document.addEventListener('DOMContentLoaded', App.mula);

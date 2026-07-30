@@ -848,6 +848,90 @@ textarea.medan { resize: vertical; min-height: 74px; }
   margin-bottom: 14px;
 }
 
+/* ==================== 9b. KEPUTUSAN PEMBAYARAN ========================== */
+
+.btn-blok--kedua {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--teks);
+  border: 1px solid var(--garis-kuat);
+  box-shadow: none;
+}
+.btn-blok--kedua:hover { background: rgba(255, 255, 255, .13); filter: none; }
+
+.hasil { text-align: center; padding: 14px 0 6px; }
+
+.hasil__ikon {
+  width: 68px; height: 68px;
+  margin: 0 auto 18px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+.hasil__ikon--berjaya {
+  color: #04220f;
+  background: linear-gradient(140deg, #7ef0a5, #25d366);
+  box-shadow: 0 0 60px -14px rgba(37, 211, 102, .9);
+  animation: cop .5s cubic-bezier(.2, .9, .3, 1.5);
+}
+.hasil__ikon--gagal {
+  color: #fff;
+  background: linear-gradient(140deg, #ff8fa3, #d6335a);
+  box-shadow: 0 0 60px -16px rgba(214, 51, 90, .9);
+}
+
+@keyframes cop {
+  0%   { transform: scale(.4); opacity: 0; }
+  60%  { transform: scale(1.14); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.hasil__pusing {
+  width: 54px; height: 54px;
+  margin: 6px auto 20px;
+  border-radius: 50%;
+  border: 3px solid var(--garis);
+  border-top-color: var(--c2);
+  animation: pusing 900ms linear infinite;
+}
+@keyframes pusing { to { transform: rotate(360deg); } }
+
+.hasil__tajuk { margin: 0 0 8px; font-size: 1.3rem; font-weight: 800; }
+.hasil__nota { margin: 0 auto; max-width: 380px; font-size: .9rem; line-height: 1.6; color: var(--lemah); }
+.hasil__ruj {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: .8rem;
+  line-height: 1.7;
+  color: var(--lemah);
+}
+.hasil__ruj b { color: var(--teks); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.hasil__resit {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border-radius: var(--r-m);
+  background: rgba(0, 0, 0, .25);
+  border: 1px solid var(--garis);
+}
+.hasil__baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: .86rem;
+  padding: 6px 0;
+  color: var(--lemah);
+}
+.hasil__baris--jumlah {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--garis-kuat);
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--teks);
+}
+
 /* ========================= 10. PANEL EDITOR ============================= */
 
 .ed {
@@ -1048,6 +1132,27 @@ textarea.medan { resize: vertical; min-height: 74px; }
 .ed-item__isi { flex: 1; min-width: 0; }
 .ed-item__nama { font-size: .9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ed-item__harga { font-size: .78rem; color: var(--lemah); }
+
+/* Lencana status dalam tab Bayaran */
+.pil-status {
+  flex: none;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  border: 1px solid currentColor;
+}
+.pil-status--ok { color: #7ef0a5; }
+.pil-status--tunggu { color: #ffc93c; }
+
+.senarai-halangan {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: .82rem;
+  line-height: 1.7;
+  color: #ffd0a8;
+}
 
 .tema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; margin-bottom: 20px; }
 .tema-pil {

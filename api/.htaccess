@@ -1,0 +1,11 @@
+# Lindungi fail tetapan daripada dibaca melalui web.
+<FilesMatch "^(config|config\.sample)\.php$">
+  Require all denied
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Jangan senaraikan kandungan folder
+Options -Indexes

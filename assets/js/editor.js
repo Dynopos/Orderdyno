@@ -17,6 +17,15 @@ const Editor = (() => {
   let itemEdit = null;       // id item yang sedang dibuka dalam borang
   let masaSimpan = null;
 
+  /* --- Keadaan tab "Bayaran" (tidak disimpan bersama menu) --------------- */
+  let bcKunci = '';          // kunci admin — dalam ingatan + sessionStorage
+  let bcAdmin = null;        // maklumat dari api/status.php?key=...
+  let bcMesej = '';          // mesej terakhir dari server
+  let bcMesejOk = true;
+  let bcSibuk = '';          // aksi yang sedang berjalan
+  let bcHashTempatan = null; // hash menu tempatan, untuk banding dengan server
+  let bcDraf = { pat: '', secret_key: '', portal_key: '' };
+
   const esc = App.esc;
 
   /* ------------------------------ Utiliti --------------------------------- */
@@ -390,6 +399,330 @@ const Editor = (() => {
       </div>`;
   }
 
+  /* =========================== TAB: BAYARAN ============================== */
+
+  const PAUTAN = {
+    daftar: 'https://bayarcash.com',
+    consoleProd: 'https://console.bayar.cash',
+    consoleSandbox: 'https://console.bayarcash-sandbox.com',
+    dokumentasi: 'https://api.webimpian.support/bayarcash',
+  };
+
+  /* Data menu yang dihantar ke server untuk pengesahan harga.
+     Gambar tidak disertakan — ia tiada kaitan dengan harga dan besar. */
+  function menuUntukServer() {
+    return JSON.stringify({
+      kedai: { mataWang: C.kedai.mataWang },
+      penghantaran: C.penghantaran,
+      menu: C.menu.map((m) => ({
+        id: m.id,
+        nama: m.nama,
+        harga: m.harga,
+        pilihan: m.pilihan,
+        tambahan: m.tambahan,
+        habis: m.habis,
+      })),
+    });
+  }
+
+  async function hashTeks(teks) {
+    if (!window.crypto || !crypto.subtle) return null; // perlu HTTPS/localhost
+    try {
+      const bait = new TextEncoder().encode(teks);
+      const cerna = await crypto.subtle.digest('SHA-256', bait);
+      return Array.from(new Uint8Array(cerna))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function kadDaftar() {
+    return `
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Belum ada akaun Bayarcash?</h4></div>
+        <p class="f__nota" style="margin-top:0">
+          Bayarcash (Web Impian Sdn. Bhd.) ialah payment gateway Malaysia — FPX online banking,
+          DuitNow, DuitNow QR, dan BNPL seperti SPayLater &amp; Boost PayFlex.
+          Daftar akaun merchant anda dahulu, kemudian ambil kredensial dari console mereka.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <a class="btn-kecil btn-kecil--utama" href="${PAUTAN.daftar}" target="_blank" rel="noopener">Daftar di bayarcash.com ↗</a>
+          <a class="btn-kecil" href="${PAUTAN.consoleSandbox}" target="_blank" rel="noopener">Console Sandbox ↗</a>
+          <a class="btn-kecil" href="${PAUTAN.consoleProd}" target="_blank" rel="noopener">Console Production ↗</a>
+        </div>
+        <p class="f__nota">
+          Di mana nak cari kredensial dalam console:<br>
+          • <b>Personal Access Token</b> — menu Developers → Personal Access Token<br>
+          • <b>API Secret Key</b> — halaman Profile<br>
+          • <b>Portal Key</b> — menu Portals<br>
+          <a href="${PAUTAN.dokumentasi}" target="_blank" rel="noopener" style="text-decoration:underline">Dokumentasi penuh API ↗</a>
+        </p>
+      </div>`;
+  }
+
+  function tabBayar() {
+    const k = window.Bayar ? Bayar.keadaan() : { backend: false };
+
+    /* ---- 1. Tiada backend PHP ---- */
+    if (!k.backend) {
+      return `
+        <div class="amaran" style="margin-bottom:18px">
+          Pembayaran online memerlukan hosting yang menyokong <b>PHP</b>.
+          Laman ini nampaknya dihoskan sebagai fail statik sahaja, jadi order
+          masih boleh dihantar melalui WhatsApp tetapi bayaran belum boleh dibuat di sini.
+        </div>
+        <div class="ed-blok">
+          <div class="ed-blok__kepala"><h4>Cara aktifkan</h4></div>
+          <p class="f__nota" style="margin-top:0">
+            1. Upload folder <b>api/</b> bersama laman ini ke hosting yang ada PHP 8.0+
+               (cPanel, Plesk, atau mana-mana hosting biasa).<br>
+            2. Salin <b>api/config.sample.php</b> jadi <b>api/config.php</b>.<br>
+            3. Tetapkan <b>kunci_admin</b> dalam fail itu kepada kata kunci rahsia anda.<br>
+            4. Kembali ke sini — tab ini akan terus berfungsi.
+          </p>
+          <p class="f__nota">
+            GitHub Pages, Netlify dan Vercel (static) tidak menjalankan PHP.
+            Untuk kekal di sana, gunakan hosting berasingan untuk folder <b>api/</b>.
+          </p>
+        </div>
+        ${kadDaftar()}`;
+    }
+
+    /* ---- 2. Backend ada tetapi config.php belum dibuat ---- */
+    if (!k.adaConfig) {
+      return `
+        <div class="amaran" style="margin-bottom:18px">
+          Backend dijumpai, tetapi <b>api/config.php</b> belum ada.
+          Satu langkah manual diperlukan sekali sahaja — ini yang melindungi
+          tetapan pembayaran anda daripada orang lain.
+        </div>
+        <div class="ed-blok">
+          <div class="ed-blok__kepala"><h4>Langkah sekali sahaja</h4></div>
+          <p class="f__nota" style="margin-top:0">
+            1. Buka File Manager hosting anda (atau FTP).<br>
+            2. Salin <b>api/config.sample.php</b> → namakan <b>api/config.php</b>.<br>
+            3. Dalam fail itu, tukar nilai <b>kunci_admin</b> kepada kata kunci
+               rahsia yang panjang. Itu sahaja yang perlu diisi.<br>
+            4. Simpan, kemudian tekan butang di bawah.
+          </p>
+          <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-segar" style="margin-top:14px">Saya sudah buat — semak semula</button>
+        </div>
+        ${kadDaftar()}`;
+    }
+
+    /* ---- 3. config.php ada tetapi kunci masih nilai asal ---- */
+    if (!k.adaKunciAdmin) {
+      return `
+        <div class="amaran" style="margin-bottom:18px">
+          <b>kunci_admin</b> dalam <b>api/config.php</b> masih nilai asal template.
+          Tukar kepada kata kunci rahsia anda sendiri, kemudian semak semula.
+        </div>
+        <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-segar">Semak semula</button>
+        ${kadDaftar()}`;
+    }
+
+    /* ---- 4. Belum log masuk ke tetapan pembayaran ---- */
+    if (!bcAdmin) {
+      return `
+        <div class="ed-blok">
+          <div class="ed-blok__kepala"><h4>Buka tetapan pembayaran</h4></div>
+          <p class="f__nota" style="margin-top:0">
+            Masukkan <b>kunci_admin</b> yang anda tetapkan dalam <b>api/config.php</b>.
+          </p>
+          <div class="f" style="margin-top:14px">
+            <input class="medan" type="password" id="bcKunci" placeholder="Kunci admin"
+                   autocomplete="current-password" value="${esc(bcKunci)}">
+          </div>
+          ${bcMesej ? `<div class="amaran">${esc(bcMesej)}</div>` : ''}
+          <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-buka"
+                  ${bcSibuk === 'buka' ? 'disabled' : ''}>
+            ${bcSibuk === 'buka' ? 'Menyemak…' : 'Buka'}
+          </button>
+          <p class="f__nota">Kunci ini hanya disimpan untuk sesi pelayar ini, bukan bersama menu anda.</p>
+        </div>
+        ${kadDaftar()}`;
+    }
+
+    /* ---- 5. Borang tetapan penuh ---- */
+    const a = bcAdmin;
+    const halangan = a.halangan || [];
+    const sedia = window.Bayar && Bayar.sedia();
+    const sumber = a.sumber || {};
+
+    const medanRahsia = (id, label, medan, petunjuk) => {
+      const adaNilai = a.terisi && a.terisi[medan];
+      const dariLuar = sumber[medan] === 'env' || sumber[medan] === 'config';
+      return `
+        <div class="f">
+          <label for="${id}">${label}</label>
+          <input class="medan" type="password" id="${id}" data-bc="${medan}"
+                 autocomplete="off" ${dariLuar ? 'disabled' : ''}
+                 placeholder="${adaNilai ? 'Tersimpan: ' + esc(adaNilai) + ' — biar kosong untuk kekalkan' : petunjuk}">
+          ${
+            dariLuar
+              ? `<p class="f__nota">Nilai ini datang dari ${sumber[medan] === 'env' ? 'environment variable' : 'api/config.php'}, jadi ia tidak boleh diubah dari sini.</p>`
+              : ''
+          }
+        </div>`;
+    };
+
+    const menuServer = a.menu;
+    const menuBeza = menuServer && bcHashTempatan && menuServer.hash !== bcHashTempatan;
+
+    return `
+      <div class="ed-blok">
+        <div class="ed-blok__kepala">
+          <h4>Status</h4>
+          <span class="pil-status ${sedia ? 'pil-status--ok' : 'pil-status--tunggu'}">
+            ${sedia ? 'Sedia terima bayaran' : 'Belum lengkap'}
+          </span>
+        </div>
+        ${
+          sedia
+            ? `<p class="f__nota" style="margin-top:0">Butang <b>Bayar Online</b> sudah muncul dalam cart pelanggan${a.persekitaran === 'sandbox' ? ' (mod sandbox — duit tidak sebenar)' : ''}.</p>`
+            : `<p class="f__nota" style="margin-top:0">Lengkapkan perkara berikut:</p>
+               <ul class="senarai-halangan">
+                 ${halangan.indexOf('pat_kosong') !== -1 ? '<li>Personal Access Token belum diisi</li>' : ''}
+                 ${halangan.indexOf('secret_key_kosong') !== -1 ? '<li>API Secret Key belum diisi</li>' : ''}
+                 ${halangan.indexOf('portal_key_kosong') !== -1 ? '<li>Portal Key belum diisi</li>' : ''}
+                 ${halangan.indexOf('menu_belum_segerak') !== -1 ? '<li>Menu belum disegerakkan ke server</li>' : ''}
+               </ul>`
+        }
+        ${bcMesej ? `<div class="amaran" style="${bcMesejOk ? 'color:#b7f0c8;background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3)' : ''}">${esc(bcMesej)}</div>` : ''}
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Mod</h4></div>
+        <div class="pil-baris" style="margin-bottom:0">
+          <button class="pil${a.persekitaran === 'sandbox' ? ' aktif' : ''}" type="button" data-aksi="bc-env" data-env="sandbox">Sandbox (ujian)</button>
+          <button class="pil${a.persekitaran === 'production' ? ' aktif' : ''}" type="button" data-aksi="bc-env" data-env="production">Production (sebenar)</button>
+        </div>
+        <p class="f__nota">Guna Sandbox sampai anda pasti semuanya betul. Kredensial sandbox dan production adalah berbeza.</p>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Kredensial Bayarcash</h4></div>
+        ${medanRahsia('bcPat', 'Personal Access Token', 'pat', 'Tampal token dari console')}
+        ${medanRahsia('bcSecret', 'API Secret Key', 'secret_key', 'Dari halaman Profile console')}
+        ${medanRahsia('bcPortal', 'Portal Key', 'portal_key', 'Dari menu Portals')}
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-simpan" ${bcSibuk === 'simpan' ? 'disabled' : ''}>
+            ${bcSibuk === 'simpan' ? 'Menyimpan…' : 'Simpan kredensial'}
+          </button>
+          <button class="btn-kecil" type="button" data-aksi="bc-uji" ${bcSibuk === 'uji' ? 'disabled' : ''}>
+            ${bcSibuk === 'uji' ? 'Menguji…' : 'Uji sambungan'}
+          </button>
+        </div>
+        <p class="f__nota">Kredensial dihantar ke server anda sendiri dan disimpan di sana. Ia tidak pernah dipulangkan semula ke pelayar.</p>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Saluran pembayaran</h4></div>
+        <p class="f__nota" style="margin-top:0">Tandakan hanya saluran yang sudah <b>diaktifkan</b> dalam console Bayarcash anda. Secara lalai hanya FPX aktif.</p>
+        <div style="margin-top:12px">
+          ${(a.saluranAda || [])
+            .map(
+              (s) => `
+            <label class="suis">
+              <input type="checkbox" data-bc-saluran="${s.kod}" ${(a.saluranAktif || []).indexOf(s.kod) !== -1 ? 'checked' : ''}>
+              <span>${esc(s.nama)} <span style="color:var(--lemah);font-weight:500">· kod ${s.kod}</span></span>
+            </label>`
+            )
+            .join('')}
+        </div>
+        <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-saluran" ${bcSibuk === 'saluran' ? 'disabled' : ''}>
+          ${bcSibuk === 'saluran' ? 'Menyimpan…' : 'Simpan saluran'}
+        </button>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Segerakkan menu ke server</h4></div>
+        <p class="f__nota" style="margin-top:0">
+          Harga yang dicaj dikira di server dari snapshot menu ini — bukan dari
+          data pelayar. Ini yang menghalang orang mengubah harga dalam devtools.
+          <b>Segerakkan setiap kali anda tukar harga atau menu.</b>
+        </p>
+        ${
+          menuServer
+            ? `<p class="f__nota">Di server: <b>${menuServer.item}</b> item · dikemas ${esc(String(menuServer.dikemas).replace('T', ' ').slice(0, 16))} UTC</p>`
+            : '<p class="f__nota">Belum ada menu di server.</p>'
+        }
+        ${menuBeza ? '<div class="amaran">Menu di server berbeza dengan menu semasa anda. Tekan segerakkan supaya harga bayaran betul.</div>' : ''}
+        <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-menu" ${bcSibuk === 'menu' ? 'disabled' : ''}>
+          ${bcSibuk === 'menu' ? 'Menghantar…' : 'Segerakkan menu sekarang'}
+        </button>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>URL untuk rujukan</h4></div>
+        <p class="f__nota" style="margin-top:0">OrderDyno menghantar URL ini secara automatik pada setiap pembayaran. Simpan sebagai rujukan kalau console anda memerlukannya.</p>
+        <div class="pautan-kotak" style="margin-top:10px">callback_url&nbsp;→&nbsp;${esc(a.urlCallback || '')}<br>return_url&nbsp;→&nbsp;${esc(a.urlReturn || '')}</div>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Senarai order</h4></div>
+        <p class="f__nota" style="margin-top:0">Lihat semua order dan status pembayaran. Jangan kongsi pautan ini — ia mengandungi kunci admin anda.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-orders">Buka senarai order ↗</button>
+          <button class="btn-kecil btn-kecil--bahaya" type="button" data-aksi="bc-lupakan">Buang kredensial tersimpan</button>
+        </div>
+      </div>
+
+      ${kadDaftar()}`;
+  }
+
+  /* ------------------------ Tindakan tab Bayaran -------------------------- */
+
+  async function bcJalan(aksi, kerja) {
+    bcSibuk = aksi;
+    bcMesej = '';
+    renderBadan();
+    try {
+      const hasil = await kerja();
+      bcMesejOk = true;
+      bcMesej = hasil && hasil.mesej ? hasil.mesej : 'Selesai';
+    } catch (e) {
+      bcMesejOk = false;
+      bcMesej = e.message || 'Gagal';
+    }
+    bcSibuk = '';
+    await bcSegarkan();
+  }
+
+  /* Muat semula keadaan pembayaran dari server */
+  async function bcSegarkan() {
+    if (window.Bayar) await Bayar.mula();          // kemas status awam
+    bcHashTempatan = await hashTeks(menuUntukServer());
+
+    if (bcKunci) {
+      try {
+        const d = await Bayar.statusAdmin(bcKunci);
+        bcAdmin = d.admin || null;
+        if (!bcAdmin) {
+          bcKunci = '';
+          try { sessionStorage.removeItem('orderdyno:kunci'); } catch (e) { /* abaikan */ }
+          if (!bcMesej) { bcMesejOk = false; bcMesej = 'Kunci admin salah'; }
+        }
+      } catch (e) {
+        bcAdmin = null;
+      }
+    }
+    renderBadan();
+  }
+
+  function medanBc(id) {
+    const el = $p('#' + id);
+    return el && !el.disabled ? el.value.trim() : '';
+  }
+
+  function saluranDitanda() {
+    return $$p('[data-bc-saluran]')
+      .filter((c) => c.checked)
+      .map((c) => Number(c.dataset.bcSaluran));
+  }
+
   /* ============================ TAB: ORDER =============================== */
 
   function tabOrder() {
@@ -492,7 +825,8 @@ const Editor = (() => {
     { id: 'menu', nama: 'Menu', render: tabMenu },
     { id: 'tema', nama: 'Tema', render: tabTema },
     { id: 'order', nama: 'Order', render: tabOrder },
-    { id: 'simpan', nama: 'Simpan & Kongsi', render: tabSimpan },
+    { id: 'bayar', nama: 'Bayaran', render: tabBayar },
+    { id: 'simpan', nama: 'Kongsi', render: tabSimpan },
   ];
 
   function bina() {
@@ -601,7 +935,9 @@ const Editor = (() => {
       if (btnTab) {
         tab = btnTab.dataset.tab;
         itemEdit = null;
+        bcMesej = '';
         renderBadan();
+        if (tab === 'bayar') bcSegarkan();
         return;
       }
 
@@ -756,6 +1092,99 @@ const Editor = (() => {
           break;
         }
 
+        /* --- Tab Bayaran --- */
+        case 'bc-segar':
+          bcSegarkan();
+          break;
+
+        case 'bc-buka': {
+          const nilai = ($p('#bcKunci') && $p('#bcKunci').value.trim()) || '';
+          if (!nilai) {
+            bcMesejOk = false;
+            bcMesej = 'Masukkan kunci admin dahulu';
+            renderBadan();
+            break;
+          }
+          bcKunci = nilai;
+          bcSibuk = 'buka';
+          bcMesej = '';
+          renderBadan();
+          Bayar.statusAdmin(bcKunci)
+            .then((d) => {
+              bcSibuk = '';
+              if (d.admin) {
+                bcAdmin = d.admin;
+                try { sessionStorage.setItem('orderdyno:kunci', bcKunci); } catch (err) { /* abaikan */ }
+                return bcSegarkan();
+              }
+              bcKunci = '';
+              bcAdmin = null;
+              bcMesejOk = false;
+              bcMesej = 'Kunci admin salah';
+              renderBadan();
+            })
+            .catch((err) => {
+              bcSibuk = '';
+              bcKunci = '';
+              bcMesejOk = false;
+              bcMesej = err.message || 'Gagal hubungi server';
+              renderBadan();
+            });
+          break;
+        }
+
+        case 'bc-env': {
+          const env = btn.dataset.env;
+          bcJalan('env', () => Bayar.admin('simpan', { persekitaran: env }, bcKunci));
+          break;
+        }
+
+        case 'bc-simpan': {
+          const data = {
+            pat: medanBc('bcPat'),
+            secret_key: medanBc('bcSecret'),
+            portal_key: medanBc('bcPortal'),
+          };
+          if (!data.pat && !data.secret_key && !data.portal_key) {
+            bcMesejOk = false;
+            bcMesej = 'Tiada medan baru untuk disimpan';
+            renderBadan();
+            break;
+          }
+          bcJalan('simpan', () => Bayar.admin('simpan', data, bcKunci));
+          break;
+        }
+
+        case 'bc-uji':
+          bcJalan('uji', () => Bayar.admin('uji', { pat: medanBc('bcPat') }, bcKunci));
+          break;
+
+        case 'bc-saluran': {
+          const kod = saluranDitanda();
+          if (!kod.length) {
+            bcMesejOk = false;
+            bcMesej = 'Pilih sekurang-kurangnya satu saluran';
+            renderBadan();
+            break;
+          }
+          bcJalan('saluran', () => Bayar.admin('simpan', { saluran: kod }, bcKunci));
+          break;
+        }
+
+        case 'bc-menu':
+          bcJalan('menu', () => Bayar.admin('menu', { menu: menuUntukServer() }, bcKunci));
+          break;
+
+        case 'bc-orders':
+          window.open('api/orders.php?key=' + encodeURIComponent(bcKunci), '_blank', 'noopener');
+          break;
+
+        case 'bc-lupakan':
+          if (confirm('Buang kredensial Bayarcash yang disimpan di server? Pembayaran online akan berhenti sampai anda isi semula.')) {
+            bcJalan('lupakan', () => Bayar.admin('lupakan', {}, bcKunci));
+          }
+          break;
+
         /* --- Simpan & kongsi --- */
         case 'export':
           Store.turunJson(C, `menu-${(C.kedai.nama || 'kedai').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`);
@@ -838,10 +1267,23 @@ const Editor = (() => {
     C = Store.klon(App.config());
     if (tabMula) tab = tabMula;
     itemEdit = null;
+    bcMesej = '';
+
+    // Kunci admin dikekalkan untuk sesi pelayar ini sahaja
+    if (!bcKunci) {
+      try {
+        bcKunci = sessionStorage.getItem('orderdyno:kunci') || '';
+      } catch (e) {
+        bcKunci = '';
+      }
+    }
+
     renderBadan();
     tunjukStatus('Sedia untuk diedit');
     el.classList.add('buka');
     document.body.classList.add('beku');
+
+    if (tab === 'bayar' || bcKunci) bcSegarkan();
   }
 
   function tutup() {
@@ -855,6 +1297,10 @@ const Editor = (() => {
 
   return { buka, tutup };
 })();
+
+/* Dedahkan pada window supaya pemeriksaan `window.Editor` berfungsi —
+   `const` pada aras atas skrip klasik tidak melakukannya secara automatik. */
+window.Editor = Editor;
 
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('btnEdit');
