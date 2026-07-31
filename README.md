@@ -65,6 +65,35 @@ Semua perubahan disimpan automatik. Tiada butang "Save" untuk dilupakan.
 
 ---
 
+## Menu contoh (demo)
+
+Template asal sengaja kosong — "Nama Kedai Anda" dengan 3 item contoh — supaya
+setiap pemilik bermula dari kosong.
+
+Tetapi kalau anda mahu **tunjuk demo kepada bakal pelanggan**, atau sekadar
+lihat rupa penuh sistem ini sebelum mengisi menu sendiri, ada kedai contoh yang
+lengkap disediakan: **Restoran Doa Ibu** — 10 kategori, 76 item.
+
+Buka **Edit Menu → tab Menu**, scroll ke bawah sekali, tekan **🍛 Muat menu
+contoh**. Ia menggantikan menu semasa anda (ada pengesahan dahulu).
+
+Menu contoh itu memaparkan setiap ciri template sekali gus:
+
+| Ciri | Di mana nampak |
+|---|---|
+| Pilihan/variasi (harga papar julat) | Set Hidangan — `RM 7.50 – RM 12.90` |
+| Add-on | Nasi Lemak, Mee Goreng, Set Hidangan |
+| Lencana "Popular" | 8 item terpilih |
+| Delivery + caj + minimum order | RM 5.00 caj, minimum RM 15.00 |
+| Logo emoji, tagline, waktu, Google Maps | bahagian hero & footer |
+| Tema warna | preset **Emas** |
+
+Untuk kembali ke template kosong: **tab Kongsi → Reset ke template asal**.
+
+Datanya dalam `assets/js/contoh-menu.js`. Fail itu **tidak** dimuat secara
+automatik — ia hanya dibaca bila butang ditekan, jadi pelanggan baru tetap
+nampak template kosong.
+
 ## Di mana menu disimpan?
 
 Bila anda guna panel Edit Menu, menu disimpan dalam **`localStorage` pelayar
@@ -557,6 +586,7 @@ admin, secret key, menu terbitan dan rekod order kekal.
 index.html                    struktur laman
 assets/css/style.css          keseluruhan reka bentuk & animasi
 assets/js/config.js           ⬅ TEMPLATE: data lalai (nama kedai, kategori, menu)
+assets/js/contoh-menu.js      kedai contoh lengkap untuk demo (Restoran Doa Ibu)
 assets/js/store.js            simpan/muat, export/import JSON, link kongsi
 assets/js/app.js              paparan menu, cart, checkout WhatsApp
 assets/js/editor.js           panel Edit Menu (termasuk tab Bayaran)

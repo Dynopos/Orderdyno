@@ -121,7 +121,9 @@ json_keluar([
     'status'       => $status,
     'status_label' => Bayarcash::labelStatus($status),
     'dibayar'      => $status === Bayarcash::BERJAYA,
-    'jumlah'       => $rekod['jumlah'],
+    // Formatkan di sini supaya resit sentiasa "12.00", bukan "12" —
+    // json_encode(12.00) menghasilkan 12, dan pelayar memaparkannya bulat-bulat.
+    'jumlah'       => number_format((float) $rekod['jumlah'], 2, '.', ''),
     'mata_wang'    => $rekod['mata_wang'] ?? 'MYR',
     'cara'         => $rekod['cara'] ?? 'pickup',
     'saluran_nama' => $rekod['saluran_nama'] ?? '',
