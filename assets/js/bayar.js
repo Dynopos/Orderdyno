@@ -76,7 +76,37 @@ const Bayar = (() => {
     // Kalau cart sedang terbuka, papar semula supaya butang bayar muncul
     if (document.querySelector('#sheetCart.buka')) App.paparCartSemula();
 
+    await muatMenuAwam();
     periksaPulangan();
+  }
+
+  /* ======================= MENU YANG DITERBITKAN ======================== */
+
+  /*
+   * Muat menu yang pemilik kedai terbitkan melalui "Terbitkan menu".
+   *
+   * Hanya digunakan bila pelayar ini TIADA tetapan tersimpan — iaitu
+   * pelanggan biasa. Pelayar pemilik kedai menyimpan drafnya sendiri dalam
+   * localStorage, jadi draf itu kekal menang; panel Bayaran yang memberitahu
+   * pemilik bila draf berbeza dengan yang diterbitkan.
+   *
+   * Menu ini sengaja TIDAK disimpan ke localStorage. Kalau disimpan, salinan
+   * itu akan menang selama-lamanya dan pelanggan tidak akan nampak kemas
+   * kini menu yang seterusnya.
+   */
+  async function muatMenuAwam() {
+    if (!keadaan.backend) return;          // tiada server — tiada apa nak muat
+    if (Store.dariLink()) return;          // link kongsi menang
+    if (Store.adaTersimpan()) return;      // pelayar pemilik — hormati drafnya
+
+    try {
+      const d = await dapat('menu-awam.php');
+      if (!d || !d.ok || !d.config) return;
+      App.gunaConfig(Store.bersih(d.config), false);   // false = jangan simpan
+    } catch (e) {
+      /* Tiada menu diterbitkan lagi (404) atau server tak dapat dihubungi.
+         Laman terus guna menu lalai — bukan ralat. */
+    }
   }
 
   /* ========================== BUAT PEMBAYARAN =========================== */

@@ -8,7 +8,7 @@
    Aksi:
      uji       — uji kredensial dengan panggil senarai bank Bayarcash
      simpan    — simpan Personal Access Token / Secret Key / Portal Key / saluran
-     menu      — segerakkan snapshot menu ke server (untuk pengesahan harga)
+     menu      — terbitkan menu (pelanggan nampak + harga dikunci di server)
      lupakan   — buang kredensial yang disimpan dari panel
 
    Kredensial tidak pernah dipulangkan semula ke pelayar — hanya bentuk
@@ -164,19 +164,24 @@ switch ($aksi) {
             json_silap('Data menu tidak dihantar');
         }
         if (strlen($mentah) > 4 * 1024 * 1024) {
-            json_silap('Menu terlalu besar. Guna URL gambar berbanding upload untuk item yang banyak.', 413);
+            json_silap(
+                'Menu terlalu besar (' . round(strlen($mentah) / 1048576, 1) . 'MB, had 4MB). '
+                . 'Gambar yang di-upload menyumbang paling banyak — guna URL gambar '
+                . 'atau emoji untuk sebahagian item.',
+                413
+            );
         }
 
         try {
             $hasil = $tetapan->simpanMenu($mentah);
         } catch (Throwable $e) {
-            json_silap('Gagal segerakkan menu: ' . $e->getMessage(), 400);
+            json_silap('Gagal terbitkan menu: ' . $e->getMessage(), 400);
         }
 
         $segar = new Tetapan();
         json_keluar([
             'ok'    => true,
-            'mesej' => 'Menu disegerakkan ke server (' . $hasil['item'] . ' item)',
+            'mesej' => 'Menu diterbitkan — pelanggan kini nampak ' . $hasil['item'] . ' item',
             'menu'  => $hasil,
             'siap'  => $segar->siap(),
             'halangan' => $segar->halangan(),

@@ -126,6 +126,16 @@ const Store = (() => {
     return klon(TEMPLATE);
   }
 
+  /* Ada tetapan tersimpan dalam pelayar ini? Digunakan untuk menentukan
+     sama ada perlu muat menu yang diterbitkan dari server. */
+  function adaTersimpan() {
+    try {
+      return !!localStorage.getItem(KUNCI);
+    } catch (e) {
+      return false;
+    }
+  }
+
   function simpan(config) {
     try {
       localStorage.setItem(KUNCI, JSON.stringify(config));
@@ -183,6 +193,7 @@ const Store = (() => {
     muat,
     simpan,
     padam,
+    adaTersimpan,
     bersih,
     gabung,
     klon,
