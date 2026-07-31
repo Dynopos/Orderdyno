@@ -28,6 +28,8 @@ $jawapan = [
     'saluran'  => $siap ? $tetapan->saluran() : [],
     'mataWang' => $siap ? $order->mataWang() : null,
     'sandbox'  => $tetapan->persekitaran() === 'sandbox',
+    // Laman demo: pembayaran ditiru sepenuhnya, tiada Bayarcash terlibat
+    'demo'     => $tetapan->modDemo(),
     // Beritahu panel bahawa backend memang ada, walaupun belum dikonfigurasi
     'backend'  => true,
     'adaConfig'     => $tetapan->adaConfig(),

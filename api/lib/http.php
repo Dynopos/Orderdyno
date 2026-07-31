@@ -90,3 +90,12 @@ function had_kadar(string $nama, int $maks, int $tempohDetik): bool
 
     return $rekod['kira'] <= $maks;
 }
+
+/* Escape untuk output HTML. Diletakkan di sini kerana lebih daripada satu
+   halaman (orders.php, demo-bayar.php) menghasilkan HTML. */
+if (!function_exists('h')) {
+    function h(?string $t): string
+    {
+        return htmlspecialchars((string) $t, ENT_QUOTES, 'UTF-8');
+    }
+}

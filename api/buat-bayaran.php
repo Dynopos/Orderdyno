@@ -109,19 +109,28 @@ if ($telefon !== null) {
     $payload['payer_telephone_number'] = (int) $telefon;
 }
 
-$payload['checksum'] = $tetapan->klien()->checksumIntent($payload);
+$demo = $tetapan->modDemo();
 
-try {
-    $intent = $tetapan->klien()->buatPaymentIntent($payload);
-} catch (Throwable $e) {
-    error_log('[OrderDyno] Payment intent gagal: ' . $e->getMessage());
-    json_silap('Gagal mulakan pembayaran. Sila cuba lagi atau hantar order melalui WhatsApp.', 502);
-}
+if ($demo) {
+    /* Laman demo: langkau Bayarcash sepenuhnya dan hantar pelanggan ke
+       halaman pembayaran tiruan kita sendiri. Tiada duit, tiada API. */
+    $intent    = [];
+    $urlBayar  = $tetapan->urlApi('demo-bayar.php') . '?order=' . rawurlencode($nombor);
+} else {
+    $payload['checksum'] = $tetapan->klien()->checksumIntent($payload);
 
-$urlBayar = (string) ($intent['url'] ?? '');
-if ($urlBayar === '') {
-    error_log('[OrderDyno] Bayarcash tidak pulangkan URL: ' . json_encode($intent));
-    json_silap('Bayarcash tidak memulangkan pautan pembayaran. Sila cuba lagi.', 502);
+    try {
+        $intent = $tetapan->klien()->buatPaymentIntent($payload);
+    } catch (Throwable $e) {
+        error_log('[OrderDyno] Payment intent gagal: ' . $e->getMessage());
+        json_silap('Gagal mulakan pembayaran. Sila cuba lagi atau hantar order melalui WhatsApp.', 502);
+    }
+
+    $urlBayar = (string) ($intent['url'] ?? '');
+    if ($urlBayar === '') {
+        error_log('[OrderDyno] Bayarcash tidak pulangkan URL: ' . json_encode($intent));
+        json_silap('Bayarcash tidak memulangkan pautan pembayaran. Sila cuba lagi.', 502);
+    }
 }
 
 /* ------------------------------ Simpan order ----------------------------- */
@@ -152,6 +161,9 @@ try {
         'url_bayar'         => $urlBayar,
         'transaksi'         => [],
         'dibayar_pada'      => null,
+        // Ditanda pada rekod itu sendiri: demo-bayar.php enggan menyentuh
+        // order yang tidak mempunyai penanda ini.
+        'demo'              => $demo,
     ]);
 } catch (Throwable $e) {
     error_log('[OrderDyno] Gagal simpan order: ' . $e->getMessage());
@@ -163,4 +175,5 @@ json_keluar([
     'url'          => $urlBayar,
     'order_number' => $nombor,
     'jumlah'       => $amaun,
+    'demo'         => $demo,
 ]);
