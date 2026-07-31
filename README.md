@@ -386,12 +386,23 @@ Site → **SSL** → **Let's Encrypt** → masukkan kedua-dua `domain-anda.com` 
 
 Kenapa perlu? OrderDyno menghantar `return_url` dan `callback_url` kepada
 Bayarcash pada setiap pembayaran. Tanpa `url_asas`, ia meneka URL itu dari
-header `Host` permintaan. Itu berfungsi untuk pelanggan biasa, tetapi header
-`Host` datang dari pelayar — jadi seseorang boleh menghantar permintaan dengan
-`Host` palsu dan menyebabkan callback dihantar ke domain lain. Mereka **tidak**
-boleh mencuri duit (checksum masih memerlukan secret key anda), tetapi order
-itu mungkin tidak ditanda sebagai dibayar. Menetapkan `url_asas` menutup
-kemungkinan itu sepenuhnya.
+header `Host` permintaan — dan header itu datang dari pelayar:
+
+```
+Tanpa url_asas, permintaan dengan Host palsu:
+  callback_url → http://penyerang.example/api/callback.php
+
+Dengan url_asas ditetapkan, Host palsu yang sama:
+  callback_url → https://kedaisaya.com/api/callback.php   (tidak berubah)
+```
+
+Penyerang **tidak** boleh mencuri duit — checksum masih memerlukan secret key
+anda — tetapi callback itu tidak sampai ke server anda, jadi order mungkin
+tidak ditanda sebagai dibayar walaupun pelanggan sudah membayar.
+
+Tab **Bayaran** memberi amaran bila `url_asas` belum ditetapkan, dan
+menunjukkan baris tepat yang perlu ditampal. Bila sudah ditetapkan, ia
+mengesahkan dengan tanda hijau.
 
 **Tiada apa perlu dikemas kini dalam console Bayarcash.** Callback URL dihantar
 bersama setiap permintaan, bukan didaftarkan di sana. Selepas menukar domain,

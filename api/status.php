@@ -66,6 +66,7 @@ if ($kunci !== null && $tetapan->kunciSah($kunci)) {
         ],
         'urlCallback' => $tetapan->urlApi('callback.php'),
         'urlReturn'   => $tetapan->urlApi('pulang.php'),
+        'urlAsasDitetapkan' => $tetapan->urlAsasDitetapkan(),
     ];
 } elseif ($kunci !== null) {
     // Jangan bocorkan sama ada kunci hampir betul

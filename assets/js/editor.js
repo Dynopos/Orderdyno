@@ -668,8 +668,21 @@ const Editor = (() => {
 
       <div class="ed-blok">
         <div class="ed-blok__kepala"><h4>URL untuk rujukan</h4></div>
-        <p class="f__nota" style="margin-top:0">OrderDyno menghantar URL ini secara automatik pada setiap pembayaran. Simpan sebagai rujukan kalau console anda memerlukannya.</p>
+        <p class="f__nota" style="margin-top:0">OrderDyno menghantar URL ini secara automatik pada setiap pembayaran. Tiada apa perlu didaftarkan dalam console Bayarcash.</p>
         <div class="pautan-kotak" style="margin-top:10px">callback_url&nbsp;→&nbsp;${esc(a.urlCallback || '')}<br>return_url&nbsp;→&nbsp;${esc(a.urlReturn || '')}</div>
+        ${
+          a.urlAsasDitetapkan
+            ? '<p class="f__nota" style="color:#b7f0c8">✓ Dikunci oleh <b>url_asas</b> dalam api/config.php.</p>'
+            : `<div class="amaran">
+                 <b>URL ini diteka dari permintaan anda</b>, bukan ditetapkan.
+                 Ia kelihatan betul kepada anda kerana anda sedang berada pada domain itu —
+                 tetapi header <code>Host</code> datang dari pelayar, jadi permintaan dengan
+                 <code>Host</code> palsu boleh mengalihkan callback ke domain lain dan order
+                 mungkin tidak ditanda sebagai dibayar.<br><br>
+                 Kunci ia dengan menambah baris ini dalam <b>api/config.php</b>:
+                 <div class="pautan-kotak" style="margin:10px 0 0">'url_asas' =&gt; '${esc((a.urlCallback || '').replace(/\/api\/callback\.php$/, ''))}',</div>
+               </div>`
+        }
       </div>
 
       <div class="ed-blok">
