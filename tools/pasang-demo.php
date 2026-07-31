@@ -100,10 +100,19 @@ echo '  Item     : ' . $hasil['item'] . "\n";
 
 /* --------------------- MOD SANDBOX + SALURAN PAPARAN --------------------- */
 
+/* Pembayaran tiruan dihidupkan HANYA kalau tiada kredensial Bayarcash sebenar.
+   Kedai yang sudah beroperasi tidak boleh bertukar menjadi tiruan secara tidak
+   sengaja — dan sebaik sahaja kredensial diisi kemudian, Tetapan::modDemo()
+   mematikannya sendiri. */
+$adaKredensial = $tetapan->pat() !== ''
+    || $tetapan->secretKey() !== ''
+    || $tetapan->portalKey() !== '';
+
 try {
     $tetapan->simpanKredensial([
         'persekitaran' => 'sandbox',
         'saluran'      => [1, 5],   // FPX + DuitNow QR
+        'mod_demo'     => !$adaKredensial,
     ]);
     echo "Mod sandbox ditetapkan, saluran FPX + DuitNow QR diaktifkan.\n";
 } catch (Throwable $e) {
@@ -112,24 +121,23 @@ try {
 
 /* ------------------------------ RUMUSAN ---------------------------------- */
 
-$segar     = new Tetapan();
-$halangan  = $segar->halangan();
-$perluIsi  = array_values(array_intersect(
-    $halangan,
-    ['pat_kosong', 'secret_key_kosong', 'portal_key_kosong']
-));
+$segar = new Tetapan();
 
 echo "\n";
-if (!$perluIsi) {
-    echo "Siap. Pembayaran online sudah aktif — buka laman anda untuk demo.\n";
+
+if (!$segar->modDemo()) {
+    echo "Siap. Kredensial Bayarcash sebenar dikesan, jadi pembayaran memproses\n";
+    echo "transaksi sebenar seperti biasa — pembayaran tiruan TIDAK dihidupkan.\n";
     exit(0);
 }
 
-echo "Menu sudah siap dan kelihatan kepada semua pelawat.\n";
-echo "Yang tinggal hanya kredensial Bayarcash — hanya anda boleh menjananya:\n\n";
-echo "  1. Daftar/log masuk di https://console.bayarcash-sandbox.com\n";
-echo "  2. Ambil Personal Access Token, API Secret Key, Portal Key\n";
-echo "  3. Laman anda → Edit Menu → tab Bayaran → masukkan kunci admin,\n";
-echo "     tampal ketiga-tiganya, tekan Simpan kredensial\n\n";
-echo "Sehingga itu, cart menunjukkan butang WhatsApp sahaja (tanpa Bayar Online).\n";
+echo "Siap — aliran pembayaran penuh sudah boleh didemokan.\n\n";
+echo "Butang \"Bayar Online\" muncul dalam cart. Pelanggan boleh pilih saluran,\n";
+echo "isi maklumat, dan melihat skrin resit — tetapi pembayaran itu DITIRU:\n";
+echo "tiada duit bergerak, tiada bank, dan tiada panggilan ke Bayarcash.\n\n";
+echo "Halaman bayaran demo mempunyai dua butang, supaya anda boleh tunjukkan\n";
+echo "kedua-dua keadaan: bayaran berjaya dan bayaran gagal.\n\n";
+echo "Untuk beralih ke pembayaran SEBENAR: isi kredensial Bayarcash dalam\n";
+echo "Edit Menu → tab Bayaran. Pembayaran tiruan mati sendiri sebaik sahaja\n";
+echo "kredensial wujud — tiada langkah tambahan diperlukan.\n";
 exit(0);

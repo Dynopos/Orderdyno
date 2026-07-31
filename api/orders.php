@@ -36,10 +36,7 @@ if (!empty($_GET['json'])) {
 
 /* ------------------------------- HTML ----------------------------------- */
 
-function h(?string $t): string
-{
-    return htmlspecialchars((string) $t, ENT_QUOTES, 'UTF-8');
-}
+/* h() ditakrifkan dalam lib/http.php */
 
 $berjaya = array_filter($senarai, static fn ($o) => (int) ($o['status'] ?? 0) === Bayarcash::BERJAYA);
 $jumlahTerkumpul = array_sum(array_map(static fn ($o) => (float) ($o['jumlah'] ?? 0), $berjaya));

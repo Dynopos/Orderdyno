@@ -17,6 +17,7 @@ const Bayar = (() => {
     siap: false,      // kredensial + menu lengkap?
     saluran: [],
     sandbox: true,
+    demo: false,      // laman demo — pembayaran ditiru, tiada Bayarcash
     mesej: '',
   };
 
@@ -63,6 +64,7 @@ const Bayar = (() => {
         siap: !!d.siap,
         saluran: Array.isArray(d.saluran) ? d.saluran : [],
         sandbox: !!d.sandbox,
+        demo: !!d.demo,
         mesej: d.mesej || '',
         adaConfig: !!d.adaConfig,
         adaKunciAdmin: !!d.adaKunciAdmin,

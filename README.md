@@ -125,10 +125,26 @@ Menu contoh itu memaparkan setiap ciri template sekali gus:
 Untuk kembali ke template kosong dalam pelayar anda: **tab Kongsi → Reset ke
 template asal**.
 
-**Yang demo TIDAK boleh sediakan:** kredensial Bayarcash. Hanya pemilik akaun
-boleh menjananya, jadi butang "Bayar Online" hanya muncul selepas anda isi
-Personal Access Token, API Secret Key dan Portal Key dalam tab Bayaran.
-Sebelum itu cart menunjukkan butang WhatsApp sahaja.
+### Pembayaran demo (tanpa akaun Bayarcash)
+
+`pasang-demo.php` turut menghidupkan **pembayaran tiruan** kalau tiada
+kredensial Bayarcash dikonfigurasi. Butang "Bayar Online" muncul, pelanggan
+pilih saluran, isi maklumat, dan melihat skrin resit — tetapi tiada duit
+bergerak, tiada bank, dan tiada panggilan ke Bayarcash. Halaman bayaran demo
+ada dua butang supaya anda boleh tunjukkan bayaran berjaya **dan** gagal.
+
+Ini bermakna anda boleh demo aliran penuh tanpa menunggu akaun sandbox.
+
+Tiga lapisan menghalang kedai sebenar daripada terjejas:
+
+| Perlindungan | Kesan |
+|---|---|
+| Mati sebaik kredensial sebenar wujud | Kedai yang pernah jadi demo terus memproses bayaran sebenar |
+| Hanya boleh dihidupkan dari CLI | Panel Bayaran tidak pernah menghantar medan ini |
+| Setiap order ditanda `demo` | `demo-bayar.php` enggan menyentuh order sebenar — 403 |
+
+Untuk beralih ke pembayaran sebenar: isi kredensial dalam tab Bayaran.
+Pembayaran tiruan mati sendiri — tiada langkah tambahan.
 
 Datanya dalam `assets/js/contoh-menu.js` — satu sumber, dibaca oleh pelayar
 dan oleh `tools/pasang-demo.php`. Ia **tidak** dimuat secara automatik dalam

@@ -140,6 +140,28 @@ final class Tetapan
         return trim((string) ($this->config['kunci_admin'] ?? ''));
     }
 
+    /*
+     * MOD DEMO PEMBAYARAN
+     * -------------------------------------------------------------------
+     * Untuk laman demo sahaja: aliran pembayaran penuh dipaparkan tanpa
+     * Bayarcash dan tanpa duit. Ia dipasang oleh tools/pasang-demo.php.
+     *
+     * Dua lapisan perlindungan supaya kedai sebenar tidak boleh terjejas:
+     *
+     *   1. Ia dimatikan serta-merta sebaik sahaja kredensial Bayarcash
+     *      sebenar wujud — walaupun bendera masih tersimpan. Kedai yang
+     *      pernah jadi demo dan kemudian diisi kredensial akan terus
+     *      memproses bayaran sebenar, bukan tiruan.
+     *   2. Ia tidak boleh dihidupkan dari panel Bayaran; hanya arahan CLI.
+     */
+    public function modDemo(): bool
+    {
+        if (empty($this->simpanan['mod_demo'])) {
+            return false;
+        }
+        return $this->pat() === '' && $this->secretKey() === '' && $this->portalKey() === '';
+    }
+
     public function maksKuantiti(): int
     {
         return max(1, (int) ($this->config['maks_kuantiti'] ?? 99));
@@ -186,10 +208,15 @@ final class Tetapan
     /* Sedia terima bayaran? */
     public function siap(): bool
     {
+        if (SimpananSelamat::cari(self::failMenu()) === null) {
+            return false;
+        }
+        if ($this->modDemo()) {
+            return true;   // laman demo: aliran penuh tanpa kredensial
+        }
         return $this->pat() !== ''
             && $this->secretKey() !== ''
-            && $this->portalKey() !== ''
-            && SimpananSelamat::cari(self::failMenu()) !== null;
+            && $this->portalKey() !== '';
     }
 
     /* Kenapa belum siap — untuk dipaparkan dalam panel Bayaran */
@@ -254,6 +281,12 @@ final class Tetapan
 
         if (isset($masuk['persekitaran'])) {
             $baru['persekitaran'] = $masuk['persekitaran'] === 'production' ? 'production' : 'sandbox';
+        }
+
+        /* Hanya CLI boleh menghidupkan mod demo — panel Bayaran tidak pernah
+           menghantar medan ini, jadi kedai sebenar tidak boleh tersilap. */
+        if (isset($masuk['mod_demo']) && PHP_SAPI === 'cli') {
+            $baru['mod_demo'] = (bool) $masuk['mod_demo'];
         }
 
         if (isset($masuk['saluran']) && is_array($masuk['saluran'])) {

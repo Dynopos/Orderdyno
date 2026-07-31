@@ -560,7 +560,12 @@ const App = (() => {
     const senarai = Bayar.keadaan().saluran;
     if (!saluranPilih && senarai.length) saluranPilih = senarai[0].kod;
 
-    const amaranSandbox = Bayar.keadaan().sandbox
+    /* Laman demo perlu amaran yang lebih tegas daripada sandbox: di sini
+       tiada bank langsung, jadi jangan sesekali biar ia disangka sebenar. */
+    const k = Bayar.keadaan();
+    const amaranSandbox = k.demo
+      ? '<div class="amaran">Laman demo — pembayaran ini ditiru sepenuhnya. Tiada duit bergerak dan tiada bank terlibat.</div>'
+      : k.sandbox
       ? '<div class="amaran">Mod ujian (sandbox) — pembayaran tidak melibatkan duit sebenar.</div>'
       : '';
 
