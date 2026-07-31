@@ -260,9 +260,26 @@ const Editor = (() => {
       })
       .join('');
 
+    /* Kedai contoh yang lengkap — untuk tunjuk demo, atau sebagai titik
+       permulaan supaya pemilik tidak berdepan skrin kosong. */
+    const contoh =
+      typeof CONTOH_MENU === 'undefined'
+        ? ''
+        : `
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Menu contoh</h4></div>
+        <p class="f__nota" style="margin-top:0">
+          Muatkan kedai contoh yang lengkap (${CONTOH_MENU.kategori.length} kategori,
+          ${CONTOH_MENU.menu.length} item) untuk lihat rupa penuh sistem ini.
+          <b>Menu anda sekarang akan diganti.</b>
+        </p>
+        <button class="btn-kecil" type="button" data-aksi="muat-contoh">🍛 Muat menu contoh</button>
+      </div>`;
+
     return `
       ${kategori}
-      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah">＋ Tambah kategori</button>`;
+      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah">＋ Tambah kategori</button>
+      ${contoh}`;
   }
 
   function borangItem() {
@@ -1297,6 +1314,16 @@ const Editor = (() => {
           }
           break;
         }
+
+        case 'muat-contoh':
+          if (typeof CONTOH_MENU === 'undefined') break;
+          if (confirm('Muat menu contoh (Restoran Doa Ibu)? Menu anda sekarang akan diganti.')) {
+            C = Store.bersih(Store.klon(CONTOH_MENU));
+            itemEdit = null;
+            terap();
+            App.toast('Menu contoh dimuat');
+          }
+          break;
 
         case 'reset':
           if (confirm('Set semula ke menu contoh asal? Semua isian anda akan hilang.')) {
