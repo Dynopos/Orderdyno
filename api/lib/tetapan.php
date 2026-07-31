@@ -338,6 +338,13 @@ final class Tetapan
 
     /* ============================= URL ASAS ============================= */
 
+    /* Adakah url_asas ditetapkan secara jelas dalam config.php?
+       Kalau tidak, URL callback diteka dari header Host permintaan. */
+    public function urlAsasDitetapkan(): bool
+    {
+        return trim((string) ($this->config['url_asas'] ?? '')) !== '';
+    }
+
     public function urlAsas(): string
     {
         $dikonfig = trim((string) ($this->config['url_asas'] ?? ''));
