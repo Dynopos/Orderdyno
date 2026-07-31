@@ -408,21 +408,18 @@ const Editor = (() => {
     dokumentasi: 'https://api.webimpian.support/bayarcash',
   };
 
-  /* Data menu yang dihantar ke server untuk pengesahan harga.
-     Gambar tidak disertakan — ia tiada kaitan dengan harga dan besar. */
+  /*
+   * Konfigurasi penuh yang dihantar ke server. Ia melakukan DUA kerja:
+   *   1. Menerbitkan menu — pelawat memuatnya dari api/menu-awam.php,
+   *      jadi semua pelanggan nampak menu ini tanpa pemilik perlu
+   *      menampal JSON ke config.js dan deploy semula.
+   *   2. Mengesahkan harga — api/lib/order.php mengira jumlah bayaran dari
+   *      snapshot ini, bukan dari data yang dihantar pelayar.
+   *
+   * Kredensial Bayarcash tiada di sini; ia disimpan berasingan.
+   */
   function menuUntukServer() {
-    return JSON.stringify({
-      kedai: { mataWang: C.kedai.mataWang },
-      penghantaran: C.penghantaran,
-      menu: C.menu.map((m) => ({
-        id: m.id,
-        nama: m.nama,
-        harga: m.harga,
-        pilihan: m.pilihan,
-        tambahan: m.tambahan,
-        habis: m.habis,
-      })),
-    });
+    return JSON.stringify(C);
   }
 
   async function hashTeks(teks) {
@@ -587,7 +584,7 @@ const Editor = (() => {
                  ${halangan.indexOf('pat_kosong') !== -1 ? '<li>Personal Access Token belum diisi</li>' : ''}
                  ${halangan.indexOf('secret_key_kosong') !== -1 ? '<li>API Secret Key belum diisi</li>' : ''}
                  ${halangan.indexOf('portal_key_kosong') !== -1 ? '<li>Portal Key belum diisi</li>' : ''}
-                 ${halangan.indexOf('menu_belum_segerak') !== -1 ? '<li>Menu belum disegerakkan ke server</li>' : ''}
+                 ${halangan.indexOf('menu_belum_segerak') !== -1 ? '<li>Menu belum diterbitkan</li>' : ''}
                </ul>`
         }
         ${bcMesej ? `<div class="amaran" style="${bcMesejOk ? 'color:#b7f0c8;background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3)' : ''}">${esc(bcMesej)}</div>` : ''}
@@ -647,20 +644,25 @@ const Editor = (() => {
       </div>
 
       <div class="ed-blok">
-        <div class="ed-blok__kepala"><h4>Segerakkan menu ke server</h4></div>
+        <div class="ed-blok__kepala"><h4>Terbitkan menu</h4></div>
         <p class="f__nota" style="margin-top:0">
-          Harga yang dicaj dikira di server dari snapshot menu ini — bukan dari
-          data pelayar. Ini yang menghalang orang mengubah harga dalam devtools.
-          <b>Segerakkan setiap kali anda tukar harga atau menu.</b>
+          Menu yang anda edit hanya wujud dalam pelayar ini sehingga anda
+          menerbitkannya. Tekan butang di bawah untuk:
         </p>
+        <ul class="senarai-halangan" style="color:var(--lemah)">
+          <li><b>Semua pelanggan</b> nampak menu ini bila mereka buka website</li>
+          <li>Harga bayaran dikira di server dari salinan ini, bukan dari data
+              pelayar — inilah yang menghalang orang membayar RM 0.01</li>
+        </ul>
+        <p class="f__nota"><b>Terbitkan semula setiap kali anda tukar menu atau harga.</b></p>
         ${
           menuServer
-            ? `<p class="f__nota">Di server: <b>${menuServer.item}</b> item · dikemas ${esc(String(menuServer.dikemas).replace('T', ' ').slice(0, 16))} UTC</p>`
-            : '<p class="f__nota">Belum ada menu di server.</p>'
+            ? `<p class="f__nota">Diterbitkan: <b>${menuServer.item}</b> item · ${esc(String(menuServer.dikemas).replace('T', ' ').slice(0, 16))} UTC</p>`
+            : '<p class="f__nota" style="color:#ffd0a8">Belum diterbitkan — pelanggan masih nampak menu contoh.</p>'
         }
-        ${menuBeza ? '<div class="amaran">Menu di server berbeza dengan menu semasa anda. Tekan segerakkan supaya harga bayaran betul.</div>' : ''}
+        ${menuBeza ? '<div class="amaran">Menu anda berbeza dengan yang diterbitkan. Pelanggan masih nampak versi lama — tekan terbitkan.</div>' : ''}
         <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="bc-menu" ${bcSibuk === 'menu' ? 'disabled' : ''}>
-          ${bcSibuk === 'menu' ? 'Menghantar…' : 'Segerakkan menu sekarang'}
+          ${bcSibuk === 'menu' ? 'Menerbitkan…' : 'Terbitkan menu sekarang'}
         </button>
       </div>
 

@@ -75,7 +75,24 @@ anda sahaja**. Ini bermakna:
   nampak menu lalai dalam kod
 - ⚠️ Kalau anda clear browser data, menu itu hilang
 
-Ada **tiga cara** untuk edarkan menu anda kepada pelanggan:
+Sebab itu menu perlu **diterbitkan** sebelum pelanggan boleh melihatnya.
+
+### Cara 0 — Terbitkan dari panel (kalau anda ada hosting PHP)
+
+Kalau anda menjalankan folder `api/` (contoh: Laravel Forge, cPanel), inilah
+cara paling mudah. Buka **⚙ Edit Menu → tab Bayaran → Terbitkan menu**.
+
+Satu tekan, dan **semua pelanggan** terus nampak menu anda — tiada export,
+tiada tampal ke `config.js`, tiada deploy. Tekan lagi setiap kali anda tukar
+menu atau harga.
+
+Ini juga yang mengunci harga untuk pembayaran online: server mengira jumlah
+bayaran dari salinan yang diterbitkan, bukan dari data pelayar.
+
+> Anda tidak perlu mengaktifkan Bayarcash untuk guna butang ini. Ia berfungsi
+> sebaik sahaja `api/config.php` wujud dengan `kunci_admin`.
+
+Tiga cara di bawah adalah untuk hosting statik (tanpa PHP):
 
 ### Cara 1 — Link kongsi (paling cepat)
 
@@ -168,16 +185,34 @@ portal ini** — saluran diambil terus dari portal anda, jadi tiada tekaan. Anda
 juga boleh tanda sendiri, tetapi jangan tandakan saluran yang belum diaktifkan
 dalam console Bayarcash kerana permintaan akan ditolak.
 
-**6. Segerakkan menu ke server** — tekan **Segerakkan menu sekarang**.
+**6. Terbitkan menu** — tekan **Terbitkan menu sekarang**.
 
 Selesai. Butang **Bayar Online** akan muncul dalam cart pelanggan.
 
-### Penting: segerakkan menu setiap kali harga berubah
+### Penting: terbitkan semula setiap kali menu berubah
 
-Harga yang dicaj dikira di **server** dari snapshot menu (`api/data/menu.php`),
-bukan dari data yang dihantar pelayar. Ini yang menghalang orang membuka
-devtools dan membayar RM 0.01. Kalau anda tukar harga tetapi lupa segerakkan,
-panel akan beri amaran bahawa menu di server berbeza.
+Butang **Terbitkan menu** melakukan dua kerja sekali gus:
+
+1. **Menerbitkan** — semua pelanggan nampak menu itu bila mereka buka website.
+   Laman memuatnya dari `api/menu-awam.php`.
+2. **Mengunci harga** — server mengira jumlah bayaran dari salinan yang
+   diterbitkan (`api/data/menu.php`), bukan dari data pelayar. Ini yang
+   menghalang orang membuka devtools dan membayar RM 0.01.
+
+Kalau anda tukar menu tetapi lupa terbitkan, panel memberi amaran bahawa menu
+anda berbeza dengan yang diterbitkan — pelanggan masih nampak versi lama.
+
+**Siapa nampak apa:**
+
+| Pelayar | Menu yang dipaparkan |
+|---|---|
+| Pelanggan (tiada tetapan tersimpan) | Menu yang diterbitkan dari server |
+| Pelayar anda sebagai pemilik | Draf anda dalam `localStorage` |
+| Sesiapa yang buka link kongsi | Menu dalam link itu |
+
+Menu terbitan sengaja **tidak** disimpan ke `localStorage` pelanggan — kalau
+disimpan, salinan itu akan menang selama-lamanya dan mereka tidak akan nampak
+kemas kini anda yang seterusnya.
 
 ### Aliran pembayaran
 
@@ -314,7 +349,7 @@ Kemudian **Save** (Forge akan reload nginx sendiri).
 
 Buka `https://domain-anda.com` → **⚙ Edit Menu** → tab **Bayaran** →
 masukkan kunci admin dari langkah 4 → tampal PAT / Secret Key / Portal Key →
-**Simpan kredensial** → **Uji sambungan** → **Segerakkan menu**.
+**Simpan kredensial** → **Uji sambungan** → **Terbitkan menu**.
 
 ### Custom domain
 
@@ -414,6 +449,7 @@ assets/js/bayar.js            aliran pembayaran di sebelah pelanggan
 api/                          backend pembayaran (pilihan — perlu PHP)
 ├── config.sample.php         ⬅ salin jadi config.php, set kunci_admin
 ├── status.php                pembayaran tersedia? (dipanggil oleh laman)
+├── menu-awam.php             menu yang diterbitkan, dibaca oleh setiap pelawat
 ├── admin.php                 simpan kredensial & segerak menu (perlu kunci)
 ├── buat-bayaran.php          sahkan cart → cipta Payment Intent
 ├── callback.php              callback server-ke-server dari Bayarcash

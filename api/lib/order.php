@@ -63,7 +63,7 @@ final class Order
     {
         $menu = $this->tetapan->menuTersimpan();
         if ($menu === null) {
-            throw new InvalidArgumentException('Menu belum disegerakkan ke server. Pemilik kedai perlu buka tab Bayaran dan tekan "Segerakkan menu".');
+            throw new InvalidArgumentException('Menu belum diterbitkan. Pemilik kedai perlu buka tab Bayaran dan tekan "Terbitkan menu".');
         }
 
         if (!$cart) {
