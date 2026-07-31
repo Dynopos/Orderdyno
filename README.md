@@ -471,18 +471,28 @@ $CREATE_RELEASE()
 cd $FORGE_RELEASE_DIRECTORY
 
 # --- OrderDyno: data kekal di luar folder release ---
-SHARED=/home/forge/kedaisaya.com/orderdyno-shared
+SITE=/home/forge/kedaisaya.com
+
+case "$PWD" in
+  */releases/*) REL="$PWD"; SITE="${PWD%/releases/*}" ;;
+  *) REL="$(ls -1dt "$SITE"/releases/*/ 2>/dev/null | head -1)"; REL="${REL%/}" ;;
+esac
+
+SHARED="$SITE/orderdyno-shared"
+echo "OrderDyno: release = $REL"
+[ -d "$REL/api" ] || { echo "OrderDyno: folder api/ tak dijumpai dalam '$REL'"; exit 1; }
+
 mkdir -p "$SHARED/data"
-[ -f "$SHARED/data/.htaccess" ] || cp api/data/.htaccess "$SHARED/data/.htaccess" 2>/dev/null || true
 
 if [ ! -f "$SHARED/config.php" ]; then
-  printf '<?php return ["kunci_admin" => "%s", "url_asas" => "https://kedaisaya.com"];\n' "$(openssl rand -hex 24)" > "$SHARED/config.php"
+  KUNCI="$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+  printf '<?php return ["kunci_admin" => "%s", "url_asas" => "https://kedaisaya.com"];\n' "$KUNCI" > "$SHARED/config.php"
   chmod 600 "$SHARED/config.php"
 fi
 
-rm -rf api/data
-ln -nfs "$SHARED/data" api/data
-ln -nfs "$SHARED/config.php" api/config.php
+rm -rf "$REL/api/data"
+ln -nfs "$SHARED/data" "$REL/api/data"
+ln -nfs "$SHARED/config.php" "$REL/api/config.php"
 
 echo "=== KUNCI ADMIN ORDERDYNO ==="
 cat "$SHARED/config.php"
@@ -491,7 +501,8 @@ echo "============================="
 $ACTIVATE_RELEASE()
 ```
 
-Tukar `kedaisaya.com` kepada domain anda pada dua tempat.
+Tukar `kedaisaya.com` kepada domain anda pada dua tempat (`SITE` dan
+`url_asas`).
 
 Skrip ini meletakkan kredensial, menu dan order dalam `orderdyno-shared/` di
 **luar** folder release, kemudian memautkannya masuk ke setiap release baru.
@@ -499,15 +510,30 @@ Release datang dan pergi; data kekal. Ia juga menjana kunci admin sekali
 sahaja dan mencetaknya dalam log deploy — salin dan simpan kunci itu, anda
 perlukannya untuk buka tab **Bayaran**.
 
-Diuji dengan mensimulasikan dua deploy dan memadam release pertama
-sepenuhnya: kunci admin, secret key, menu terbitan dan rekod order semuanya
-selamat.
+**Kenapa skrip ini tidak bergantung pada `cd`.** Pada sesetengah server
+`$FORGE_RELEASE_DIRECTORY` tidak sampai ke shell skrip. Bila itu berlaku,
+`cd` tanpa argumen senyap-senyap pergi ke `/home/forge`, dan versi ringkas
+yang menulis `ln -nfs "$SHARED/data" api/data` gagal dengan:
+
+```
+ln: failed to create symbolic link 'api/data': No such file or directory
+=> Deployment failed: An unexpected error occurred during deployment.
+```
+
+Blok `case` di atas mengesan keadaan itu dan mencari sendiri folder release
+terbaru, jadi skrip berjaya sama ada pemboleh ubah itu wujud atau tidak. Baris
+`[ -d "$REL/api" ]` menghentikan deploy dengan mesej jelas kalau folder tetap
+tidak dijumpai, supaya release tidak diaktifkan separuh siap.
+
+Diuji dalam tiga keadaan — cwd betul, cwd tersasar ke `/home/forge`, dan deploy
+kedua dengan release pertama dipadam sepenuhnya. Dalam ketiga-tiganya kunci
+admin, secret key, menu terbitan dan rekod order kekal.
 
 > Alternatif: matikan zero-downtime dalam tetapan site. Projek ini tiada
 > langkah build, jadi anda tidak kehilangan apa-apa. Tetapi kalau anda buat
-> begitu **selepas** menggunakan skrip di atas, buang dahulu baris `rm -rf
-> api/data` dan dua baris `ln -nfs` — `git pull` tidak boleh menarik ke dalam
-> folder yang sudah menjadi symlink.
+> begitu **selepas** menggunakan skrip di atas, buang dahulu baris `rm -rf`
+> dan dua baris `ln -nfs` — `git pull` tidak boleh menarik ke dalam folder
+> yang sudah menjadi symlink.
 
 ### Nota penting untuk Forge
 
