@@ -429,11 +429,90 @@ Kalau anda masih mahu versi statik di GitHub Pages pada domain sendiri
 Ingat: tab Bayaran tetap akan kata "perlu hosting PHP" di sana — custom domain
 tidak mengubah hakikat GitHub Pages tidak menjalankan PHP.
 
+### ⚠️ Zero-downtime deployment — WAJIB baca
+
+Forge boleh deploy dalam dua mod, dan ini mengubah segalanya:
+
+| Mod | Apa berlaku | Kesan pada data anda |
+|---|---|---|
+| `git pull` biasa | Satu folder tetap | `api/data/` kekal ✅ |
+| **Zero-downtime** | Folder baru setiap deploy (`releases/74520348`), yang lama dipadam | `api/data/` **musnah setiap deploy** ❌ |
+
+Anda boleh kenal pasti mod ini dari log deploy. Kalau nampak baris seperti:
+
+```
+=> Creating new release
+Cloning into /home/forge/kedaisaya.com/releases/74520348
+=> Purging old releases
+```
+
+anda dalam mod zero-downtime, dan **tanpa langkah di bawah setiap deploy akan
+memadam kredensial Bayarcash, menu yang diterbitkan, dan semua rekod order
+pelanggan** — termasuk order yang sudah dibayar.
+
+**Penyelesaian.** Buka tab **Deployments → Deploy Script**. Skrip lalai Forge
+untuk mod ini kelihatan begini:
+
+```bash
+$CREATE_RELEASE()
+
+cd $FORGE_RELEASE_DIRECTORY
+
+$ACTIVATE_RELEASE()
+```
+
+Gantikan keseluruhannya dengan versi ini — baris tambahan mesti berada
+**selepas** `cd` dan **sebelum** `$ACTIVATE_RELEASE()`, supaya release
+disiapkan sepenuhnya sebelum ia diaktifkan:
+
+```bash
+$CREATE_RELEASE()
+
+cd $FORGE_RELEASE_DIRECTORY
+
+# --- OrderDyno: data kekal di luar folder release ---
+SHARED=/home/forge/kedaisaya.com/orderdyno-shared
+mkdir -p "$SHARED/data"
+[ -f "$SHARED/data/.htaccess" ] || cp api/data/.htaccess "$SHARED/data/.htaccess" 2>/dev/null || true
+
+if [ ! -f "$SHARED/config.php" ]; then
+  printf '<?php return ["kunci_admin" => "%s", "url_asas" => "https://kedaisaya.com"];\n' "$(openssl rand -hex 24)" > "$SHARED/config.php"
+  chmod 600 "$SHARED/config.php"
+fi
+
+rm -rf api/data
+ln -nfs "$SHARED/data" api/data
+ln -nfs "$SHARED/config.php" api/config.php
+
+echo "=== KUNCI ADMIN ORDERDYNO ==="
+cat "$SHARED/config.php"
+echo "============================="
+
+$ACTIVATE_RELEASE()
+```
+
+Tukar `kedaisaya.com` kepada domain anda pada dua tempat.
+
+Skrip ini meletakkan kredensial, menu dan order dalam `orderdyno-shared/` di
+**luar** folder release, kemudian memautkannya masuk ke setiap release baru.
+Release datang dan pergi; data kekal. Ia juga menjana kunci admin sekali
+sahaja dan mencetaknya dalam log deploy — salin dan simpan kunci itu, anda
+perlukannya untuk buka tab **Bayaran**.
+
+Diuji dengan mensimulasikan dua deploy dan memadam release pertama
+sepenuhnya: kunci admin, secret key, menu terbitan dan rekod order semuanya
+selamat.
+
+> Alternatif: matikan zero-downtime dalam tetapan site. Projek ini tiada
+> langkah build, jadi anda tidak kehilangan apa-apa. Tetapi kalau anda buat
+> begitu **selepas** menggunakan skrip di atas, buang dahulu baris `rm -rf
+> api/data` dan dua baris `ln -nfs` — `git pull` tidak boleh menarik ke dalam
+> folder yang sudah menjadi symlink.
+
 ### Nota penting untuk Forge
 
-- **`api/data/` kekal merentas deploy.** Forge buat `git pull` di tempat yang
-  sama, dan folder itu dalam `.gitignore`, jadi kredensial dan rekod order
-  anda tidak hilang bila anda deploy semula.
+- **`api/data/` kekal merentas deploy** — tetapi hanya dalam mod `git pull`
+  biasa, atau dalam mod zero-downtime dengan skrip symlink di atas.
 - **Kebenaran fail:** folder disebabkan `git pull` dimiliki oleh pengguna
   `forge`, dan PHP-FPM juga berjalan sebagai `forge`, jadi ia sudah boleh
   ditulis. Kalau anda dapat ralat "Gagal simpan", jalankan:
