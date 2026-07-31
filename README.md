@@ -74,8 +74,42 @@ Tetapi kalau anda mahu **tunjuk demo kepada bakal pelanggan**, atau sekadar
 lihat rupa penuh sistem ini sebelum mengisi menu sendiri, ada kedai contoh yang
 lengkap disediakan: **Restoran Doa Ibu** — 10 kategori, 76 item.
 
+Ada dua cara memasangnya, dan ia **bukan** perkara yang sama.
+
+### Cara A — laman demo untuk semua pelawat (satu arahan)
+
+Guna ini kalau anda mahu laman itu sendiri jadi demo — sesiapa yang buka
+link nampak menu penuh, tanpa perlu menekan apa-apa.
+
+Forge → site anda → tab **Commands**:
+
+```bash
+php tools/pasang-demo.php
+```
+
+Ia menerbitkan menu terus ke server, menetapkan mod sandbox, dan mengaktifkan
+saluran FPX + DuitNow QR. Selepas itu buka laman anda dalam **incognito** —
+demo sepatutnya sudah ada di situ.
+
+Untuk membuang demo dan kembali ke laman kosong:
+
+```bash
+php tools/pasang-demo.php --buang
+```
+
+> Skrip ini menulis terus ke storan tanpa kunci admin, jadi ia menolak untuk
+> berjalan melalui pelayar — cubaan membukanya sebagai URL memulangkan 403.
+
+### Cara B — muat dalam pelayar anda sahaja
+
+Guna ini kalau anda cuma mahu **melihat** rupa penuh sistem tanpa mengubah apa
+yang dilihat pelanggan.
+
 Buka **Edit Menu → tab Menu**, scroll ke bawah sekali, tekan **🍛 Muat menu
-contoh**. Ia menggantikan menu semasa anda (ada pengesahan dahulu).
+contoh**. Ia menggantikan menu dalam pelayar ini sahaja (ada pengesahan
+dahulu). Pelawat lain masih nampak menu yang diterbitkan.
+
+### Apa yang ada dalam demo
 
 Menu contoh itu memaparkan setiap ciri template sekali gus:
 
@@ -88,11 +122,17 @@ Menu contoh itu memaparkan setiap ciri template sekali gus:
 | Logo emoji, tagline, waktu, Google Maps | bahagian hero & footer |
 | Tema warna | preset **Emas** |
 
-Untuk kembali ke template kosong: **tab Kongsi → Reset ke template asal**.
+Untuk kembali ke template kosong dalam pelayar anda: **tab Kongsi → Reset ke
+template asal**.
 
-Datanya dalam `assets/js/contoh-menu.js`. Fail itu **tidak** dimuat secara
-automatik — ia hanya dibaca bila butang ditekan, jadi pelanggan baru tetap
-nampak template kosong.
+**Yang demo TIDAK boleh sediakan:** kredensial Bayarcash. Hanya pemilik akaun
+boleh menjananya, jadi butang "Bayar Online" hanya muncul selepas anda isi
+Personal Access Token, API Secret Key dan Portal Key dalam tab Bayaran.
+Sebelum itu cart menunjukkan butang WhatsApp sahaja.
+
+Datanya dalam `assets/js/contoh-menu.js` — satu sumber, dibaca oleh pelayar
+dan oleh `tools/pasang-demo.php`. Ia **tidak** dimuat secara automatik dalam
+pelayar, jadi pelanggan template yang baru tetap bermula dengan laman kosong.
 
 ## Di mana menu disimpan?
 
@@ -587,6 +627,7 @@ index.html                    struktur laman
 assets/css/style.css          keseluruhan reka bentuk & animasi
 assets/js/config.js           ⬅ TEMPLATE: data lalai (nama kedai, kategori, menu)
 assets/js/contoh-menu.js      kedai contoh lengkap untuk demo (Restoran Doa Ibu)
+tools/pasang-demo.php         CLI: terbitkan demo ke server (php tools/pasang-demo.php)
 assets/js/store.js            simpan/muat, export/import JSON, link kongsi
 assets/js/app.js              paparan menu, cart, checkout WhatsApp
 assets/js/editor.js           panel Edit Menu (termasuk tab Bayaran)
