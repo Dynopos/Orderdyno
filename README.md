@@ -636,6 +636,119 @@ admin, secret key, menu terbitan dan rekod order kekal.
 
 ---
 
+## 🏪 Menjual kepada ramai pelanggan (subdomain)
+
+Satu pemasangan boleh menghidangkan ramai kedai, setiap satu pada
+subdomainnya sendiri:
+
+```
+orderdyno.my                 → kedai utama (demo / laman jualan anda)
+nasilemakali.orderdyno.my    → pelanggan A
+kedaisiti.orderdyno.my       → pelanggan B
+```
+
+Setiap kedai mempunyai folder datanya sendiri, jadi menu, kredensial
+Bayarcash dan rekod order tidak pernah bercampur:
+
+```
+api/data/                    ← kedai utama (kekal di lokasi lama)
+api/data/kedai/<slug>/       ← setiap kedai pelanggan
+```
+
+Pemilik kedai hanya boleh membuka panel kedainya sendiri — kunci pemilik
+adalah per-kedai, bukan sejagat.
+
+### Langkah 1 — DNS wildcard
+
+Dalam panel DNS domain anda, tambah rekod wildcard menunjuk ke IP server:
+
+| Type | Name | Value |
+|---|---|---|
+| A | `@` | IP server |
+| A | `*` | IP server |
+
+Rekod `*` inilah yang membuat setiap subdomain baharu terus hidup tanpa
+anda perlu menyentuh DNS setiap kali menjual.
+
+### Langkah 2 — sijil SSL wildcard
+
+Ini bahagian yang paling kerap tersekat, jadi baca sebelum menjual.
+
+Let's Encrypt boleh mengeluarkan sijil untuk `*.orderdyno.my`, tetapi
+**hanya melalui cabaran DNS-01** — ia perlu menulis rekod TXT ke domain anda
+secara automatik. Itu memerlukan API DNS yang disokong.
+
+| Keadaan | Boleh guna wildcard? |
+|---|---|
+| DNS di Cloudflare (percuma) | ✅ Ya — paling mudah |
+| DNS di penyedia dengan API yang disokong Forge | ✅ Ya |
+| DNS di panel yang tiada API | ❌ Tidak |
+
+Kalau DNS anda tiada API, ada dua jalan:
+
+1. **Pindahkan DNS ke Cloudflare** (percuma). Domain kekal di pendaftar
+   asal — anda cuma tukar nameserver. Ini yang disyorkan.
+2. **Tambah setiap subdomain satu per satu** dalam Forge → Domains, dan
+   dapatkan sijil biasa untuk setiap satu. Berfungsi, tetapi anda perlu
+   buat sekali untuk setiap pelanggan baharu.
+
+Tanpa SSL yang sah, pelawat subdomain akan nampak amaran "Not secure" —
+jangan jual sebelum ini selesai.
+
+### Langkah 3 — hidupkan dalam config
+
+Tambah dua baris ke `api/config.php`:
+
+```php
+'domain_asas'     => 'orderdyno.my',
+'kunci_pentadbir' => 'kunci-panjang-rahsia-anda',
+```
+
+Jana kunci pentadbir:
+
+```bash
+php -r "echo bin2hex(random_bytes(24));"
+```
+
+Kalau `kunci_pentadbir` kosong, `api/pentadbir.php` memulangkan 404 dan
+tidak mendedahkan apa-apa — jadi pemasangan satu kedai kekal selamat.
+
+### Langkah 4 — panel pentadbir
+
+Buka `https://orderdyno.my/api/pentadbir.php`, masukkan kunci pentadbir.
+
+Dari situ anda boleh:
+
+| Tindakan | Kesan |
+|---|---|
+| **Cipta kedai** | Isi nama + alamat → laman terus hidup, kunci pemilik dijana |
+| **Jana kunci baharu** | Kalau pemilik hilang kuncinya |
+| **Gantung** | Pelawat nampak "Kedai ini belum dibuka" — untuk pelanggan yang tidak bayar |
+| **Padam** | Buang kedai dan semua datanya (perlu taip alamat untuk sahkan) |
+
+Panel juga menunjukkan setiap kedai: berapa item menu, sama ada Bayarcash
+sudah disambung, dan berapa order diterima.
+
+### Langkah 5 — serahkan kepada pelanggan
+
+Beri mereka dua perkara:
+
+1. Alamat laman — `nasilemakali.orderdyno.my`
+2. Kunci pemilik — dari panel pentadbir
+
+Mereka buka laman itu, tekan **Edit Menu**, masukkan kunci, dan isi menu
+sendiri. Kredensial Bayarcash mereka sendiri masuk dalam tab Bayaran — jadi
+bayaran pelanggan masuk terus ke akaun mereka, bukan akaun anda.
+
+### Nota
+
+- Subdomain yang tidak terdaftar memaparkan mesej "Kedai ini belum dibuka",
+  bukan template kosong.
+- Subdomain infrastruktur (`www`, `api`, `admin`, `mail`, dan lain-lain)
+  dikhaskan dan tidak boleh dijual.
+- Kedai utama pada domain akar kekal menggunakan `api/data/` seperti asal —
+  menghidupkan mod ini tidak memindahkan atau menyentuh data sedia ada.
+
 ## Susunan fail
 
 ```
@@ -644,6 +757,8 @@ assets/css/style.css          keseluruhan reka bentuk & animasi
 assets/js/config.js           ⬅ TEMPLATE: data lalai (nama kedai, kategori, menu)
 assets/js/contoh-menu.js      kedai contoh lengkap untuk demo (Restoran Doa Ibu)
 tools/pasang-demo.php         CLI: terbitkan demo ke server (php tools/pasang-demo.php)
+api/pentadbir.php             panel pentadbir: cipta & urus kedai pelanggan
+api/lib/kedai.php             kesan subdomain, daftar kedai, pengasingan data
 assets/js/store.js            simpan/muat, export/import JSON, link kongsi
 assets/js/app.js              paparan menu, cart, checkout WhatsApp
 assets/js/editor.js           panel Edit Menu (termasuk tab Bayaran)

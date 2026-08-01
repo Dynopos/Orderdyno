@@ -18,6 +18,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib/http.php';
 
+/* Kedai tidak wujud pada subdomain ini */
+if (!Kedai::wujud()) {
+    json_keluar(['ok' => false, 'kedaiTiada' => true], 404);
+}
+
 wajib_kaedah('GET');
 
 $tetapan = new Tetapan();

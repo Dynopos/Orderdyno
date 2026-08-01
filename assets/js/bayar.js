@@ -59,6 +59,14 @@ const Bayar = (() => {
         return;
       }
 
+      if (d.kedaiTiada) {
+        keadaan.backend = true;
+        keadaan.siap = false;
+        keadaan.kedaiTiada = true;
+        tunjukKedaiTiada(d.slug || '');
+        return;
+      }
+
       keadaan = {
         backend: true,
         siap: !!d.siap,
@@ -323,6 +331,31 @@ const Bayar = (() => {
 
   function statusAdmin(kunci) {
     return dapat('status.php?key=' + encodeURIComponent(kunci));
+  }
+
+  /*
+   * Subdomain yang tidak terdaftar, atau kedai yang digantung. Tunjuk mesej
+   * yang jelas dan tutup laman — jangan biarkan template kosong terpapar
+   * seolah-olah ia kedai sebenar.
+   */
+  function tunjukKedaiTiada(slug) {
+    if (document.getElementById('kedaiTiada')) return;
+    const el = document.createElement('div');
+    el.id = 'kedaiTiada';
+    el.setAttribute('role', 'alert');
+    el.style.cssText =
+      'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;' +
+      'padding:24px;background:#0b0f19;color:#e8ecf4;text-align:center;' +
+      'font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    el.innerHTML =
+      '<div style="max-width:420px">' +
+      '<div style="font-size:2.6rem;margin-bottom:12px">🔒</div>' +
+      '<h1 style="font-size:1.25rem;margin:0 0 10px">Kedai ini belum dibuka</h1>' +
+      '<p style="color:#93a0bd;line-height:1.6;margin:0">' +
+      'Alamat <b>' + (slug ? String(slug).replace(/[<>&"]/g, '') : 'ini') + '</b> ' +
+      'belum didaftarkan atau sedang digantung. Sila semak semula pautan yang diberi kedai.' +
+      '</p></div>';
+    document.body.appendChild(el);
   }
 
   /* ============================= PERISTIWA ============================== */
