@@ -17,6 +17,19 @@ require_once __DIR__ . '/lib/order.php';
 
 wajib_kaedah('GET');
 
+/* Subdomain yang tidak terdaftar (atau kedai yang digantung) — beritahu
+   pelayar supaya ia memaparkan mesej, bukan template kosong. */
+if (!Kedai::wujud()) {
+    json_keluar([
+        'ok'        => true,
+        'backend'   => true,
+        'siap'      => false,
+        'saluran'   => [],
+        'kedaiTiada' => true,
+        'slug'      => Kedai::slug(),
+    ]);
+}
+
 $tetapan = new Tetapan();
 $order   = new Order($tetapan);
 

@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bayarcash.php';
 require_once __DIR__ . '/simpanan.php';
+require_once __DIR__ . '/kedai.php';
 
 final class Tetapan
 {
@@ -46,9 +47,15 @@ final class Tetapan
 
     /* ============================= LOKASI =============================== */
 
+    /*
+     * Folder data untuk kedai yang sedang dilayan. Dalam mod satu kedai ia
+     * sentiasa api/data. Dalam mod banyak kedai (subdomain) ia menjadi
+     * api/data/kedai/<slug> — jadi menu, kredensial dan order setiap
+     * pelanggan terasing sepenuhnya tanpa mengubah kod pemanggil.
+     */
     public static function dirData(): string
     {
-        return __DIR__ . '/../data';
+        return Kedai::dirSemasa();
     }
 
     private static function failSimpanan(): string
@@ -137,6 +144,12 @@ final class Tetapan
 
     public function kunciAdmin(): string
     {
+        /* Kedai pelanggan mempunyai kuncinya sendiri dalam daftar, supaya
+           seorang pemilik tidak boleh membuka panel pemilik lain. */
+        $kunciKedai = Kedai::kunciSemasa();
+        if ($kunciKedai !== null) {
+            return trim($kunciKedai);
+        }
         return trim((string) ($this->config['kunci_admin'] ?? ''));
     }
 

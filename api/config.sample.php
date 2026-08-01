@@ -55,6 +55,28 @@ return [
     'url_asas' => '',
 
     /* ---------------------------------------------------------------------
+       MENJUAL KEPADA RAMAI PELANGGAN (pilihan)
+
+       Isi dua nilai ini kalau anda mahu satu pemasangan menghidangkan ramai
+       kedai, setiap satu pada subdomainnya sendiri:
+
+           orderdyno.my              → kedai utama (demo / laman jualan anda)
+           nasilemakali.orderdyno.my → kedai pelanggan
+
+       'domain_asas'     — domain induk anda, tanpa 'www'
+       'kunci_pentadbir' — kunci untuk membuka api/pentadbir.php, tempat anda
+                           mencipta kedai dan menjana kunci untuk pemiliknya
+
+       Biar KOSONG untuk pemasangan satu kedai. Bila kunci_pentadbir kosong,
+       api/pentadbir.php memulangkan 404 dan tidak mendedahkan apa-apa.
+
+       Jana kunci pentadbir yang kuat:
+           php -r "echo bin2hex(random_bytes(24));"
+       --------------------------------------------------------------------- */
+    'domain_asas'     => '',
+    'kunci_pentadbir' => '',
+
+    /* ---------------------------------------------------------------------
        Had keselamatan
        --------------------------------------------------------------------- */
     'maks_kuantiti' => 99,      // kuantiti maksimum satu baris order
