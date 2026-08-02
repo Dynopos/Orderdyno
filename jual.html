@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OrderDyno — Website Order untuk Kedai Makan Anda</title>
+<meta name="description" content="Pelanggan pilih menu, order terus masuk WhatsApp anda — lengkap dengan harga dan jumlah. Tiada lagi order salah, tiada lagi kira manual.">
+<meta name="theme-color" content="#0b0616">
+<meta property="og:title" content="OrderDyno — Website Order untuk Kedai Makan">
+<meta property="og:description" content="Order masuk WhatsApp anda siap dengan harga dan jumlah. Cuba demo percuma.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   Halaman jualan — berdiri sendiri, tiada kebergantungan pada storefront.
+   Warna mengikut tema Aurora supaya ia terasa satu keluarga dengan produk.
+   ========================================================================== */
+:root {
+  --ungu:  #a855f7;
+  --pink:  #ff4d94;
+  --oren:  #ff9a3c;
+  --latar: #0b0616;
+  --kad:   #150d24;
+  --tepi:  #2a1c40;
+  --teks:  #f3eefb;
+  --lemah: #a99cc4;
+  --hijau: #25d366;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--latar); color: var(--teks);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.65; overflow-x: hidden;
+}
+img { max-width: 100%; }
+.bekas { width: min(1080px, 100% - 40px); margin-inline: auto; }
+
+/* ------------------------------- Latar ---------------------------------- */
+.aura { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+.aura i {
+  position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5;
+  animation: apung 18s ease-in-out infinite;
+}
+.aura i:nth-child(1) { width: 46vw; height: 46vw; background: var(--ungu); top: -12vw; left: -10vw; }
+.aura i:nth-child(2) { width: 40vw; height: 40vw; background: var(--pink); top: 25vh; right: -14vw; animation-delay: -6s; }
+.aura i:nth-child(3) { width: 34vw; height: 34vw; background: var(--oren); bottom: -12vw; left: 22vw; animation-delay: -12s; }
+@keyframes apung { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(3vw,-4vh) scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .aura i { animation: none; } }
+
+/* -------------------------------- Hero ---------------------------------- */
+header { padding: 26px 0 8px; }
+.jenama { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; letter-spacing: -.01em; }
+.jenama span { font-size: 1.4rem; }
+
+.hero { padding: 40px 0 56px; text-align: center; }
+.hero h1 {
+  font-size: clamp(2rem, 7vw, 3.4rem); line-height: 1.08; margin: 0 0 18px;
+  letter-spacing: -.03em; font-weight: 800;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(100deg, var(--ungu), var(--pink) 45%, var(--oren));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero p.utama { font-size: clamp(1rem, 2.6vw, 1.2rem); color: var(--lemah); margin: 0 auto 30px; max-width: 34em; }
+
+.butang-baris { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 15px 28px; border-radius: 999px; text-decoration: none; font-weight: 700;
+  font-size: 1rem; border: 1px solid transparent; cursor: pointer; transition: transform .15s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn--utama {
+  background: linear-gradient(100deg, var(--ungu), var(--pink) 55%, var(--oren));
+  color: #17071c; box-shadow: 0 14px 36px rgba(255,77,148,.32);
+}
+.btn--wa { background: var(--hijau); color: #06301a; }
+.btn--garis { border-color: var(--tepi); color: var(--teks); background: rgba(255,255,255,.03); }
+.nota-kecil { color: var(--lemah); font-size: .86rem; margin-top: 16px; }
+
+/* ------------------------------ Seksyen --------------------------------- */
+section { padding: 56px 0; }
+h2 {
+  font-size: clamp(1.5rem, 4.6vw, 2.1rem); margin: 0 0 12px; letter-spacing: -.02em;
+  text-align: center; font-weight: 800;
+}
+.sub { text-align: center; color: var(--lemah); margin: 0 auto 36px; max-width: 32em; }
+
+/* --------------------------- Sebelum / Selepas -------------------------- */
+.banding { display: grid; gap: 18px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .banding { grid-template-columns: 1fr 1fr; } }
+.chat {
+  background: var(--kad); border: 1px solid var(--tepi); border-radius: 18px; padding: 22px;
+}
+.chat h3 { margin: 0 0 4px; font-size: 1rem; }
+.chat .label { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; margin-bottom: 14px; }
+.chat--buruk .label { color: #ff9db3; }
+.chat--baik .label { color: #9df0bd; }
+.gelembung {
+  background: rgba(255,255,255,.05); border-radius: 14px; padding: 10px 14px;
+  margin-bottom: 8px; font-size: .92rem;
+}
+.chat--baik .gelembung { background: rgba(37,211,102,.1); white-space: pre-line; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------ Langkah --------------------------------- */
+.langkah { display: grid; gap: 18px; grid-template-columns: 1fr; counter-reset: n; }
+@media (min-width: 760px) { .langkah { grid-template-columns: repeat(3, 1fr); } }
+.langkah > div {
+  background: var(--kad); border: 1px solid var(--tepi); border-radius: 18px; padding: 24px;
+}
+.langkah > div::before {
+  counter-increment: n; content: counter(n);
+  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(100deg, var(--ungu), var(--pink)); color: #17071c;
+  font-weight: 800; margin-bottom: 14px;
+}
+.langkah h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.langkah p { margin: 0; color: var(--lemah); font-size: .94rem; }
+
+/* ------------------------------- Ciri ----------------------------------- */
+.ciri { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 620px) { .ciri { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 940px) { .ciri { grid-template-columns: repeat(3, 1fr); } }
+.ciri > div {
+  background: var(--kad); border: 1px solid var(--tepi); border-radius: 16px; padding: 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.ciri b { display: block; margin-bottom: 3px; }
+.ciri p { margin: 0; color: var(--lemah); font-size: .9rem; }
+.ikon { font-size: 1.5rem; line-height: 1; }
+
+/* ------------------------------- Harga ---------------------------------- */
+.harga { display: grid; gap: 18px; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 760px) { .harga { grid-template-columns: 1fr 1fr; } }
+.pelan {
+  background: var(--kad); border: 1px solid var(--tepi); border-radius: 20px; padding: 28px; position: relative;
+}
+.pelan--pilihan { border-color: var(--pink); box-shadow: 0 0 0 1px rgba(255,77,148,.35), 0 20px 50px rgba(255,77,148,.14); }
+.lencana {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(100deg, var(--ungu), var(--pink)); color: #17071c;
+  font-size: .74rem; font-weight: 800; padding: 5px 14px; border-radius: 999px;
+  text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+}
+.pelan h3 { margin: 0 0 2px; font-size: 1.1rem; }
+.pelan .nilai { font-size: 2.3rem; font-weight: 800; letter-spacing: -.03em; margin: 12px 0 2px; }
+.pelan .nilai small { font-size: .95rem; font-weight: 600; color: var(--lemah); }
+.pelan ul { list-style: none; padding: 0; margin: 18px 0 22px; }
+.pelan li { padding-left: 26px; position: relative; margin-bottom: 9px; font-size: .93rem; }
+.pelan li::before { content: '✓'; position: absolute; left: 0; color: var(--hijau); font-weight: 800; }
+.pelan .btn { width: 100%; }
+
+/* -------------------------------- FAQ ----------------------------------- */
+details {
+  background: var(--kad); border: 1px solid var(--tepi); border-radius: 14px;
+  padding: 16px 20px; margin-bottom: 10px;
+}
+summary { cursor: pointer; font-weight: 700; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '＋'; float: right; color: var(--lemah); font-weight: 400; }
+details[open] summary::after { content: '－'; }
+details p { color: var(--lemah); margin: 12px 0 0; font-size: .94rem; }
+
+/* ------------------------------- Penutup -------------------------------- */
+.penutup {
+  background: linear-gradient(135deg, rgba(168,85,247,.16), rgba(255,77,148,.12));
+  border: 1px solid var(--tepi); border-radius: 26px; padding: 44px 26px; text-align: center;
+}
+footer { padding: 34px 0 46px; text-align: center; color: var(--lemah); font-size: .86rem; }
+footer a { color: var(--lemah); }
+
+/* Butang WhatsApp terapung */
+.wa-apung {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50;
+  width: 56px; height: 56px; border-radius: 50%; background: var(--hijau);
+  display: grid; place-items: center; box-shadow: 0 10px 28px rgba(37,211,102,.4);
+  text-decoration: none; font-size: 1.6rem;
+}
+</style>
+</head>
+<body>
+
+<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="bekas">
+
+  <header>
+    <div class="jenama"><span>🛒</span> OrderDyno</div>
+  </header>
+
+  <!-- ================================ HERO =============================== -->
+  <div class="hero">
+    <h1>Order masuk WhatsApp anda,<br><em>siap dengan harga dan jumlah</em></h1>
+    <p class="utama">
+      Pelanggan pilih menu dari website kedai anda, tekan hantar — dan order
+      sampai ke WhatsApp anda dalam bentuk yang kemas. Tiada lagi order salah,
+      tiada lagi kira guna kalkulator.
+    </p>
+
+    <div class="butang-baris">
+      <a class="btn btn--utama" href="https://demo.orderdyno.my" target="_blank" rel="noopener">
+        🍽 Cuba Demo
+      </a>
+      <a class="btn btn--wa" href="https://wa.me/60182889932?text=Salam%2C%20saya%20berminat%20dengan%20OrderDyno" target="_blank" rel="noopener">
+        WhatsApp Saya
+      </a>
+    </div>
+    <p class="nota-kecil">Demo penuh — boleh order, boleh bayar. Tiada pendaftaran.</p>
+  </div>
+
+  <!-- =========================== SEBELUM / SELEPAS ======================= -->
+  <section>
+    <h2>Kenal masalah ini?</h2>
+    <p class="sub">Setiap hari, order hilang dalam chat yang berselerak.</p>
+
+    <div class="banding">
+      <div class="chat chat--buruk">
+        <div class="label">Sebelum</div>
+        <div class="gelembung">nak nasi lemak 2</div>
+        <div class="gelembung">eh tambah teh ais satu</div>
+        <div class="gelembung">yg tadi tu tukar jadi 3 boleh?</div>
+        <div class="gelembung">berapa semua ni?</div>
+        <div class="gelembung">saya dah transfer, check la</div>
+        <h3>Order salah. Kira manual. Duit tak masuk.</h3>
+      </div>
+
+      <div class="chat chat--baik">
+        <div class="label">Selepas</div>
+        <div class="gelembung">*ORDER BARU*
+
+Nama: Aisyah
+Cara: Ambil sendiri
+
+1. Nasi Lemak Ayam × 3
+2. Teh Tarik Ais × 1
+
+*JUMLAH: RM 28.50*
+Status: SUDAH DIBAYAR</div>
+        <h3>Tersusun. Dah dikira. Dah dibayar.</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== LANGKAH ============================== -->
+  <section>
+    <h2>Tiga langkah, siap hari ini</h2>
+    <p class="sub">Tak perlu tahu coding. Tak perlu beli domain sendiri.</p>
+
+    <div class="langkah">
+      <div>
+        <h3>Saya buatkan laman anda</h3>
+        <p>Anda dapat alamat sendiri seperti <b>kedaianda.orderdyno.my</b>, siap dengan HTTPS.</p>
+      </div>
+      <div>
+        <h3>Anda isi menu sendiri</h3>
+        <p>Tekan butang Edit Menu pada laman anda. Isi nama, harga, gambar — semua dari telefon.</p>
+      </div>
+      <div>
+        <h3>Kongsi link, terima order</h3>
+        <p>Letak di bio Instagram, status WhatsApp, atau cetak jadi QR code untuk meja.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ CIRI =============================== -->
+  <section>
+    <h2>Apa yang anda dapat</h2>
+    <p class="sub">Semua sekali, tiada tambahan tersembunyi.</p>
+
+    <div class="ciri">
+      <div><div class="ikon">📱</div><div><b>Order terus ke WhatsApp</b><p>Mesej tersusun, lengkap dengan item, kuantiti dan jumlah.</p></div></div>
+      <div><div class="ikon">💳</div><div><b>Pelanggan boleh bayar dulu</b><p>FPX dan DuitNow. Duit masuk akaun anda sendiri, bukan akaun saya.</p></div></div>
+      <div><div class="ikon">⚙️</div><div><b>Tukar menu bila-bila</b><p>Naik harga, tanda "Habis", tambah item — sendiri, dari telefon.</p></div></div>
+      <div><div class="ikon">🚗</div><div><b>Pickup atau penghantaran</b><p>Set caj hantar dan order minimum ikut kawasan anda.</p></div></div>
+      <div><div class="ikon">🧾</div><div><b>Rekod order tersimpan</b><p>Lihat semua order yang masuk dan yang sudah dibayar.</p></div></div>
+      <div><div class="ikon">🔒</div><div><b>Laman selamat (HTTPS)</b><p>Tiada amaran "Not secure" yang menakutkan pelanggan.</p></div></div>
+    </div>
+  </section>
+
+  <!-- =============================== HARGA =============================== -->
+  <section>
+    <h2>Harga</h2>
+    <p class="sub">Pilih yang sesuai dengan kedai anda.</p>
+
+    <div class="harga">
+      <div class="pelan">
+        <h3>Sekali Bayar</h3>
+        <p style="color:var(--lemah);margin:0;font-size:.9rem">Bayar sekali, guna selamanya</p>
+        <div class="nilai">RM 380</div>
+        <ul>
+          <li>Laman siap dengan alamat sendiri</li>
+          <li>Saya masukkan menu pertama anda</li>
+          <li>Sambungan pembayaran online</li>
+          <li>Tunjuk ajar guna panel</li>
+        </ul>
+        <a class="btn btn--garis" href="https://wa.me/60182889932?text=Salam%2C%20saya%20nak%20pakej%20Sekali%20Bayar%20OrderDyno" target="_blank" rel="noopener">Tanya di WhatsApp</a>
+      </div>
+
+      <div class="pelan pelan--pilihan">
+        <div class="lencana">Paling popular</div>
+        <h3>Bulanan</h3>
+        <p style="color:var(--lemah);margin:0;font-size:.9rem">Mula kecil, berhenti bila-bila</p>
+        <div class="nilai">RM 39 <small>/ bulan</small></div>
+        <ul>
+          <li>Semua dalam pakej Sekali Bayar</li>
+          <li><b>Bulan pertama percuma</b></li>
+          <li>Saya kemas kini menu untuk anda</li>
+          <li>Bantuan WhatsApp bila ada masalah</li>
+        </ul>
+        <a class="btn btn--utama" href="https://wa.me/60182889932?text=Salam%2C%20saya%20nak%20cuba%20OrderDyno%20percuma%20sebulan" target="_blank" rel="noopener">Cuba Percuma Sebulan</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ FAQ ================================ -->
+  <section>
+    <h2>Soalan lazim</h2>
+    <div style="max-width:720px;margin-inline:auto">
+      <details>
+        <summary>Saya tak pandai komputer. Boleh guna ke?</summary>
+        <p>Boleh. Semua diisi melalui borang pada telefon — sama macam isi maklumat dalam Facebook. Saya masukkan menu pertama anda, jadi anda cuma perlu edit bila ada perubahan.</p>
+      </details>
+      <details open>
+        <summary>Duit pelanggan masuk mana?</summary>
+        <p>Terus ke akaun bank anda sendiri melalui Bayarcash. Saya tidak menyentuh duit anda langsung — saya tiada akses kepadanya.</p>
+      </details>
+      <details>
+        <summary>Kena beli domain sendiri?</summary>
+        <p>Tidak perlu. Anda dapat alamat di bawah orderdyno.my secara percuma. Kalau nanti nak domain sendiri, boleh disambung kemudian.</p>
+      </details>
+      <details>
+        <summary>Kalau saya berhenti langganan, menu saya hilang?</summary>
+        <p>Tidak. Menu anda boleh di-export sebagai fail sebelum berhenti, dan laman boleh dihidupkan semula bila-bila masa.</p>
+      </details>
+      <details>
+        <summary>Berapa lama sampai siap?</summary>
+        <p>Laman siap dalam beberapa minit. Yang ambil masa cuma isi menu — biasanya sejam kalau menu panjang.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================== PENUTUP ============================== -->
+  <section>
+    <div class="penutup">
+      <h2 style="margin-bottom:10px">Tengok dulu sebelum putus</h2>
+      <p class="sub" style="margin-bottom:26px">
+        Demo ini kedai sebenar dengan 76 item. Cuba order sesuatu — sampai habis.
+      </p>
+      <div class="butang-baris">
+        <a class="btn btn--utama" href="https://demo.orderdyno.my" target="_blank" rel="noopener">🍽 Cuba Demo</a>
+        <a class="btn btn--wa" href="https://wa.me/60182889932?text=Salam%2C%20saya%20berminat%20dengan%20OrderDyno" target="_blank" rel="noopener">WhatsApp Saya</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    OrderDyno · <a href="https://wa.me/60182889932">018-288 9932</a><br>
+    Website order untuk kedai makan, kafe dan gerai di Malaysia.
+  </footer>
+
+</div>
+
+<a class="wa-apung" href="https://wa.me/60182889932?text=Salam%2C%20saya%20berminat%20dengan%20OrderDyno"
+   target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+
+</body>
+</html>

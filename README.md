@@ -740,6 +740,49 @@ Mereka buka laman itu, tekan **Edit Menu**, masukkan kunci, dan isi menu
 sendiri. Kredensial Bayarcash mereka sendiri masuk dalam tab Bayaran — jadi
 bayaran pelanggan masuk terus ke akaun mereka, bukan akaun anda.
 
+### Halaman jualan pada domain akar
+
+Bila anda menjual, domain akar lebih berguna sebagai **halaman jualan**
+daripada sebagai kedai. `jual.html` menyediakannya: tajuk, perbandingan
+sebelum/selepas, harga, FAQ, dan butang **Cuba Demo** + WhatsApp.
+
+Untuk menghidupkannya, buka `index.html` dan cari blok `JUALAN` dalam
+`<head>`:
+
+```js
+var JUALAN = {
+  aktif:  true,
+  domain: 'orderdyno.my',   // domain akar anda, tanpa 'www'
+  fail:   'jual.html',
+};
+```
+
+Set `aktif: false` untuk mematikannya (lalai untuk pemasangan satu kedai).
+
+Selepas itu:
+
+| Alamat | Memaparkan |
+|---|---|
+| `orderdyno.my` | halaman jualan |
+| `demo.orderdyno.my` | kedai demo |
+| `kedaiali.orderdyno.my` | kedai pelanggan |
+
+Semakan itu berjalan dalam `<head>` sebelum apa-apa dipaparkan, jadi tiada
+kelipan storefront sebelum halaman jualan muncul. Buka
+`orderdyno.my/#edit` kalau anda perlu masuk ke storefront domain akar.
+
+**Pindahkan demo ke subdomainnya sendiri:**
+
+1. Cipta kedai `demo` dalam `api/pentadbir.php`
+2. Jalankan:
+
+```bash
+php tools/pasang-demo.php --kedai=demo
+```
+
+Tukar juga harga, nombor WhatsApp dan pautan demo dalam `jual.html` supaya
+padan dengan tawaran anda.
+
 ### Nota
 
 - Subdomain yang tidak terdaftar memaparkan mesej "Kedai ini belum dibuka",
@@ -756,6 +799,7 @@ index.html                    struktur laman
 assets/css/style.css          keseluruhan reka bentuk & animasi
 assets/js/config.js           ⬅ TEMPLATE: data lalai (nama kedai, kategori, menu)
 assets/js/contoh-menu.js      kedai contoh lengkap untuk demo (Restoran Doa Ibu)
+jual.html                     halaman jualan untuk domain akar (pilihan)
 tools/pasang-demo.php         CLI: terbitkan demo ke server (php tools/pasang-demo.php)
 api/pentadbir.php             panel pentadbir: cipta & urus kedai pelanggan
 api/lib/kedai.php             kesan subdomain, daftar kedai, pengasingan data

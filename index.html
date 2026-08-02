@@ -14,6 +14,43 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kaushan+Script&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+
+<script>
+/* ==========================================================================
+   HALAMAN JUALAN PADA DOMAIN UTAMA (pilihan)
+   --------------------------------------------------------------------------
+   Untuk pemasangan yang menjual laman kepada ramai pelanggan: domain akar
+   memaparkan halaman jualan (jual.html), manakala setiap subdomain kekal
+   sebagai kedai biasa.
+
+       orderdyno.my            -> jual.html      (halaman jualan)
+       demo.orderdyno.my       -> kedai demo
+       kedaiali.orderdyno.my   -> kedai pelanggan
+
+   Untuk mematikannya, tukar `aktif` kepada false. Untuk pemasangan satu
+   kedai, biarkan false — halaman jualan tidak akan mengganggu apa-apa.
+
+   Diletakkan dalam <head> dengan sengaja: ia berjalan sebelum apa-apa
+   dipaparkan, jadi tiada kelipan storefront sebelum halaman jualan muncul.
+   ========================================================================== */
+(function () {
+  var JUALAN = {
+    aktif:  true,
+    domain: 'orderdyno.my',   // domain akar anda, tanpa 'www'
+    fail:   'jual.html',
+  };
+
+  if (!JUALAN.aktif || !JUALAN.domain) return;
+
+  var host = location.hostname.toLowerCase().replace(/^www\./, '');
+  if (host !== JUALAN.domain) return;          // subdomain -> kedai biasa
+
+  // #edit atau ?kedai= membenarkan pemilik membuka storefront domain utama
+  if (location.hash.indexOf('edit') !== -1 || location.search.indexOf('kedai') !== -1) return;
+
+  location.replace(JUALAN.fail);
+})();
+</script>
 </head>
 <body>
 
