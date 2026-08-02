@@ -77,6 +77,20 @@ return [
     'kunci_pentadbir' => '',
 
     /* ---------------------------------------------------------------------
+       Hidupkan HANYA kalau laman berada di belakang Cloudflare dengan proxy
+       dihidupkan (awan oren).
+
+       Tanpa ini, setiap pelawat kelihatan datang dari IP Cloudflare yang
+       sama, jadi mereka berkongsi satu baldi had kadar — seorang penyalahguna
+       boleh mengunci semua pelanggan sah.
+
+       Jangan hidupkan kalau laman boleh dicapai terus melalui IP server,
+       kerana header CF-Connecting-IP boleh dipalsukan dan had kadar akan
+       dipintas sepenuhnya.
+       --------------------------------------------------------------------- */
+    'di_belakang_cloudflare' => false,
+
+    /* ---------------------------------------------------------------------
        Had keselamatan
        --------------------------------------------------------------------- */
     'maks_kuantiti' => 99,      // kuantiti maksimum satu baris order

@@ -45,8 +45,36 @@ function wajib_kaedah(string $kaedah): void
     }
 }
 
+/**
+ * IP pelawat sebenar — digunakan untuk had kadar.
+ *
+ * Di belakang proxy seperti Cloudflare, REMOTE_ADDR ialah IP proxy itu, jadi
+ * SEMUA pelawat kelihatan sama dan berkongsi satu baldi had kadar. Seorang
+ * penyalahguna boleh mengunci semua pelanggan sah.
+ *
+ * Header CF-Connecting-IP membetulkannya, tetapi ia hanya boleh dipercayai
+ * bila permintaan benar-benar datang melalui Cloudflare — kalau tidak sesiapa
+ * sahaja boleh memalsukannya dan memintas had kadar sepenuhnya. Sebab itu ia
+ * hanya dibaca bila pemilik menghidupkan 'di_belakang_cloudflare' dalam
+ * api/config.php, iaitu pengesahan bahawa laman memang tidak boleh dicapai
+ * kecuali melalui Cloudflare.
+ */
 function ip_pelawat(): string
 {
+    static $config = null;
+    if ($config === null) {
+        $fail = __DIR__ . '/../config.php';
+        $d = is_file($fail) ? require $fail : [];
+        $config = is_array($d) ? $d : [];
+    }
+
+    if (!empty($config['di_belakang_cloudflare'])) {
+        $cf = trim((string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+        if ($cf !== '' && filter_var($cf, FILTER_VALIDATE_IP)) {
+            return $cf;
+        }
+    }
+
     $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
     return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
 }
