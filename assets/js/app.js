@@ -598,6 +598,18 @@ const App = (() => {
     jalur.innerHTML =
       '<b>🌙 ' + esc(st.mesej) + '</b>' +
       (st.seterusnya ? '<span>Buka semula ' + esc(st.seterusnya) + '</span>' : '');
+
+    ukurJalur();
+  }
+
+  /* Butang "Edit Menu" ialah position:fixed, jadi ia tidak bergerak bila
+     jalur muncul dan keduanya bertindih. Ukur tinggi jalur dan turunkan
+     butang itu — tingginya berubah ikut panjang mesej, jadi ia mesti
+     diukur, bukan diteka. */
+  function ukurJalur() {
+    const jalur = document.getElementById('jalurTutup');
+    const tinggi = jalur ? jalur.offsetHeight : 0;
+    document.documentElement.style.setProperty('--tinggi-jalur', tinggi + 'px');
   }
 
   /* Semak setiap minit supaya kedai "bangun" sendiri bila sampai waktunya,
@@ -932,6 +944,7 @@ const App = (() => {
     }
 
     mulaPengawasWaktu();
+    window.addEventListener('resize', ukurJalur);
 
     // Semak sama ada backend pembayaran tersedia (senyap kalau tiada)
     if (window.Bayar) Bayar.mula();
