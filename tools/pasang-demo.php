@@ -26,6 +26,13 @@
    Untuk membuang demo dan kembali ke laman kosong:
 
        php tools/pasang-demo.php --buang
+
+   Untuk memasang ke dalam kedai tertentu (mod banyak kedai / subdomain):
+
+       php tools/pasang-demo.php --kedai=demo
+
+   Itu menerbitkan menu ke demo.orderdyno.my dan bukan ke domain utama —
+   berguna bila domain utama digunakan sebagai halaman jualan.
    ========================================================================== */
 
 declare(strict_types=1);
@@ -41,6 +48,26 @@ require_once __DIR__ . '/../api/lib/tetapan.php';
 
 $akar   = dirname(__DIR__);
 $buang  = in_array('--buang', $argv, true);
+
+/* --kedai=<slug> memasang ke dalam kedai pelanggan, bukan kedai utama. */
+$slug = null;
+foreach ($argv as $a) {
+    if (str_starts_with((string) $a, '--kedai=')) {
+        $slug = strtolower(trim(substr($a, 8)));
+    }
+}
+
+if ($slug !== null) {
+    if (Kedai::ambil($slug) === null) {
+        fwrite(STDERR, "Kedai '$slug' tidak wujud. Ciptanya dahulu dalam api/pentadbir.php.\n");
+        exit(1);
+    }
+    /* Tetapan membaca folder data melalui Kedai::dirSemasa(), yang biasanya
+       ditentukan oleh Host. Dalam CLI tiada Host, jadi kita palsukannya. */
+    $_SERVER['HTTP_HOST'] = $slug . '.' . Kedai::domainAsas();
+    echo "Memasang ke kedai: $slug\n";
+}
+
 $tetapan = new Tetapan();
 
 /* ------------------------------- BUANG ---------------------------------- */
