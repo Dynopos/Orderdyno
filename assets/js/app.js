@@ -136,6 +136,8 @@ const App = (() => {
       on.querySelector('.btn__luar').hidden = true;
     }
 
+    paparStatusBuka();
+
     // Kad info footer
     $('#alamat').textContent = k.alamat || '—';
     $('#waktu').textContent = k.waktu || '—';
@@ -533,6 +535,20 @@ const App = (() => {
           : ''
       }`;
 
+    /* Kedai tutup — tunjuk sebabnya di tempat pelanggan akan menekan */
+    const sb = status();
+    if (!sb.buka) {
+      kaki.innerHTML = `
+        <div class="amaran" style="margin-bottom:12px">
+          <b>🌙 ${esc(sb.mesej)}</b>
+          ${sb.seterusnya ? `<br>Buka semula ${esc(sb.seterusnya)}.` : ''}
+          <br>Order anda kekal dalam cart — hantar bila kedai buka.
+        </div>
+        <button class="cart-buang" type="button" data-kosongkan
+                style="display:block;margin:0 auto">Kosongkan order</button>`;
+      return;
+    }
+
     const butangBayar = bolehBayar()
       ? `<button class="btn-blok" id="btnBayar" type="button"${kurang ? ' disabled' : ''}>
            ${IKON.kad} Bayar Online — ${wang(st + caj)}
@@ -546,6 +562,55 @@ const App = (() => {
       </button>
       <button class="cart-buang" type="button" data-kosongkan
               style="display:block;margin:12px auto 0">Kosongkan order</button>`;
+  }
+
+  /* ============================ WAKTU OPERASI ===========================
+     Bila kedai tutup, pelanggan masih boleh melihat menu dan mengisi cart —
+     mereka cuma tidak boleh menghantar order. Itu sengaja: ramai pelanggan
+     melihat menu malam dan order keesokan paginya.
+     ==================================================================== */
+
+  let statusTerakhir = null;
+
+  function status() {
+    statusTerakhir = Store.statusBuka(C);
+    return statusTerakhir;
+  }
+
+  function paparStatusBuka() {
+    const st = status();
+    let jalur = document.getElementById('jalurTutup');
+
+    if (st.buka) {
+      if (jalur) jalur.remove();
+      document.body.classList.remove('kedai-tutup');
+      return;
+    }
+
+    document.body.classList.add('kedai-tutup');
+    if (!jalur) {
+      jalur = document.createElement('div');
+      jalur.id = 'jalurTutup';
+      jalur.className = 'jalur-tutup';
+      jalur.setAttribute('role', 'status');
+      document.body.insertBefore(jalur, document.body.firstChild);
+    }
+    jalur.innerHTML =
+      '<b>🌙 ' + esc(st.mesej) + '</b>' +
+      (st.seterusnya ? '<span>Buka semula ' + esc(st.seterusnya) + '</span>' : '');
+  }
+
+  /* Semak setiap minit supaya kedai "bangun" sendiri bila sampai waktunya,
+     tanpa pelanggan perlu refresh. */
+  function mulaPengawasWaktu() {
+    setInterval(() => {
+      const sebelum = statusTerakhir && statusTerakhir.buka;
+      const kini = Store.statusBuka(C).buka;
+      if (sebelum !== kini) {
+        paparStatusBuka();
+        if (document.getElementById('sheetCart') && !$('#sheetCart').hidden) lukisCart();
+      }
+    }, 60000);
   }
 
   /* Pembayaran online tersedia? */
@@ -865,6 +930,8 @@ const App = (() => {
     if (location.hash.indexOf('edit') !== -1) {
       setTimeout(() => window.Editor && Editor.buka(), 400);
     }
+
+    mulaPengawasWaktu();
 
     // Semak sama ada backend pembayaran tersedia (senyap kalau tiada)
     if (window.Bayar) Bayar.mula();

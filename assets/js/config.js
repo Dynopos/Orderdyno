@@ -59,6 +59,34 @@ const TEMPLATE = {
     latar: '#0b0616',
   },
 
+  /* ---------------------------- WAKTU OPERASI ----------------------------
+     Bila `aktif` true dan kedai sedang tutup, pelanggan masih boleh melihat
+     menu tetapi tidak boleh menghantar order — mereka nampak mesej dan
+     waktu buka seterusnya.
+
+     `zon` ialah offset jam dari UTC (Malaysia = 8). Ia digunakan supaya
+     status dikira ikut waktu KEDAI, bukan waktu telefon pelanggan — pelawat
+     dari luar negara tetap nampak status yang betul.
+
+     Waktu melepasi tengah malam disokong: tutup '02:00' dengan buka '18:00'
+     bermakna 6 petang hingga 2 pagi keesokannya.
+     ---------------------------------------------------------------------- */
+  waktuBuka: {
+    aktif: false,
+    zon: 8,
+    tutupSementara: false,          // butang kecemasan — tutup serta-merta
+    mesej: 'Kedai sedang tutup. Sila order esok — terima kasih!',
+    hari: {
+      isnin:  { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      selasa: { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      rabu:   { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      khamis: { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      jumaat: { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      sabtu:  { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+      ahad:   { tutupHariIni: false, buka: '10:00', tutup: '22:00' },
+    },
+  },
+
   /* ---------------------------- CARA TERIMA ORDER ------------------------ */
   penghantaran: {
     pickup: { aktif: true, label: 'Ambil Sendiri', nota: 'Sedia dalam 15–20 minit' },

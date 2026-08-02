@@ -19,6 +19,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/bayarcash.php';
 require_once __DIR__ . '/simpanan.php';
 require_once __DIR__ . '/kedai.php';
+require_once __DIR__ . '/waktu.php';
 
 final class Tetapan
 {
