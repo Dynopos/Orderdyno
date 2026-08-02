@@ -48,9 +48,11 @@ $mesej = '';
 $jenis = 'ok';
 $kunciBaharu = null;   // dipaparkan sekali sahaja selepas cipta/putar
 
-if ($masuk && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    $aksi = (string) ($_POST['aksi'] ?? '');
+/* Borang log masuk hanya menghantar kunci — ia bukan satu aksi. Tanpa
+   syarat ini, log masuk yang berjaya akan memaparkan "Aksi tidak dikenali". */
+$aksi = (string) ($_POST['aksi'] ?? '');
 
+if ($masuk && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && $aksi !== '') {
     try {
         switch ($aksi) {
             case 'cipta': {
