@@ -28,6 +28,21 @@ $order   = new Order($tetapan);
 if (!$tetapan->siap()) {
     json_silap('Pembayaran online belum disediakan oleh kedai ini.', 503);
 }
+
+/* Kedai tutup — jangan terima wang untuk order yang tidak akan disediakan.
+   Pelayar sudah menyembunyikan butang, tetapi permintaan boleh dihantar
+   terus ke sini, jadi semakan ini yang sebenarnya menguatkuasakannya. */
+$menuTersimpan = $tetapan->menuTersimpan();
+if (is_array($menuTersimpan)) {
+    $jam = Waktu::status($menuTersimpan);
+    if (!$jam['buka']) {
+        json_silap(
+            trim(($jam['mesej'] ?: 'Kedai sedang tutup.')
+                . ($jam['seterusnya'] !== '' ? ' Buka semula ' . $jam['seterusnya'] . '.' : '')),
+            409
+        );
+    }
+}
 if ($order->mataWang() !== 'MYR') {
     json_silap('Bayarcash memproses MYR sahaja.', 503);
 }

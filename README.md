@@ -150,6 +150,54 @@ Datanya dalam `assets/js/contoh-menu.js` — satu sumber, dibaca oleh pelayar
 dan oleh `tools/pasang-demo.php`. Ia **tidak** dimuat secara automatik dalam
 pelayar, jadi pelanggan template yang baru tetap bermula dengan laman kosong.
 
+## 🕐 Waktu operasi & mod tutup
+
+Kedai makan tidak buka 24 jam. Tab **Waktu** dalam panel Edit Menu
+membolehkan pemilik menetapkan waktu setiap hari, dan sistem menguruskan
+selebihnya sendiri.
+
+Bila kedai tutup:
+
+- Jalur kuning muncul di atas laman dengan mesej pemilik dan waktu buka
+  seterusnya — contoh *"Buka semula esok jam 10:00"*
+- Butang **Hantar Order** dan **Bayar Online** hilang dari cart
+- **Menu masih boleh dilihat, cart masih boleh diisi.** Itu sengaja: ramai
+  pelanggan melihat menu pada waktu malam dan order keesokan paginya. Cart
+  mereka kekal, jadi mereka hanya perlu tekan hantar bila kedai buka.
+
+Laman menyemak sendiri setiap minit, jadi kedai "bangun" tepat pada waktunya
+tanpa pelanggan perlu refresh.
+
+### Tetapan
+
+| Tetapan | Kegunaan |
+|---|---|
+| **Tutup sekarang** | Suis kecemasan — hari cuti, stok habis. Mengatasi waktu operasi |
+| **Guna waktu operasi** | Matikan untuk terima order 24 jam |
+| Waktu setiap hari | Buang tanda pada hari kedai tutup |
+| Mesej bila tutup | Apa yang pelanggan baca |
+
+Waktu melepasi tengah malam disokong: `18:00 – 02:00` bermakna 6 petang
+hingga 2 pagi keesokannya.
+
+### Ikut waktu kedai, bukan waktu pelanggan
+
+Status dikira dari offset zon waktu kedai (Malaysia = 8), bukan jam pada
+telefon pelawat. Pelanggan yang melancong ke luar negara tetap nampak status
+yang betul.
+
+### Dikuatkuasakan di server
+
+Pelayar menyembunyikan butang, tetapi permintaan boleh dihantar terus ke
+`api/buat-bayaran.php`. Sebab itu `api/lib/waktu.php` menyemak semula sebelum
+menerima apa-apa pembayaran, dan memulangkan **409** kalau kedai tutup.
+
+Tanpa itu, wang boleh masuk untuk order yang tidak akan disediakan — masalah
+sebenar bagi pemilik kedai, bukan sekadar isu paparan.
+
+> Logik waktu wujud dalam dua tempat: `assets/js/store.js` (`statusBuka`) dan
+> `api/lib/waktu.php`. Kalau anda mengubah satu, ubah yang satu lagi juga.
+
 ## Di mana menu disimpan?
 
 Bila anda guna panel Edit Menu, menu disimpan dalam **`localStorage` pelayar
@@ -803,6 +851,7 @@ jual.html                     halaman jualan untuk domain akar (pilihan)
 tools/pasang-demo.php         CLI: terbitkan demo ke server (php tools/pasang-demo.php)
 api/pentadbir.php             panel pentadbir: cipta & urus kedai pelanggan
 api/lib/kedai.php             kesan subdomain, daftar kedai, pengasingan data
+api/lib/waktu.php             waktu operasi — semakan di sisi server
 assets/js/store.js            simpan/muat, export/import JSON, link kongsi
 assets/js/app.js              paparan menu, cart, checkout WhatsApp
 assets/js/editor.js           panel Edit Menu (termasuk tab Bayaran)

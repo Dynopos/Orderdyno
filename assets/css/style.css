@@ -1278,3 +1278,44 @@ input[type=color].medan { padding: 5px; height: 46px; cursor: pointer; }
   .btn-edit, .bar, .tirai, .sheet, .ed, .toast-bekas, .aurora { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+/* ==========================================================================
+   JALUR "KEDAI TUTUP"
+   --------------------------------------------------------------------------
+   Melekat di atas sekali supaya pelanggan nampak sebelum mula memilih menu,
+   bukan selepas mereka penuhkan cart.
+   ========================================================================== */
+.jalur-tutup {
+  position: sticky; top: 0; z-index: 60;
+  background: linear-gradient(100deg, #3a2f10, #4a3410);
+  color: #ffd48a;
+  border-bottom: 1px solid rgba(255, 212, 138, .28);
+  padding: 11px 16px;
+  text-align: center;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+.jalur-tutup b { display: block; font-weight: 700; }
+.jalur-tutup span { display: block; opacity: .82; font-size: .86rem; margin-top: 2px; }
+
+/* Cart tetap boleh diisi semasa tutup — cuma butang hantar diganti dengan
+   penjelasan. Butang "Semak Order" dilembutkan supaya ia tidak menjerit. */
+body.kedai-tutup .btn-semak { filter: saturate(.55); }
+
+/* ------------------------- Tab Waktu (editor) --------------------------- */
+.ed-waktu-senarai { display: grid; gap: 8px; margin: 14px 0 4px; }
+.ed-waktu {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid var(--garis, rgba(255,255,255,.09));
+  border-radius: 12px; padding: 8px 12px;
+}
+.ed-waktu--tutup { opacity: .55; }
+.ed-waktu .suis span { font-size: .92rem; }
+.medan--jam { width: 108px; flex: 0 0 auto; padding: 8px 10px; font-size: .9rem; }
+.ed-waktu__ke { color: var(--lemah, #a99cc4); font-size: .85rem; }
+@media (max-width: 420px) {
+  .ed-waktu { flex-wrap: wrap; }
+  .ed-waktu .suis { flex: 1 0 100%; }
+  .medan--jam { flex: 1; width: auto; }
+}

@@ -797,6 +797,86 @@ const Editor = (() => {
 
   /* ============================ TAB: ORDER =============================== */
 
+  /* ============================ TAB: WAKTU ==============================
+     Waktu operasi kedai. Bila tutup, pelanggan masih boleh lihat menu
+     tetapi tidak boleh menghantar order.
+     ==================================================================== */
+
+  function tabWaktu() {
+    const w = C.waktuBuka;
+    const st = Store.statusBuka(C);
+
+    const barisHari = Store.HARI.map((h) => {
+      const d = w.hari[h.id];
+      return `
+        <div class="ed-waktu${d.tutupHariIni ? ' ed-waktu--tutup' : ''}">
+          <label class="suis" style="margin:0;flex:1">
+            <input type="checkbox" data-waktu-buka="${h.id}" ${d.tutupHariIni ? '' : 'checked'}>
+            <span>${h.nama}</span>
+          </label>
+          <input class="medan medan--jam" type="time" data-waktu-jam="${h.id}.buka"
+                 value="${esc(d.buka)}" ${d.tutupHariIni ? 'disabled' : ''} aria-label="${h.nama} buka">
+          <span class="ed-waktu__ke">–</span>
+          <input class="medan medan--jam" type="time" data-waktu-jam="${h.id}.tutup"
+                 value="${esc(d.tutup)}" ${d.tutupHariIni ? 'disabled' : ''} aria-label="${h.nama} tutup">
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Status sekarang</h4></div>
+        <div class="amaran" style="${st.buka
+          ? 'color:#b7f0c8;background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3)'
+          : 'color:#ffd48a;background:rgba(255,212,138,.1);border-color:rgba(255,212,138,.28)'}">
+          <b>${st.buka ? '✅ Kedai sedang BUKA' : '🌙 Kedai sedang TUTUP'}</b>
+          ${!st.buka && st.seterusnya ? `<br>Buka semula ${esc(st.seterusnya)}.` : ''}
+          ${st.buka && !C.waktuBuka.aktif ? '<br>Waktu operasi belum dihidupkan — kedai sentiasa buka.' : ''}
+        </div>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Tutup sekarang</h4></div>
+        <label class="suis">
+          <input type="checkbox" data-jalan="waktuBuka.tutupSementara" ${w.tutupSementara ? 'checked' : ''}>
+          <span>Tutup kedai serta-merta</span>
+        </label>
+        <p class="f__nota" style="margin-bottom:0">
+          Untuk hari cuti, kehabisan stok, atau kecemasan. Ia mengatasi waktu
+          operasi di bawah. Jangan lupa buka semula.
+        </p>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Waktu operasi</h4></div>
+        <label class="suis">
+          <input type="checkbox" data-jalan="waktuBuka.aktif" ${w.aktif ? 'checked' : ''}>
+          <span>Guna waktu operasi</span>
+        </label>
+        <p class="f__nota" style="margin-top:0">
+          Bila dimatikan, kedai sentiasa menerima order. Buka suis untuk set
+          waktu setiap hari — buang tanda pada hari yang kedai tutup.
+        </p>
+        <div class="ed-waktu-senarai">${barisHari}</div>
+        <p class="f__nota">
+          Waktu melepasi tengah malam disokong — contoh <b>18:00 – 02:00</b>
+          bermakna 6 petang hingga 2 pagi keesokannya.
+        </p>
+      </div>
+
+      <div class="ed-blok">
+        <div class="ed-blok__kepala"><h4>Mesej bila tutup</h4></div>
+        <div class="f" style="margin-bottom:0">
+          <label for="wMesej">Apa yang pelanggan nampak</label>
+          <input class="medan" id="wMesej" data-jalan="waktuBuka.mesej"
+                 value="${esc(w.mesej)}" placeholder="Kedai sedang tutup. Sila order esok — terima kasih!">
+          <p class="f__nota">
+            Pelanggan masih boleh melihat menu dan mengisi cart — mereka cuma
+            tidak boleh menghantar order sehingga kedai buka.
+          </p>
+        </div>
+      </div>`;
+  }
+
   function tabOrder() {
     const p = C.penghantaran.pickup;
     const d = C.penghantaran.delivery;
@@ -896,6 +976,7 @@ const Editor = (() => {
     { id: 'kedai', nama: 'Kedai', render: tabKedai },
     { id: 'menu', nama: 'Menu', render: tabMenu },
     { id: 'tema', nama: 'Tema', render: tabTema },
+    { id: 'waktu', nama: 'Waktu', render: tabWaktu },
     { id: 'order', nama: 'Order', render: tabOrder },
     { id: 'bayar', nama: 'Bayaran', render: tabBayar },
     { id: 'simpan', nama: 'Kongsi', render: tabSimpan },
@@ -951,6 +1032,21 @@ const Editor = (() => {
         set(t.dataset.jalan, nilai);
         // Tak perlu render panel semula untuk medan teks (elak hilang fokus)
         terap(t.type === 'checkbox');
+        return;
+      }
+
+      // Waktu operasi — tanda hari buka/tutup
+      if (t.dataset.waktuBuka) {
+        C.waktuBuka.hari[t.dataset.waktuBuka].tutupHariIni = !t.checked;
+        terap();                       // render semula: medan jam jadi aktif/mati
+        return;
+      }
+
+      // Waktu operasi — jam buka/tutup
+      if (t.dataset.waktuJam) {
+        const [hari, medan] = t.dataset.waktuJam.split('.');
+        C.waktuBuka.hari[hari][medan] = t.value || (medan === 'buka' ? '10:00' : '22:00');
+        terap(false);                  // jangan render: elak hilang fokus
         return;
       }
 
