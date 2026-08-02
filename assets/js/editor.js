@@ -200,11 +200,36 @@ const Editor = (() => {
         <textarea class="medan" id="fNota" data-jalan="kedai.nota" placeholder="Contoh: Pembayaran secara COD atau QR sahaja">${esc(k.nota)}</textarea>
       </div>
 
-      <label class="suis">
-        <input type="checkbox" data-jalan="kedai.sembunyikanEdit" ${k.sembunyikanEdit ? 'checked' : ''}>
-        <span>Sembunyikan butang "Edit Menu" dari pelanggan</span>
-      </label>
-      <p class="f__nota">Bila disembunyikan, anda masih boleh buka panel ini dengan tambah <b>#edit</b> di hujung URL.</p>`;
+      <div class="ed-blok" style="margin-top:18px">
+        <div class="ed-blok__kepala"><h4>Butang Edit Menu</h4></div>
+        <label class="suis">
+          <input type="checkbox" data-jalan="kedai.sembunyikanEdit" ${k.sembunyikanEdit ? 'checked' : ''}>
+          <span>Sembunyikan dari pelanggan</span>
+        </label>
+        <p class="f__nota" style="margin-top:0">
+          Laman nampak lebih kemas tanpa butang admin. Anda tetap boleh masuk
+          melalui alamat di bawah.
+        </p>
+
+        <p class="f__nota" style="margin-bottom:6px"><b>Simpan alamat ini dahulu:</b></p>
+        <div class="pautan-kotak">${esc(urlEdit())}</div>
+        <button class="btn-kecil" type="button" data-aksi="salin-edit" style="margin-top:10px">
+          📋 Salin alamat masuk
+        </button>
+        <p class="f__nota">
+          Simpan sebagai bookmark pada telefon anda. Tanpa alamat ini —
+          dan dengan butang disembunyikan — anda tidak akan dapat membuka
+          panel ini semula.
+        </p>
+      </div>`;
+  }
+
+  /* Alamat penuh untuk membuka panel bila butang disembunyikan. Dipapar
+     sebagai alamat sebenar, bukan arahan "tambah #edit" — pemilik kedai
+     tidak sepatutnya perlu menyusun URL sendiri. */
+  function urlEdit() {
+    const u = location.origin + location.pathname.replace(/index\.html$/, '');
+    return u + '#edit';
   }
 
   /* ============================ TAB: MENU ================================ */
@@ -1420,6 +1445,17 @@ const Editor = (() => {
             App.toast('Menu contoh dimuat');
           }
           break;
+
+        case 'salin-edit': {
+          const alamat = urlEdit();
+          const selesai = () => App.toast('Alamat masuk disalin 📋');
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(alamat).then(selesai, () => salinLama(alamat, selesai));
+          } else {
+            salinLama(alamat, selesai);
+          }
+          break;
+        }
 
         case 'reset':
           if (confirm('Set semula ke menu contoh asal? Semua isian anda akan hilang.')) {
