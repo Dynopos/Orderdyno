@@ -24,6 +24,14 @@
   --c3: #ff9a3c;
   --latar: #0b0616;
 
+  /* Pasangan RGB bagi warna di atas — rgba() tidak boleh menerima hex melalui
+     var(), jadi apa-apa lapisan lut sinar mesti menggunakan yang ini. app.js
+     menulis semula kesemuanya setiap kali tema kedai berubah. */
+  --c1-rgb: 168, 85, 247;
+  --c2-rgb: 255, 77, 148;
+  --c3-rgb: 255, 154, 60;
+  --latar-rgb: 11, 6, 22;
+
   --teks: #f6f0ff;
   --lemah: #b3a4c9;
   --kad: rgba(255, 255, 255, .045);
@@ -119,7 +127,7 @@ button { cursor: pointer; border: 0; background: none; }
 .aurora__blob--4 {
   width: 40vw; height: 40vw; min-width: 260px; min-height: 260px;
   bottom: -14vw; right: -8vw;
-  background: #1d4ed8;
+  background: var(--c1);
   opacity: .38;
   animation: hanyut2 30s ease-in-out infinite reverse;
 }
@@ -303,11 +311,11 @@ button { cursor: pointer; border: 0; background: none; }
   font-size: clamp(2.6rem, 9vw, 5.2rem);
   line-height: 1.05;
   letter-spacing: .01em;
-  background: linear-gradient(100deg, #ffd9ec, var(--c2) 40%, var(--c1) 75%, var(--c3));
+  background: linear-gradient(100deg, var(--c3), var(--c2) 40%, var(--c1) 75%, var(--c3));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 4px 26px rgba(255, 77, 148, .45));
+  filter: drop-shadow(0 4px 26px rgba(var(--c2-rgb), .45));
   overflow-wrap: break-word;
 }
 
@@ -340,7 +348,7 @@ button { cursor: pointer; border: 0; background: none; }
   z-index: 40;
   padding: 14px 0 12px;
   text-align: center;
-  background: linear-gradient(to bottom, rgba(11, 6, 22, .9), rgba(11, 6, 22, .35) 70%, transparent);
+  background: linear-gradient(to bottom, rgba(var(--latar-rgb), .9), rgba(var(--latar-rgb), .35) 70%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -439,7 +447,7 @@ main { padding-bottom: clamp(60px, 10vw, 100px); min-height: 30vh; }
 .kategori__garis {
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, rgba(255, 77, 148, .55), rgba(255, 154, 60, .3), transparent);
+  background: linear-gradient(to right, rgba(var(--c2-rgb), .55), rgba(var(--c3-rgb), .3), transparent);
 }
 
 .grid {
@@ -636,7 +644,7 @@ a.info__kad:hover { transform: translateY(-3px); border-color: var(--garis-kuat)
   display: flex;
   flex-direction: column;
   border-radius: var(--r-xl) var(--r-xl) 0 0;
-  background: linear-gradient(160deg, #1a0f28, #120a1c);
+  background: linear-gradient(160deg, rgba(var(--c1-rgb), .09), rgba(var(--c1-rgb), .02)), var(--latar);
   border-top: 1px solid var(--garis-kuat);
   box-shadow: 0 -30px 90px -20px rgba(0, 0, 0, .9);
   transform: translateY(101%);
@@ -961,7 +969,7 @@ textarea.medan { resize: vertical; min-height: 74px; }
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(170deg, #170e24, #0e0817);
+  background: linear-gradient(170deg, rgba(var(--c1-rgb), .08), rgba(var(--c1-rgb), .015)), var(--latar);
   border-left: 1px solid var(--garis-kuat);
   box-shadow: -30px 0 90px -20px rgba(0, 0, 0, .9);
   transform: translateX(100%);

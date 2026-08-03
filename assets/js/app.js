@@ -79,15 +79,38 @@ const App = (() => {
 
   /* ============================ PAPARAN ================================== */
 
+  /* '#ff8a3d' -> '255, 138, 61'. Diperlukan kerana rgba() tidak boleh menerima
+     hex melalui var(); CSS perlukan tiga nombor untuk membina warna lut sinar
+     daripada warna tema. */
+  function keRgb(hex, ganti) {
+    const h = String(hex || '').trim().replace('#', '');
+    const penuh = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    if (!/^[0-9a-f]{6}$/i.test(penuh)) return ganti;
+    const n = parseInt(penuh, 16);
+    return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+  }
+
   function pakaiTema() {
     const t = C.tema || {};
     const r = document.documentElement.style;
-    r.setProperty('--c1', t.warna1 || '#a855f7');
-    r.setProperty('--c2', t.warna2 || '#ff4d94');
-    r.setProperty('--c3', t.warna3 || '#ff9a3c');
-    r.setProperty('--latar', t.latar || '#0b0616');
+    const w = {
+      c1: t.warna1 || '#a855f7',
+      c2: t.warna2 || '#ff4d94',
+      c3: t.warna3 || '#ff9a3c',
+      latar: t.latar || '#0b0616',
+    };
+    const asal = { c1: '168, 85, 247', c2: '255, 77, 148', c3: '255, 154, 60', latar: '11, 6, 22' };
+
+    Object.keys(w).forEach((k) => {
+      r.setProperty('--' + k, w[k]);
+      /* Pasangan RGB untuk bayang, garis dan lapisan lut sinar — tanpa ini
+         bahagian itu terpaksa mengekod warna tetap, dan tema kedai tidak
+         benar-benar berubah. */
+      r.setProperty('--' + k + '-rgb', keRgb(w[k], asal[k]));
+    });
+
     const meta = document.querySelector('meta[name=theme-color]');
-    if (meta) meta.content = t.latar || '#0b0616';
+    if (meta) meta.content = w.latar;
   }
 
   function paparKedai() {
