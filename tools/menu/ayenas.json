@@ -1,0 +1,1934 @@
+{
+  "versi": 2,
+  "kedai": {
+    "nama": "Warung Ayam Bakar Ayenas",
+    "tagline": "Thai Signature Dishes · Freshly Cooked",
+    "logo": "",
+    "logoEmoji": "🔥",
+    "mataWang": "RM",
+    "whatsapp": "",
+    "telefon": "",
+    "alamat": "Kota Bharu, Kelantan",
+    "pautanLokasi": "",
+    "waktu": "",
+    "orderNow": {
+      "label": "Order Sekarang",
+      "pautan": ""
+    },
+    "nota": "Masakan segar dimasak selepas order · Thai Signature Dishes",
+    "sembunyikanEdit": false
+  },
+  "tema": {
+    "preset": "emas",
+    "warna1": "#f5c542",
+    "warna2": "#ff8a3d",
+    "warna3": "#ffe9a8",
+    "latar": "#120d05"
+  },
+  "waktuBuka": {
+    "aktif": false,
+    "zon": 8,
+    "tutupSementara": false,
+    "mesej": "Kedai sedang tutup. Sila order esok — terima kasih!",
+    "hari": {
+      "isnin": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "selasa": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "rabu": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "khamis": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "jumaat": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "sabtu": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      },
+      "ahad": {
+        "tutupHariIni": false,
+        "buka": "11:00",
+        "tutup": "23:00"
+      }
+    }
+  },
+  "penghantaran": {
+    "pickup": {
+      "aktif": true,
+      "label": "Ambil Sendiri",
+      "nota": "Sedia dalam 15–20 minit"
+    },
+    "delivery": {
+      "aktif": false,
+      "label": "Penghantaran",
+      "caj": 0,
+      "minOrder": 0,
+      "nota": ""
+    }
+  },
+  "kategori": [
+    {
+      "id": "set",
+      "nama": "Menu Set"
+    },
+    {
+      "id": "thai",
+      "nama": "Signature Thai"
+    },
+    {
+      "id": "tomyam",
+      "nama": "Tomyam & Sup"
+    },
+    {
+      "id": "lauk",
+      "nama": "Paprik & Goreng Kunyit"
+    },
+    {
+      "id": "nasi",
+      "nama": "Nasi Goreng & Nasi"
+    },
+    {
+      "id": "celup",
+      "nama": "Mee Celup & Nasi Bubur"
+    },
+    {
+      "id": "mee",
+      "nama": "Mee / Bihun / Kuey Teow"
+    },
+    {
+      "id": "western",
+      "nama": "Western & Snek"
+    },
+    {
+      "id": "sampingan",
+      "nama": "Sampingan"
+    },
+    {
+      "id": "minuman",
+      "nama": "Minuman"
+    },
+    {
+      "id": "special",
+      "nama": "Air Special"
+    }
+  ],
+  "menu": [
+    {
+      "id": "set1",
+      "kategori": "set",
+      "nama": "Set A — Mesra & Jimat",
+      "desc": "Nasi putih 2 · Tomyam atau Sup Ayam 1 · Daging Merah 1 · Telur Dadar 1 · Air 2 cup (Teh O Beng / Sirap)",
+      "gambar": "",
+      "emoji": "🍱",
+      "harga": 22.9,
+      "pilihan": [
+        {
+          "nama": "Dengan Tomyam",
+          "harga": 22.9
+        },
+        {
+          "nama": "Dengan Sup Ayam",
+          "harga": 22.9
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "thai1",
+      "kategori": "thai",
+      "nama": "Padthai Goreng",
+      "desc": "Padthai goreng ala Thai dengan udang, tauhu, taugeh dan daun kucai. Dimasak segar dengan rasa asli yang seimbang.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 10.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "thai2",
+      "kategori": "thai",
+      "nama": "Nasi Padkrapao Ayam",
+      "desc": "Nasi wangi tumis dengan ayam cincang, daun basil, cili dan sos Padkrapao Thai yang pedas beraroma.",
+      "gambar": "",
+      "emoji": "🍛",
+      "harga": 10.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        }
+      ],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "thai3",
+      "kategori": "thai",
+      "nama": "Somtam",
+      "desc": "Kerabu betik ala Thai — masam, pedas, segar.",
+      "gambar": "",
+      "emoji": "🥗",
+      "harga": 8.0,
+      "pilihan": [
+        {
+          "nama": "Somtam Papaya",
+          "harga": 8.0
+        },
+        {
+          "nama": "Somtam Seafood Telur Masin",
+          "harga": 12.0
+        },
+        {
+          "nama": "Somtam Mango Telur Masin",
+          "harga": 12.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "thai4",
+      "kategori": "thai",
+      "nama": "Kerabu",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥗",
+      "harga": 10.0,
+      "pilihan": [
+        {
+          "nama": "Kerabu Mango Biasa",
+          "harga": 10.0
+        },
+        {
+          "nama": "Kerabu Maggi Thai Biasa",
+          "harga": 10.0
+        },
+        {
+          "nama": "Kerabu Papaya Seafood",
+          "harga": 12.0
+        },
+        {
+          "nama": "Kerabu Maggi Thai Seafood",
+          "harga": 12.0
+        },
+        {
+          "nama": "Kerabu Seafood",
+          "harga": 15.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ts1",
+      "kategori": "tomyam",
+      "nama": "Tomyam",
+      "desc": "Tomyam Thai pekat dan pedas.",
+      "gambar": "",
+      "emoji": "🍲",
+      "harga": 9.0,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 9.0
+        },
+        {
+          "nama": "Daging",
+          "harga": 9.0
+        },
+        {
+          "nama": "Seafood",
+          "harga": 12.0
+        },
+        {
+          "nama": "Campur",
+          "harga": 12.0
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "ts2",
+      "kategori": "tomyam",
+      "nama": "Sup",
+      "desc": "Sup panas berempah.",
+      "gambar": "",
+      "emoji": "🥣",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 8.5
+        },
+        {
+          "nama": "Daging",
+          "harga": 9.0
+        },
+        {
+          "nama": "Campur",
+          "harga": 12.0
+        },
+        {
+          "nama": "Perut",
+          "harga": 12.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "lauk1",
+      "kategori": "lauk",
+      "nama": "Paprik",
+      "desc": "Tumis paprik pedas ala Thai.",
+      "gambar": "",
+      "emoji": "🌶️",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 8.5
+        },
+        {
+          "nama": "Daging",
+          "harga": 9.0
+        },
+        {
+          "nama": "Sotong",
+          "harga": 9.5
+        },
+        {
+          "nama": "Udang",
+          "harga": 9.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "lauk2",
+      "kategori": "lauk",
+      "nama": "Goreng Kunyit",
+      "desc": "Goreng kunyit rangup.",
+      "gambar": "",
+      "emoji": "🍗",
+      "harga": 7.5,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 7.5
+        },
+        {
+          "nama": "Daging",
+          "harga": 8.0
+        },
+        {
+          "nama": "Sotong",
+          "harga": 9.0
+        },
+        {
+          "nama": "Udang",
+          "harga": 9.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng1",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Kampung",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "ng2",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Ayam",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 8.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng3",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Cina",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng4",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Tomyam",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng5",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Pattaya",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 8.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng6",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Cili Padi",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng7",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Belacan",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng8",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Ikan Masin",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 7.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng9",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng USA",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 9.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng10",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Seafood",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 9.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng11",
+      "kategori": "nasi",
+      "nama": "Nasi Goreng Ayam Kunyit",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 8.0,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng13",
+      "kategori": "nasi",
+      "nama": "Nasi Daging Black Pepper",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 8.5,
+      "pilihan": [],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        },
+        {
+          "nama": "Telur Dadar",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng12",
+      "kategori": "nasi",
+      "nama": "Nasi Paprik",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍛",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 8.5
+        },
+        {
+          "nama": "Daging",
+          "harga": 8.5
+        },
+        {
+          "nama": "Seafood",
+          "harga": 10.0
+        }
+      ],
+      "tambahan": [
+        {
+          "nama": "Telur Mata",
+          "harga": 2.0
+        }
+      ],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "ng14",
+      "kategori": "nasi",
+      "nama": "Nasi Bujang",
+      "desc": "Nasi goreng ringkas untuk seorang.",
+      "gambar": "",
+      "emoji": "⭐",
+      "harga": 4.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "mc1",
+      "kategori": "celup",
+      "nama": "Mee Celup Signature",
+      "desc": "Kombinasi penuh — pilih tahap anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 5.0,
+      "pilihan": [
+        {
+          "nama": "Meatball",
+          "harga": 5.0
+        },
+        {
+          "nama": "Ayam + Meatball",
+          "harga": 8.0
+        },
+        {
+          "nama": "Ayam + Meatball + Daging",
+          "harga": 10.0
+        },
+        {
+          "nama": "Ayam + Meatball + Daging + Perut",
+          "harga": 12.0
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "mc2",
+      "kategori": "celup",
+      "nama": "Mee Celup",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 7.0,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 7.0
+        },
+        {
+          "nama": "Daging",
+          "harga": 9.0
+        },
+        {
+          "nama": "Seafood",
+          "harga": 10.0
+        },
+        {
+          "nama": "Perut + Daging",
+          "harga": 12.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "mc3",
+      "kategori": "celup",
+      "nama": "Nasi Bubur",
+      "desc": "Bubur nasi panas, sesuai bila tak sihat.",
+      "gambar": "",
+      "emoji": "🥣",
+      "harga": 5.0,
+      "pilihan": [
+        {
+          "nama": "Ayam",
+          "harga": 5.0
+        },
+        {
+          "nama": "Ayam + Telur Masin",
+          "harga": 7.0
+        },
+        {
+          "nama": "Seafood",
+          "harga": 9.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me1",
+      "kategori": "mee",
+      "nama": "Goreng Biasa",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 6.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 6.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 6.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 6.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 6.5
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "me2",
+      "kategori": "mee",
+      "nama": "Goreng Singapore",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 6.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 6.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 6.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 6.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 6.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me3",
+      "kategori": "mee",
+      "nama": "Goreng Mamak",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 7.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 7.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 7.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 7.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 7.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me4",
+      "kategori": "mee",
+      "nama": "Tomyam Ayam",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 8.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 8.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 8.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 8.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me5",
+      "kategori": "mee",
+      "nama": "Tomyam Daging",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 9.0,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 9.0
+        },
+        {
+          "nama": "Bihun",
+          "harga": 9.0
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 9.0
+        },
+        {
+          "nama": "Maggi",
+          "harga": 9.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me6",
+      "kategori": "mee",
+      "nama": "Tomyam Seafood",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 10.0,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 10.0
+        },
+        {
+          "nama": "Bihun",
+          "harga": 10.0
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 10.0
+        },
+        {
+          "nama": "Maggi",
+          "harga": 10.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me7",
+      "kategori": "mee",
+      "nama": "Sup Ayam",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 7.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 7.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 7.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 7.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 7.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me8",
+      "kategori": "mee",
+      "nama": "Sup Daging",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 8.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 8.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 8.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 8.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me9",
+      "kategori": "mee",
+      "nama": "Ladna",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 9.0,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 9.0
+        },
+        {
+          "nama": "Bihun",
+          "harga": 9.0
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 9.0
+        },
+        {
+          "nama": "Maggi",
+          "harga": 9.0
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "me10",
+      "kategori": "mee",
+      "nama": "Kungfu",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 10.0,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 10.0
+        },
+        {
+          "nama": "Bihun",
+          "harga": 10.0
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 10.0
+        },
+        {
+          "nama": "Maggi",
+          "harga": 10.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me11",
+      "kategori": "mee",
+      "nama": "Seafood",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 10.0,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 10.0
+        },
+        {
+          "nama": "Bihun",
+          "harga": 10.0
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 10.0
+        },
+        {
+          "nama": "Maggi",
+          "harga": 10.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "me12",
+      "kategori": "mee",
+      "nama": "Hailam",
+      "desc": "Pilih jenis mi anda.",
+      "gambar": "",
+      "emoji": "🍜",
+      "harga": 8.5,
+      "pilihan": [
+        {
+          "nama": "Mee",
+          "harga": 8.5
+        },
+        {
+          "nama": "Bihun",
+          "harga": 8.5
+        },
+        {
+          "nama": "Kuey Teow",
+          "harga": 8.5
+        },
+        {
+          "nama": "Maggi",
+          "harga": 8.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w1",
+      "kategori": "western",
+      "nama": "Chicken Chop",
+      "desc": "Ayam goreng rangup dengan sos istimewa, dihidang bersama kentang goreng, coleslaw & nachos.",
+      "gambar": "",
+      "emoji": "🍗",
+      "harga": 15.9,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "w2",
+      "kategori": "western",
+      "nama": "Spaghetti Bolognese",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍝",
+      "harga": 10.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w3",
+      "kategori": "western",
+      "nama": "Spaghetti Carbonara",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍝",
+      "harga": 10.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w4",
+      "kategori": "western",
+      "nama": "Spaghetti Chicken Chop",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍝",
+      "harga": 17.9,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w5",
+      "kategori": "western",
+      "nama": "Nasi Goreng Chicken Chop",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍛",
+      "harga": 16.9,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w6",
+      "kategori": "western",
+      "nama": "French Fries",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍟",
+      "harga": 6.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w7",
+      "kategori": "western",
+      "nama": "Chicken Nugget",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍗",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "w8",
+      "kategori": "western",
+      "nama": "Cheesy Wedges",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🧀",
+      "harga": 8.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "s1",
+      "kategori": "sampingan",
+      "nama": "Nasi Putih",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍚",
+      "harga": 2.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "s2",
+      "kategori": "sampingan",
+      "nama": "Telur Mata",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍳",
+      "harga": 2.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "s3",
+      "kategori": "sampingan",
+      "nama": "Telur Dadar",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍳",
+      "harga": 2.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "s4",
+      "kategori": "sampingan",
+      "nama": "Kailam Ikan Masin",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥬",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "s5",
+      "kategori": "sampingan",
+      "nama": "Kangkung Goreng Belacan",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥬",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d1",
+      "kategori": "minuman",
+      "nama": "Teh O",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 1.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 1.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 2.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d2",
+      "kategori": "minuman",
+      "nama": "Teh",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.9,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.9
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.0
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "d3",
+      "kategori": "minuman",
+      "nama": "Teh O Limau",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 2.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d4",
+      "kategori": "minuman",
+      "nama": "Teh O Lemon",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d5",
+      "kategori": "minuman",
+      "nama": "Teh O Halia",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 2.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d6",
+      "kategori": "minuman",
+      "nama": "Teh Halia",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.9,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.9
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d7",
+      "kategori": "minuman",
+      "nama": "Teh O Laici",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 4.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 4.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 5.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d8",
+      "kategori": "minuman",
+      "nama": "Teh Hijau",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.9,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.9
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 4.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d9",
+      "kategori": "minuman",
+      "nama": "Kopi O",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d10",
+      "kategori": "minuman",
+      "nama": "Kopi",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.5
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "d11",
+      "kategori": "minuman",
+      "nama": "Nescafe O",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 2.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d12",
+      "kategori": "minuman",
+      "nama": "Nescafe",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d13",
+      "kategori": "minuman",
+      "nama": "Neslo",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 4.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d14",
+      "kategori": "minuman",
+      "nama": "Milo O",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.9,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.9
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.3
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d15",
+      "kategori": "minuman",
+      "nama": "Milo",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.9,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.9
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.9
+        }
+      ],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "d16",
+      "kategori": "minuman",
+      "nama": "Barli O",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d17",
+      "kategori": "minuman",
+      "nama": "Barli Susu",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.9
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d18",
+      "kategori": "minuman",
+      "nama": "Sirap",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 2.5
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d19",
+      "kategori": "minuman",
+      "nama": "Sirap Limau",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d20",
+      "kategori": "minuman",
+      "nama": "Sirap Laici",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 4.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 4.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 5.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d21",
+      "kategori": "minuman",
+      "nama": "Sirap Bandung",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 2.5,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 2.5
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 3.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d22",
+      "kategori": "minuman",
+      "nama": "Bandung Laici",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 4.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 4.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 5.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d23",
+      "kategori": "minuman",
+      "nama": "Laici Susu",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 4.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 4.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 5.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "d24",
+      "kategori": "minuman",
+      "nama": "Laici",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 3.0,
+      "pilihan": [
+        {
+          "nama": "Panas",
+          "harga": 3.0
+        },
+        {
+          "nama": "Sejuk (Ais)",
+          "harga": 4.0
+        }
+      ],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as1",
+      "kategori": "special",
+      "nama": "Milo Tabur Choco Smoothie",
+      "desc": "Rasa coklat yang kaya dengan taburan Milo premium di atasnya.",
+      "gambar": "",
+      "emoji": "🥤",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": true,
+      "habis": false
+    },
+    {
+      "id": "as2",
+      "kategori": "special",
+      "nama": "Mango Smoothie",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🥭",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as3",
+      "kategori": "special",
+      "nama": "Strawberry Fresh Milk",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍓",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as4",
+      "kategori": "special",
+      "nama": "Orange Smoothie",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍊",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as5",
+      "kategori": "special",
+      "nama": "Watermelon Smoothie",
+      "desc": "",
+      "gambar": "",
+      "emoji": "🍉",
+      "harga": 7.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as6",
+      "kategori": "special",
+      "nama": "Fresh Orange",
+      "desc": "100% buah segar.",
+      "gambar": "",
+      "emoji": "🍊",
+      "harga": 4.5,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as7",
+      "kategori": "special",
+      "nama": "Fresh Watermelon",
+      "desc": "100% buah segar.",
+      "gambar": "",
+      "emoji": "🍉",
+      "harga": 5.0,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as8",
+      "kategori": "special",
+      "nama": "Fresh Carrot",
+      "desc": "100% buah segar.",
+      "gambar": "",
+      "emoji": "🥕",
+      "harga": 4.5,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    },
+    {
+      "id": "as9",
+      "kategori": "special",
+      "nama": "Fresh Carrot Susu",
+      "desc": "100% buah segar.",
+      "gambar": "",
+      "emoji": "🥕",
+      "harga": 5.5,
+      "pilihan": [],
+      "tambahan": [],
+      "popular": false,
+      "habis": false
+    }
+  ]
+}
