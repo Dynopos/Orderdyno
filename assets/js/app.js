@@ -628,11 +628,107 @@ const App = (() => {
   /* Butang "Edit Menu" ialah position:fixed, jadi ia tidak bergerak bila
      jalur muncul dan keduanya bertindih. Ukur tinggi jalur dan turunkan
      butang itu — tingginya berubah ikut panjang mesej, jadi ia mesti
-     diukur, bukan diteka. */
+     diukur, bukan diteka. Dua jalur boleh muncul serentak (kedai tutup DAN
+     talian putus), jadi jumlahkan kesemuanya. */
   function ukurJalur() {
-    const jalur = document.getElementById('jalurTutup');
-    const tinggi = jalur ? jalur.offsetHeight : 0;
+    let tinggi = 0;
+    document.querySelectorAll('.jalur-tutup').forEach((j) => { tinggi += j.offsetHeight; });
     document.documentElement.style.setProperty('--tinggi-jalur', tinggi + 'px');
+  }
+
+  /* ============================ MOD OFFLINE =============================
+     Service worker menyimpan menu terakhir, jadi laman tetap terbuka tanpa
+     talian. Tetapi menu itu mungkin sudah lama — dan harga sebenar dikira
+     semula di server semasa bayaran. Pelanggan mesti tahu.
+     ==================================================================== */
+
+  function paparOffline() {
+    const offline = navigator.onLine === false;
+    let jalur = document.getElementById('jalurOffline');
+
+    document.body.classList.toggle('tiada-talian', offline);
+
+    if (!offline) {
+      if (jalur) jalur.remove();
+      ukurJalur();
+      return;
+    }
+
+    if (!jalur) {
+      jalur = document.createElement('div');
+      jalur.id = 'jalurOffline';
+      jalur.className = 'jalur-tutup jalur-tutup--offline';
+      jalur.setAttribute('role', 'status');
+      jalur.innerHTML =
+        '<b>📴 Anda sedang offline</b>'
+        + '<span>Menu ini disimpan dari lawatan lepas — harga mungkin sudah berubah</span>';
+      document.body.insertBefore(jalur, document.body.firstChild);
+    }
+
+    ukurJalur();
+  }
+
+  /* ======================= PASANG KE SKRIN UTAMA ========================
+     Android menawarkan pemasangan melalui peristiwa beforeinstallprompt.
+     Ia hanya berlaku bila laman memenuhi syarat: HTTPS, manifest yang sah,
+     ikon yang cukup besar, dan service worker. Butang hanya muncul bila
+     peristiwa itu benar-benar tiba — tiada gunanya menjanjikan sesuatu yang
+     pelayar tidak akan benarkan.
+
+     iOS tidak menghantar peristiwa ini langsung; di sana pemasangan dibuat
+     melalui Kongsi -> Add to Home Screen, dan <link rel="apple-touch-icon">
+     yang ditetapkan di bawah memastikan ikon kedai yang muncul.
+     ==================================================================== */
+
+  let promptPasang = null;
+
+  function butangPasang() {
+    let btn = document.getElementById('btnPasang');
+    if (btn) return btn;
+
+    const bekas = document.querySelector('.hero__butang');
+    if (!bekas) return null;
+
+    btn = document.createElement('button');
+    btn.id = 'btnPasang';
+    btn.type = 'button';
+    btn.className = 'btn btn--pasang';
+    btn.hidden = true;
+    btn.innerHTML = '<span aria-hidden="true">📲</span> Pasang di telefon';
+    btn.addEventListener('click', async () => {
+      if (!promptPasang) return;
+      btn.hidden = true;
+      promptPasang.prompt();
+      const hasil = await promptPasang.userChoice.catch(() => null);
+      promptPasang = null;
+      if (hasil && hasil.outcome === 'accepted') toast('Aplikasi dipasang 🎉');
+    });
+    bekas.appendChild(btn);
+    return btn;
+  }
+
+  function mulaPasang() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();               // gunakan butang kita sendiri
+      promptPasang = e;
+      const btn = butangPasang();
+      if (btn) btn.hidden = false;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      promptPasang = null;
+      const btn = document.getElementById('btnPasang');
+      if (btn) btn.hidden = true;
+    });
+  }
+
+  /* Ikon kedai untuk tab pelayar dan skrin utama iOS. Dijana dalam pelayar
+     kerana emoji berwarna datang dari font peranti. */
+  function pasangIkon() {
+    if (!window.Ikon) return;
+    const jalankan = () => Ikon.jana(C).then(Ikon.pasangPautan);
+    if (window.requestIdleCallback) requestIdleCallback(jalankan, { timeout: 3000 });
+    else setTimeout(jalankan, 800);
   }
 
   /* Semak setiap minit supaya kedai "bangun" sendiri bila sampai waktunya,
@@ -650,7 +746,9 @@ const App = (() => {
 
   /* Pembayaran online tersedia? */
   function bolehBayar() {
-    return typeof Bayar !== 'undefined' && Bayar.sedia();
+    /* Tanpa talian, pembayaran tidak boleh dimulakan langsung — butang yang
+       hanya akan gagal lebih teruk daripada butang yang tiada. */
+    return typeof Bayar !== 'undefined' && Bayar.sedia() && navigator.onLine !== false;
   }
 
   /* Pemilih saluran pembayaran (FPX, DuitNow, …) */
@@ -944,6 +1042,8 @@ const App = (() => {
     }
 
     render();
+    /* Logo, emoji atau tema mungkin baru berubah — ikon mesti ikut */
+    pasangIkon();
   }
 
   function render() {
@@ -968,6 +1068,16 @@ const App = (() => {
 
     mulaPengawasWaktu();
     window.addEventListener('resize', ukurJalur);
+
+    mulaPasang();
+    pasangIkon();
+    paparOffline();
+    /* Cart perlu dilukis semula: butang bayar hilang dan muncul semula
+       mengikut talian. */
+    ['online', 'offline'].forEach((p) => window.addEventListener(p, () => {
+      paparOffline();
+      if (document.getElementById('sheetCart') && !$('#sheetCart').hidden) lukisCart();
+    }));
 
     // Semak sama ada backend pembayaran tersedia (senyap kalau tiada)
     if (window.Bayar) Bayar.mula();

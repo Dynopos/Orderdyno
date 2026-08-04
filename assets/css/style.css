@@ -1310,6 +1310,25 @@ input[type=color].medan { padding: 5px; height: 46px; cursor: pointer; }
    penjelasan. Butang "Semak Order" dilembutkan supaya ia tidak menjerit. */
 body.kedai-tutup .btn-semak { filter: saturate(.55); }
 
+/* Jalur offline — kelabu, bukan kuning. Kedai tutup ialah keputusan pemilik;
+   talian putus ialah masalah peranti pelanggan, dan dua sebab berbeza itu
+   tidak sepatutnya kelihatan sama. */
+.jalur-tutup--offline {
+  background: linear-gradient(100deg, #23242a, #2c2e36);
+  color: #d5d8e0;
+  border-bottom-color: rgba(213, 216, 224, .22);
+}
+
+/* -------------------- Butang "Pasang di telefon" ------------------------ */
+/* Hanya muncul bila pelayar benar-benar menawarkan pemasangan (app.js) */
+.btn--pasang {
+  background: transparent;
+  border: 1px dashed var(--garis-kuat);
+  color: var(--teks);
+}
+.btn--pasang:hover { border-style: solid; border-color: var(--c1); }
+.btn--pasang span { font-size: 1.05em; }
+
 /* ------------------------- Tab Waktu (editor) --------------------------- */
 .ed-waktu-senarai { display: grid; gap: 8px; margin: 14px 0 4px; }
 .ed-waktu {
@@ -1328,7 +1347,9 @@ body.kedai-tutup .btn-semak { filter: saturate(.55); }
   .medan--jam { flex: 1; width: auto; }
 }
 
-/* Butang Edit Menu ialah fixed, jadi ia perlu diturunkan bila jalur
-   "kedai tutup" muncul — kalau tidak keduanya bertindih di penjuru atas.
-   --tinggi-jalur ditetapkan oleh app.js selepas mengukur jalur sebenar. */
-body.kedai-tutup .btn-edit { top: calc(16px + var(--tinggi-jalur, 0px)); }
+/* Butang Edit Menu ialah fixed, jadi ia perlu diturunkan bila jalur muncul —
+   kalau tidak keduanya bertindih di penjuru atas. Dua jalur boleh muncul
+   serentak (kedai tutup DAN talian putus); --tinggi-jalur ialah jumlah
+   kesemuanya, diukur oleh app.js. */
+body.kedai-tutup .btn-edit,
+body.tiada-talian .btn-edit { top: calc(16px + var(--tinggi-jalur, 0px)); }
