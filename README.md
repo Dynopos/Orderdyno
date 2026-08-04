@@ -34,6 +34,8 @@ hosting PHP; tanpanya semua yang lain tetap berfungsi.
 - 🚗 Pilihan **Ambil Sendiri** atau **Penghantaran** (caj + order minimum)
 - 💾 Cart tak hilang bila refresh
 - 📱 Mobile-first — majoriti pelanggan order dari telefon
+- 📲 **Boleh dipasang ke skrin utama** dengan ikon kedai, dan terbuka walaupun
+  talian putus
 - 💬 Order dihantar sebagai mesej WhatsApp yang tersusun rapi
 
 **Untuk pemilik kedai**
@@ -197,6 +199,72 @@ sebenar bagi pemilik kedai, bukan sekadar isu paparan.
 
 > Logik waktu wujud dalam dua tempat: `assets/js/store.js` (`statusBuka`) dan
 > `api/lib/waktu.php`. Kalau anda mengubah satu, ubah yang satu lagi juga.
+
+## 📲 Pasang ke skrin utama (PWA)
+
+Laman kedai boleh dipasang seperti aplikasi. Pelanggan menekan **Pasang di
+telefon**, ikon kedai muncul pada skrin utama mereka, dan laman terbuka
+tanpa bar alamat pelayar.
+
+Untuk kedai makan, itu bukan sekadar hiasan: pelanggan tetap tidak perlu
+mencari pautan setiap kali mereka lapar.
+
+### Ikon dan nama datang dari kedai, bukan dari OrderDyno
+
+`api/manifest.php` dijana untuk setiap kedai — satu pemasangan menghidangkan
+ramai kedai, jadi manifest statik akan menamakan kesemuanya "OrderDyno" dan
+memberi mereka ikon yang sama.
+
+Ikon dilukis dalam pelayar (`assets/js/ikon.js`) kerana emoji berwarna datang
+dari font peranti, dan server tidak semestinya mempunyai font emoji langsung.
+Ia dihantar ke server semasa **Terbitkan menu**, dan disimpan berasingan
+daripada menu — PNG 512px ialah puluhan kilobait, dan menu awam dimuat turun
+oleh setiap pelawat pada setiap lawatan.
+
+Kalau kedai belum menerbitkan menu dari panel, `api/ikon.php` melukis jubin
+warna tema dengan GD. Tanpa GD pun ia masih berfungsi, sebagai SVG.
+
+| Sumber ikon | Bila digunakan |
+|---|---|
+| PNG dari panel | Selepas pemilik menerbitkan menu — emoji atau logo sebenar |
+| Jubin GD | Kedai yang belum menerbitkan dari panel |
+| SVG | Server tanpa sambungan GD |
+
+### Apa yang dicache, dan apa yang tidak
+
+`sw.js` bukan sekadar prestasi — peraturannya soal wang:
+
+| Permintaan | Layanan |
+|---|---|
+| `/api/menu-awam.php` | Rangkaian dahulu, cache hanya bila talian putus |
+| `/api/` yang lain | **Tidak pernah dicache** — order, bayaran, status, panel admin |
+| Navigasi halaman | Rangkaian dahulu, cache sebagai sandaran |
+| `/assets/` | Cache dahulu, kemas kini di belakang |
+
+Resit yang dicache ialah resit yang menipu, jadi tiada apa-apa dari aliran
+pembayaran disimpan. Harga pula tetap dikira semula di server semasa bayaran,
+jadi menu lama dalam cache tidak boleh menjadi harga yang dibayar.
+
+### Bila talian putus
+
+Laman tetap terbuka dan menu terakhir masih kelihatan, tetapi:
+
+- Jalur kelabu memberitahu pelanggan mereka sedang offline dan **harga
+  mungkin sudah berubah**
+- Butang **Bayar Online** hilang — pembayaran tidak boleh dimulakan tanpa
+  talian, dan butang yang hanya akan gagal lebih teruk daripada butang yang
+  tiada
+
+### Syarat
+
+PWA memerlukan **HTTPS**. Atas `http://` biasa, pendaftaran service worker
+gagal secara senyap dan laman terus berjalan seperti biasa — cuma tanpa
+pemasangan dan tanpa mod offline.
+
+Pada iOS tiada butang "Pasang"; Safari tidak menyediakan peristiwa itu.
+Pengguna iPhone memasang melalui **Kongsi → Add to Home Screen**, dan
+`<link rel="apple-touch-icon">` yang ditetapkan `app.js` memastikan ikon
+kedai yang muncul.
 
 ## Di mana menu disimpan?
 

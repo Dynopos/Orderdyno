@@ -10,6 +10,15 @@
 <meta property="og:description" content="Pilih menu, masuk cart, hantar order terus ke WhatsApp.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+
+<!-- Laman boleh dipasang ke skrin utama telefon. Manifest dijana per-kedai
+     supaya nama dan ikon yang muncul ialah milik kedai itu, bukan OrderDyno.
+     iOS tidak membaca manifest untuk ikon, jadi app.js turut menetapkan
+     <link rel="apple-touch-icon"> daripada logo kedai. -->
+<link rel="manifest" href="api/manifest.php">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kaushan+Script&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -171,9 +180,26 @@
 
 <script src="assets/js/config.js"></script>
 <script src="assets/js/contoh-menu.js"></script>
+<script src="assets/js/ikon.js"></script>
 <script src="assets/js/store.js"></script>
 <script src="assets/js/bayar.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/editor.js"></script>
+
+<script>
+/* Service worker: laman boleh dibuka walaupun talian putus, dan itu syarat
+   Android sebelum ia menawarkan "Pasang aplikasi".
+
+   Didaftarkan selepas 'load' supaya ia tidak berebut jalur dengan menu —
+   pelanggan yang baru sampai patut nampak makanan dahulu.
+
+   Ia hanya berfungsi atas HTTPS (atau localhost). Pada http:// biasa
+   pendaftaran gagal secara senyap, dan laman terus berjalan seperti biasa. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* senyap */ });
+  });
+}
+</script>
 </body>
 </html>

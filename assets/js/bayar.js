@@ -105,7 +105,10 @@ const Bayar = (() => {
    * kini menu yang seterusnya.
    */
   async function muatMenuAwam() {
-    if (!keadaan.backend) return;          // tiada server — tiada apa nak muat
+    /* Tanpa talian, status.php tidak dapat dihubungi, jadi keadaan.backend
+       menjadi palsu-negatif. Service worker mungkin masih menyimpan menu
+       terakhir — itulah yang membolehkan laman terbuka di luar liputan. */
+    if (!keadaan.backend && navigator.onLine !== false) return;
     if (Store.dariLink()) return;          // link kongsi menang
     if (Store.adaTersimpan()) return;      // pelayar pemilik — hormati drafnya
 

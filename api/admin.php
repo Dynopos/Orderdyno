@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib/http.php';
 require_once __DIR__ . '/lib/order.php';
+require_once __DIR__ . '/lib/ikon.php';
 
 wajib_kaedah('POST');
 
@@ -185,6 +186,35 @@ switch ($aksi) {
             'menu'  => $hasil,
             'siap'  => $segar->siap(),
             'halangan' => $segar->halangan(),
+        ]);
+    }
+
+    /* --------------------------------------------------------------- ikon */
+    /* Ikon aplikasi dijana dalam pelayar (canvas), kerana emoji berwarna
+       datang dari font peranti dan server tidak semestinya memilikinya.
+       Disimpan berasingan daripada menu: PNG 512px ialah puluhan kilobait,
+       dan menu awam dimuat turun oleh setiap pelawat. */
+    case 'ikon': {
+        $dataUri = $masuk['ikon'] ?? null;
+
+        if ($dataUri === '' || $dataUri === null) {
+            Ikon::buang();
+            json_keluar(['ok' => true, 'mesej' => 'Ikon aplikasi dibuang']);
+        }
+        if (!is_string($dataUri)) {
+            json_silap('Ikon tidak dihantar');
+        }
+
+        try {
+            $bait = Ikon::simpan($dataUri);
+        } catch (Throwable $e) {
+            json_silap($e->getMessage(), 400);
+        }
+
+        json_keluar([
+            'ok'    => true,
+            'mesej' => 'Ikon aplikasi dikemas kini',
+            'bait'  => $bait,
         ]);
     }
 
