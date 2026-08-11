@@ -9,7 +9,11 @@
 <meta property="og:title" content="OrderDyno — Website Order untuk Kedai Makan">
 <meta property="og:description" content="Order masuk WhatsApp anda siap dengan harga dan jumlah. Cuba demo percuma.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+<link rel="icon" href="assets/img/ikon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/ikon-512.png">
+<!-- og:image mesti URL mutlak — WhatsApp dan Facebook tidak menyelesaikan
+     laluan relatif bila menjana pratonton pautan. -->
+<meta property="og:image" content="https://orderdyno.my/assets/img/ikon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,7 +60,7 @@ img { max-width: 100%; }
 /* -------------------------------- Hero ---------------------------------- */
 header { padding: 26px 0 8px; }
 .jenama { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; letter-spacing: -.01em; }
-.jenama span { font-size: 1.4rem; }
+.jenama img { width: 34px; height: 34px; display: block; }
 
 .hero { padding: 40px 0 56px; text-align: center; }
 .hero h1 {
@@ -192,7 +196,7 @@ footer a { color: var(--lemah); }
 <div class="bekas">
 
   <header>
-    <div class="jenama"><span>🛒</span> OrderDyno</div>
+    <div class="jenama"><img src="assets/img/lambang.png" alt="" width="34" height="34"> OrderDyno</div>
   </header>
 
   <!-- ================================ HERO =============================== -->

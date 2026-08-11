@@ -6,16 +6,18 @@
    mesti ikon KEDAI itu. Satu pemasangan menghidangkan ramai kedai, jadi
    ikon tidak boleh menjadi fail statik.
 
-   Tiga sumber, mengikut keutamaan:
+   Dua sumber sahaja:
 
      1. Ikon yang dijana pelayar semasa pemilik menerbitkan menu. Ini yang
         terbaik — emoji berwarna datang dari font peranti, dan server tidak
         semestinya mempunyai font emoji langsung.
 
-     2. Jubin warna tema yang dilukis dengan GD. Tiada emoji, tetapi ia
-        mengikut warna kedai dan berfungsi tanpa apa-apa font.
+     2. Lambang OrderDyno yang dibungkus bersama projek. Kedai yang belum
+        menerbitkan dari panel mendapat ini.
 
-     3. SVG yang sama, untuk server tanpa GD.
+   Sandaran ialah fail PNG sebenar, bukan lukisan GD. Itu bermakna ikon
+   berfungsi walaupun sambungan GD tiada pada server, dan rupanya sama pada
+   setiap pemasangan.
 
    Ikon disimpan berasingan daripada menu dengan sengaja: PNG 512px ialah
    puluhan kilobait base64, dan menu awam dimuat turun oleh setiap pelawat
@@ -29,10 +31,18 @@ require_once __DIR__ . '/tetapan.php';
 final class Ikon
 {
     public const HAD_BAIT = 262144;      // 256KB — jauh lebih besar dari PNG 512px biasa
+    public const SAIZ = [192, 512];
 
     public static function fail(): string
     {
         return Tetapan::dirData() . '/ikon.php';
+    }
+
+    /* Lambang OrderDyno yang dibungkus bersama projek */
+    public static function failAsal(int $saiz): string
+    {
+        $saiz = in_array($saiz, self::SAIZ, true) ? $saiz : 512;
+        return dirname(__DIR__, 2) . '/assets/img/ikon-' . $saiz . '.png';
     }
 
     /* PNG mentah yang disimpan pemilik kedai, atau null */
@@ -88,136 +98,22 @@ final class Ikon
         }
     }
 
-    /* ---------------------------- WARNA TEMA ------------------------------ */
-
-    /** @return array{0:int,1:int,2:int} */
-    private static function rgb(string $hex, array $ganti): array
-    {
-        $h = ltrim(trim($hex), '#');
-        if (strlen($h) === 3) {
-            $h = $h[0] . $h[0] . $h[1] . $h[1] . $h[2] . $h[2];
-        }
-        if (!preg_match('/^[0-9a-f]{6}$/i', $h)) {
-            return $ganti;
-        }
-        $n = (int) hexdec($h);
-        return [($n >> 16) & 255, ($n >> 8) & 255, $n & 255];
-    }
-
-    /** @return array{latar:array,warna:array} */
-    public static function tema(): array
-    {
-        $menu = (new Tetapan())->menuTersimpan();
-        $t = is_array($menu['tema'] ?? null) ? $menu['tema'] : [];
-
-        return [
-            'latar' => self::rgb((string) ($t['latar'] ?? ''), [11, 6, 22]),
-            'warna' => self::rgb((string) ($t['warna1'] ?? ''), [168, 85, 247]),
-        ];
-    }
-
-    /* ------------------------------ LUKISAN ------------------------------- */
-
     public static function adaGd(): bool
     {
         return function_exists('imagecreatetruecolor') && function_exists('imagepng');
     }
 
     /**
-     * Jubin warna tema — tiada teks, jadi tiada font diperlukan.
-     *
-     * Warna rata dengan satu bulatan, bukan gradien: gradien licin
-     * menjadikan PNG 512px ratusan kilobait kerana hampir setiap piksel
-     * berbeza dan tiada apa untuk dimampatkan.
-     */
-    public static function lukisPng(int $saiz): ?string
-    {
-        if (!self::adaGd()) {
-            return null;
-        }
-
-        $t = self::tema();
-        $img = imagecreatetruecolor($saiz, $saiz);
-        if ($img === false) {
-            return null;
-        }
-
-        $latar = imagecolorallocate($img, ...$t['latar']);
-        $warna = imagecolorallocate($img, ...$t['warna']);
-        if ($latar === false || $warna === false) {
-            imagedestroy($img);
-            return null;
-        }
-
-        imagefilledrectangle($img, 0, 0, $saiz, $saiz, $latar);
-
-        /* Bulatan dikekalkan dalam zon selamat supaya ia tidak dipotong bila
-           Android menggunakan topeng bulat pada ikon. */
-        $d = (int) round($saiz * 0.44);
-        imagefilledellipse($img, intdiv($saiz, 2), intdiv($saiz, 2), $d, $d, $warna);
-
-        ob_start();
-        imagepng($img, null, 9);
-        $png = (string) ob_get_clean();
-        imagedestroy($img);
-
-        return $png !== '' ? $png : null;
-    }
-
-    /** Sandaran untuk server tanpa GD */
-    public static function lukisSvg(): string
-    {
-        $t = self::tema();
-        $latar = sprintf('#%02x%02x%02x', ...$t['latar']);
-        $warna = sprintf('#%02x%02x%02x', ...$t['warna']);
-
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">'
-            . '<rect width="512" height="512" fill="' . $latar . '"/>'
-            . '<circle cx="256" cy="256" r="113" fill="' . $warna . '"/>'
-            . '</svg>';
-    }
-
-    /* ----------------------------- MANIFEST ------------------------------- */
-
-    /**
-     * Senarai ikon untuk manifest.
-     *
-     * PNG diisytiharkan hanya bila kita benar-benar boleh menghasilkannya —
-     * mengisytiharkan image/png yang kemudiannya menjadi SVG akan membuatkan
-     * Chrome menolak ikon itu, dan laman menjadi tidak boleh dipasang.
+     * Senarai ikon untuk manifest. Sentiasa PNG — sandaran ialah fail sebenar
+     * yang dibungkus bersama projek, jadi tiada keadaan di mana kita
+     * mengisytiharkan image/png tetapi menghidangkan sesuatu yang lain.
      */
     public static function senarai(): array
     {
-        $adaPng = self::simpanan() !== null || self::adaGd();
-
-        if (!$adaPng) {
-            return [[
-                'src'     => '/api/ikon.php?jenis=svg',
-                'sizes'   => 'any',
-                'type'    => 'image/svg+xml',
-                'purpose' => 'any maskable',
-            ]];
-        }
-
         return [
-            [
-                'src'     => '/api/ikon.php?s=192',
-                'sizes'   => '192x192',
-                'type'    => 'image/png',
-                'purpose' => 'any',
-            ],
-            [
-                'src'     => '/api/ikon.php?s=512',
-                'sizes'   => '512x512',
-                'type'    => 'image/png',
-                'purpose' => 'any',
-            ],
-            [
-                'src'     => '/api/ikon.php?s=512',
-                'sizes'   => '512x512',
-                'type'    => 'image/png',
-                'purpose' => 'maskable',
-            ],
+            ['src' => '/api/ikon.php?s=192', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => '/api/ikon.php?s=512', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => '/api/ikon.php?s=512', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
         ];
     }
 }

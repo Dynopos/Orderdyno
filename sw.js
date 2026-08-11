@@ -39,6 +39,10 @@ const PRACACHE = [
   './assets/js/bayar.js',
   './assets/js/app.js',
   './assets/js/editor.js',
+  /* Lambang digunakan sebagai ikon kedai yang belum memilih logo sendiri —
+     ia mesti ada tanpa talian juga. */
+  './assets/img/lambang.png',
+  './assets/img/ikon-192.png',
 ];
 
 self.addEventListener('install', (e) => {
