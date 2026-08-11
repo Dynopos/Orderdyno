@@ -209,31 +209,26 @@ tanpa bar alamat pelayar.
 Untuk kedai makan, itu bukan sekadar hiasan: pelanggan tetap tidak perlu
 mencari pautan setiap kali mereka lapar.
 
-### Ikon dan nama datang dari kedai, bukan dari OrderDyno
+### Nama dari kedai, ikon dari OrderDyno
 
-`api/manifest.php` dijana untuk setiap kedai — satu pemasangan menghidangkan
-ramai kedai, jadi manifest statik akan menamakan kesemuanya "OrderDyno" dan
-memberi mereka ikon yang sama.
+`api/manifest.php` dijana untuk setiap kedai, supaya **nama** yang muncul di
+bawah ikon ialah nama kedai itu. Pelanggan yang memasang dua kedai perlu dapat
+membezakannya.
 
-Ikon dilukis dalam pelayar (`assets/js/ikon.js`) kerana emoji berwarna datang
-dari font peranti, dan server tidak semestinya mempunyai font emoji langsung.
-Ia dihantar ke server semasa **Terbitkan menu**, dan disimpan berasingan
-daripada menu — PNG 512px ialah puluhan kilobait, dan menu awam dimuat turun
-oleh setiap pelawat pada setiap lawatan.
+**Ikonnya pula sengaja sama untuk semua kedai** — lambang OrderDyno. Itu
+keputusan jenama, bukan had teknikal: setiap kali pelanggan sesebuah kedai
+melihat skrin utama telefon mereka, lambang itu ada di situ.
 
-Kedai yang belum memilih logo atau emoji mendapat lambang OrderDyno yang
-dibungkus bersama projek (`assets/img/ikon-512.png`). Ia fail PNG sebenar,
-bukan lukisan yang dijana, jadi ia berfungsi walaupun server tiada sambungan
-GD dan rupanya sama pada setiap pemasangan.
+Logo dan emoji yang dipilih pemilik kedai masih digunakan pada laman itu
+sendiri — cuma bukan sebagai ikon aplikasi.
 
-| Sumber ikon | Bila digunakan |
-|---|---|
-| PNG dari panel | Kedai yang ada logo atau emoji sendiri |
-| Lambang OrderDyno | Kedai yang belum memilih logo atau emoji |
+Ikon ialah fail PNG sebenar yang dibungkus bersama projek
+(`assets/img/ikon-512.png` dan `ikon-192.png`), bukan imej yang dijana. Tiada
+kebergantungan pada sambungan GD, dan rupanya sama pada setiap pemasangan.
 
-Menerbitkan menu tanpa logo dan tanpa emoji akan **membuang** ikon tersimpan,
-bukan memuat naik lukisan semula lambang — server sudah pun ada failnya, dalam
-kualiti yang lebih baik.
+Untuk menukar ikon bagi keseluruhan pemasangan, ganti dua fail itu —
+`api/manifest.php` merujuk satu laluan tetap, jadi tiada tempat lain perlu
+disentuh.
 
 ### Apa yang dicache, dan apa yang tidak
 

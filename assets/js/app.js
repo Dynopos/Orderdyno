@@ -722,14 +722,6 @@ const App = (() => {
     });
   }
 
-  /* Ikon kedai untuk tab pelayar dan skrin utama iOS. Dijana dalam pelayar
-     kerana emoji berwarna datang dari font peranti. */
-  function pasangIkon() {
-    if (!window.Ikon) return;
-    const jalankan = () => Ikon.jana(C).then(Ikon.pasangPautan);
-    if (window.requestIdleCallback) requestIdleCallback(jalankan, { timeout: 3000 });
-    else setTimeout(jalankan, 800);
-  }
 
   /* Semak setiap minit supaya kedai "bangun" sendiri bila sampai waktunya,
      tanpa pelanggan perlu refresh. */
@@ -1042,8 +1034,6 @@ const App = (() => {
     }
 
     render();
-    /* Logo, emoji atau tema mungkin baru berubah — ikon mesti ikut */
-    pasangIkon();
   }
 
   function render() {
@@ -1070,7 +1060,6 @@ const App = (() => {
     window.addEventListener('resize', ukurJalur);
 
     mulaPasang();
-    pasangIkon();
     paparOffline();
     /* Cart perlu dilukis semula: butang bayar hilang dan muncul semula
        mengikut talian. */
