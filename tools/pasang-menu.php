@@ -190,6 +190,20 @@ if ($wa === '') {
     echo "dalam Edit Menu -> tab Kedai.\n";
 }
 
+/* Tanpa logo atau emoji, kedai ini akan berkongsi ikon skrin utama yang sama
+   dengan setiap kedai lain yang juga belum memilihnya. Pelanggan yang memasang
+   dua kedai tidak akan dapat membezakannya. */
+$adaLogo = trim((string) ($config['kedai']['logo'] ?? '')) !== ''
+    || trim((string) ($config['kedai']['logoEmoji'] ?? '')) !== '';
+
+if (!$adaLogo) {
+    echo "\nAMARAN: kedai ini tiada logo dan tiada emoji.\n";
+    echo "Ikon pada skrin utama telefon pelanggan akan menjadi lambang OrderDyno,\n";
+    echo "sama seperti setiap kedai lain yang juga belum memilihnya.\n";
+    echo "Isi 'logoEmoji' dalam fail menu, atau minta pemilik kedai memilihnya\n";
+    echo "dalam Edit Menu -> tab Kedai.\n";
+}
+
 /* ------------------------- PEMBAYARAN TIRUAN ----------------------------- */
 
 if ($demo) {
