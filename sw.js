@@ -34,13 +34,11 @@ const PRACACHE = [
   './assets/css/style.css',
   './assets/js/config.js',
   './assets/js/contoh-menu.js',
-  './assets/js/ikon.js',
   './assets/js/store.js',
   './assets/js/bayar.js',
   './assets/js/app.js',
   './assets/js/editor.js',
-  /* Lambang digunakan sebagai ikon kedai yang belum memilih logo sendiri —
-     ia mesti ada tanpa talian juga. */
+  /* Ikon aplikasi — mesti ada tanpa talian juga. */
   './assets/img/lambang.png',
   './assets/img/ikon-192.png',
 ];

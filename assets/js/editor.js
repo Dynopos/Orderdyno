@@ -464,28 +464,6 @@ const Editor = (() => {
     return JSON.stringify(C);
   }
 
-  /* Ikon aplikasi dihantar berasingan daripada menu, bukan sebagai sebahagian
-     daripadanya: PNG 512px ialah puluhan kilobait base64, dan menu awam
-     dimuat turun oleh setiap pelawat pada setiap lawatan.
-
-     Kegagalan di sini tidak boleh menggagalkan penerbitan menu — menu ialah
-     perkara yang pemilik kedai sedang cuba lakukan; ikon hanyalah pelengkap,
-     dan api/ikon.php sudah ada sandarannya sendiri. */
-  async function hantarIkon() {
-    if (!window.Ikon || !bcKunci) return;
-    try {
-      /* Tiada logo dan tiada emoji bermakna ikon yang dijana hanyalah lukisan
-         semula lambang OrderDyno — yang server sudah pun ada, dalam kualiti
-         lebih baik. Hantar kosong supaya server guna failnya sendiri, dan
-         100KB tidak dimuat naik tanpa sebab. */
-      const k = C.kedai || {};
-      const dataUri = (k.logo || k.logoEmoji) ? await Ikon.jana(C) : '';
-      await Bayar.admin('ikon', { ikon: dataUri }, bcKunci);
-    } catch (e) {
-      /* senyap */
-    }
-  }
-
   async function hashTeks(teks) {
     if (!window.crypto || !crypto.subtle) return null; // perlu HTTPS/localhost
     try {
@@ -1404,11 +1382,7 @@ const Editor = (() => {
         }
 
         case 'bc-menu':
-          bcJalan('menu', async () => {
-            const hasil = await Bayar.admin('menu', { menu: menuUntukServer() }, bcKunci);
-            await hantarIkon();
-            return hasil;
-          });
+          bcJalan('menu', () => Bayar.admin('menu', { menu: menuUntukServer() }, bcKunci));
           break;
 
         case 'bc-orders':
