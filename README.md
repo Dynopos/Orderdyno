@@ -34,7 +34,7 @@ hosting PHP; tanpanya semua yang lain tetap berfungsi.
 - 🚗 Pilihan **Ambil Sendiri** atau **Penghantaran** (caj + order minimum)
 - 💾 Cart tak hilang bila refresh
 - 📱 Mobile-first — majoriti pelanggan order dari telefon
-- 📲 **Boleh dipasang ke skrin utama** dengan ikon kedai, dan terbuka walaupun
+- 📲 **Boleh dipasang ke skrin utama** seperti aplikasi, dan terbuka walaupun
   talian putus
 - 💬 Order dihantar sebagai mesej WhatsApp yang tersusun rapi
 
