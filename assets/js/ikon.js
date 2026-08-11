@@ -44,19 +44,9 @@ const Ikon = (() => {
     ctx.fillRect(0, 0, SAIZ, SAIZ);
   }
 
-  /* Huruf pertama nama kedai, untuk kedai tanpa emoji dan tanpa logo */
-  function lukisHuruf(ctx, nama, tema) {
-    const huruf = (String(nama || '?').trim()[0] || '?').toUpperCase();
-    const grad = ctx.createLinearGradient(0, SAIZ * 0.3, SAIZ, SAIZ * 0.7);
-    grad.addColorStop(0, tema.warna1 || '#f5c542');
-    grad.addColorStop(1, tema.warna3 || '#ffe9a8');
-
-    ctx.fillStyle = grad;
-    ctx.font = `800 ${Math.round(SAIZ * 0.42)}px 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(huruf, SAIZ / 2, SAIZ / 2);
-  }
+  /* Lambang OrderDyno, untuk kedai tanpa logo dan tanpa emoji. Fail ini
+     mempunyai latar telus, jadi ia duduk atas warna tema kedai. */
+  const LAMBANG = 'assets/img/lambang.png';
 
   /**
    * Jana ikon aplikasi untuk sesebuah kedai.
@@ -77,14 +67,18 @@ const Ikon = (() => {
 
       const kotak = SAIZ * SELAMAT;
 
+      /* Muat dalam zon selamat tanpa memotong atau meregangkan */
+      const lukisGambar = (img) => {
+        const skala = Math.min(kotak / img.width, kotak / img.height);
+        const w = img.width * skala;
+        const h = img.height * skala;
+        ctx.drawImage(img, (SAIZ - w) / 2, (SAIZ - h) / 2, w, h);
+      };
+
       if (k.logo) {
         const img = await muatGambar(k.logo);
         if (img && img.width && img.height) {
-          /* Muat dalam zon selamat tanpa memotong atau meregangkan */
-          const skala = Math.min(kotak / img.width, kotak / img.height);
-          const w = img.width * skala;
-          const h = img.height * skala;
-          ctx.drawImage(img, (SAIZ - w) / 2, (SAIZ - h) / 2, w, h);
+          lukisGambar(img);
           return kanvas.toDataURL('image/png');
         }
       }
@@ -99,7 +93,11 @@ const Ikon = (() => {
         return kanvas.toDataURL('image/png');
       }
 
-      lukisHuruf(ctx, k.nama, tema);
+      /* Kedai belum pilih logo atau emoji — guna lambang OrderDyno. Ia sefail
+         dengan projek, jadi kanvas kekal bersih dan toDataURL tetap boleh. */
+      const lambang = await muatGambar(LAMBANG);
+      if (lambang && lambang.width) lukisGambar(lambang);
+
       return kanvas.toDataURL('image/png');
     } catch (e) {
       return '';

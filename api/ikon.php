@@ -1,12 +1,12 @@
 <?php
 /* ==========================================================================
-   GET api/ikon.php?s=192|512    (atau ?jenis=svg)
+   GET api/ikon.php?s=192|512
    --------------------------------------------------------------------------
    Ikon aplikasi bagi kedai pada subdomain ini, untuk manifest dan skrin
-   utama telefon. Lihat api/lib/ikon.php untuk susunan sumbernya.
+   utama telefon.
 
    Dihidangkan sebagai endpoint, bukan fail statik, kerana setiap kedai pada
-   pemasangan ini mempunyai ikonnya sendiri.
+   pemasangan ini mempunyai ikonnya sendiri. Lihat api/lib/ikon.php.
    ========================================================================== */
 
 declare(strict_types=1);
@@ -20,14 +20,14 @@ if (!Kedai::wujud()) {
     json_keluar(['ok' => false, 'kedaiTiada' => true], 404);
 }
 
-/* Hanya saiz ikon yang diisytiharkan dalam manifest diterima — tanpa had,
+/* Hanya saiz yang diisytiharkan dalam manifest diterima — tanpa had,
    ?s=20000 menjadi cara mudah membakar CPU server. */
 $saiz = (int) ($_GET['s'] ?? 512);
-if (!in_array($saiz, [192, 512], true)) {
+if (!in_array($saiz, Ikon::SAIZ, true)) {
     $saiz = 512;
 }
 
-$hantar = static function (string $bait, string $jenis): never {
+$hantar = static function (string $bait): never {
     $etag = '"' . substr(hash('sha256', $bait), 0, 32) . '"';
 
     if (($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $etag) {
@@ -36,7 +36,7 @@ $hantar = static function (string $bait, string $jenis): never {
         exit;
     }
 
-    header('Content-Type: ' . $jenis);
+    header('Content-Type: image/png');
     header('Content-Length: ' . strlen($bait));
     header('ETag: ' . $etag);
     header('Cache-Control: public, max-age=86400');
@@ -44,10 +44,6 @@ $hantar = static function (string $bait, string $jenis): never {
     echo $bait;
     exit;
 };
-
-if (($_GET['jenis'] ?? '') === 'svg') {
-    $hantar(Ikon::lukisSvg(), 'image/svg+xml; charset=utf-8');
-}
 
 /* --------------------- 1. Ikon yang dijana pelayar ----------------------- */
 
@@ -60,7 +56,7 @@ if ($simpanan !== null) {
     /* Kecilkan hanya bila perlu dan bila GD ada. Kalau tidak, hantar seadanya
        — pelayar mengecilkan sendiri, dan ikon 512px kekal betul. */
     if ($lebar === $saiz || !Ikon::adaGd() || $lebar < 1) {
-        $hantar($simpanan, 'image/png');
+        $hantar($simpanan);
     }
 
     $asal = @imagecreatefromstring($simpanan);
@@ -81,23 +77,23 @@ if ($simpanan !== null) {
             imagedestroy($kecil);
             imagedestroy($asal);
             if ($png !== '') {
-                $hantar($png, 'image/png');
+                $hantar($png);
             }
         } else {
             imagedestroy($asal);
         }
     }
 
-    $hantar($simpanan, 'image/png');
+    $hantar($simpanan);
 }
 
-/* ---------------------- 2. Jubin warna tema (GD) ------------------------- */
+/* ------------------- 2. Lambang OrderDyno yang dibungkus ----------------- */
 
-$png = Ikon::lukisPng($saiz);
-if ($png !== null) {
-    $hantar($png, 'image/png');
+$asal = Ikon::failAsal($saiz);
+$bait = is_file($asal) ? @file_get_contents($asal) : false;
+
+if ($bait === false || $bait === '') {
+    json_silap('Ikon tidak dijumpai.', 404);
 }
 
-/* ------------------------- 3. Sandaran SVG ------------------------------- */
-
-$hantar(Ikon::lukisSvg(), 'image/svg+xml; charset=utf-8');
+$hantar($bait);

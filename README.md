@@ -221,14 +221,19 @@ Ia dihantar ke server semasa **Terbitkan menu**, dan disimpan berasingan
 daripada menu — PNG 512px ialah puluhan kilobait, dan menu awam dimuat turun
 oleh setiap pelawat pada setiap lawatan.
 
-Kalau kedai belum menerbitkan menu dari panel, `api/ikon.php` melukis jubin
-warna tema dengan GD. Tanpa GD pun ia masih berfungsi, sebagai SVG.
+Kedai yang belum memilih logo atau emoji mendapat lambang OrderDyno yang
+dibungkus bersama projek (`assets/img/ikon-512.png`). Ia fail PNG sebenar,
+bukan lukisan yang dijana, jadi ia berfungsi walaupun server tiada sambungan
+GD dan rupanya sama pada setiap pemasangan.
 
 | Sumber ikon | Bila digunakan |
 |---|---|
-| PNG dari panel | Selepas pemilik menerbitkan menu — emoji atau logo sebenar |
-| Jubin GD | Kedai yang belum menerbitkan dari panel |
-| SVG | Server tanpa sambungan GD |
+| PNG dari panel | Kedai yang ada logo atau emoji sendiri |
+| Lambang OrderDyno | Kedai yang belum memilih logo atau emoji |
+
+Menerbitkan menu tanpa logo dan tanpa emoji akan **membuang** ikon tersimpan,
+bukan memuat naik lukisan semula lambang — server sudah pun ada failnya, dalam
+kualiti yang lebih baik.
 
 ### Apa yang dicache, dan apa yang tidak
 

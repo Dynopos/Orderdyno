@@ -474,8 +474,13 @@ const Editor = (() => {
   async function hantarIkon() {
     if (!window.Ikon || !bcKunci) return;
     try {
-      const dataUri = await Ikon.jana(C);
-      if (dataUri) await Bayar.admin('ikon', { ikon: dataUri }, bcKunci);
+      /* Tiada logo dan tiada emoji bermakna ikon yang dijana hanyalah lukisan
+         semula lambang OrderDyno — yang server sudah pun ada, dalam kualiti
+         lebih baik. Hantar kosong supaya server guna failnya sendiri, dan
+         100KB tidak dimuat naik tanpa sebab. */
+      const k = C.kedai || {};
+      const dataUri = (k.logo || k.logoEmoji) ? await Ikon.jana(C) : '';
+      await Bayar.admin('ikon', { ikon: dataUri }, bcKunci);
     } catch (e) {
       /* senyap */
     }
