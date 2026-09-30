@@ -77,9 +77,9 @@
     "delivery": {
       "aktif": true,
       "label": "Penghantaran",
-      "caj": 0,
+      "caj": 5,
       "minOrder": 0,
-      "nota": "Penghantaran sekitar kawasan berdekatan · hantar rapat tangga"
+      "nota": "Caj bermula RM 5.00 dan bergantung pada kawasan — kami sahkan caj sebenar dalam WhatsApp sebelum hantar"
     }
   },
   "kategori": [
