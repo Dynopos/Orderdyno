@@ -77,9 +77,9 @@
     "delivery": {
       "aktif": true,
       "label": "Penghantaran",
-      "caj": 5,
+      "caj": 0,
       "minOrder": 0,
-      "nota": "Caj bermula RM 5.00 dan bergantung pada kawasan — kami sahkan caj sebenar dalam WhatsApp sebelum hantar"
+      "nota": "Caj berdasarkan rider — kami maklumkan dalam WhatsApp sebelum hantar"
     }
   },
   "kategori": [
@@ -5707,7 +5707,7 @@
       "nama": "Sambal Blacan",
       "desc": "",
       "gambar": "",
-      "emoji": "🍛",
+      "emoji": "🌶️",
       "harga": 2.0,
       "pilihan": [],
       "tambahan": [
@@ -9852,7 +9852,7 @@
       "nama": "Sambal",
       "desc": "",
       "gambar": "",
-      "emoji": "🌭",
+      "emoji": "🌶️",
       "harga": 3.0,
       "pilihan": [],
       "tambahan": [],
