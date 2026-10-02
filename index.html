@@ -25,7 +25,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kaushan+Script&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<!-- ?v=N pada CSS dan JS: naikkan nombor itu SETIAP KALI salah satu
+     fail ini diubah. Tanpanya, cache pelayar atau service worker lama
+     boleh menghidangkan gaya lama bersama HTML baharu, dan laman nampak
+     pecah sehingga pelanggan membuang data laman sendiri. Nombor ini
+     mesti sepadan dengan ASET_VERSI dalam sw.js. -->
+<link rel="stylesheet" href="assets/css/style.css?v=3">
 
 <script>
 /* ==========================================================================
@@ -148,7 +153,11 @@
         <span class="info__teks"><b>Hubungi</b><span id="telefon">+60 12-000 0000</span></span>
       </a>
     </div>
-    <p class="footer__hak">© <span id="tahun">2026</span> <span id="footerNama">Nama Kedai Anda</span> · dibina dengan <b>OrderDyno</b></p>
+    <!-- Nombor versi kelihatan. Bila pemilik kedai melaporkan laman nampak
+         pecah, soalan pertama sentiasa "versi mana yang telefon anda muat?" —
+         dan tiada devtools pada telefon untuk menjawabnya. Angka ini
+         menjawabnya dalam satu pandangan. Naikkan bersama ?v=N. -->
+    <p class="footer__hak">© <span id="tahun">2026</span> <span id="footerNama">Nama Kedai Anda</span> · dibina dengan <b>OrderDyno</b> <span class="footer__versi">v3</span></p>
   </div>
 </footer>
 
@@ -195,12 +204,12 @@
 
 <div class="toast-bekas" id="toast" aria-live="polite"></div>
 
-<script src="assets/js/config.js"></script>
-<script src="assets/js/contoh-menu.js"></script>
-<script src="assets/js/store.js"></script>
-<script src="assets/js/bayar.js"></script>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/editor.js"></script>
+<script src="assets/js/config.js?v=3"></script>
+<script src="assets/js/contoh-menu.js?v=3"></script>
+<script src="assets/js/store.js?v=3"></script>
+<script src="assets/js/bayar.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/editor.js?v=3"></script>
 
 <script>
 /* Service worker: laman boleh dibuka walaupun talian putus, dan itu syarat

@@ -1461,3 +1461,17 @@ body.kedai-tutup .btn-semak { filter: saturate(.55); }
    kesemuanya, diukur oleh app.js. */
 body.kedai-tutup .btn-edit,
 body.tiada-talian .btn-edit { top: calc(16px + var(--tinggi-jalur, 0px)); }
+
+/* Nombor versi aset dalam footer — kecil dan senyap, tetapi ia menjawab
+   "versi mana telefon anda muat?" tanpa perlu devtools. */
+.footer__versi {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--lemah);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--garis);
+}
