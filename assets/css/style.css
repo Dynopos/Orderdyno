@@ -387,12 +387,92 @@ button { cursor: pointer; border: 0; background: none; }
   100% { transform: scale(1); }
 }
 
+/* --------------------------- Carian menu -------------------------------- */
+
+.cari {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(520px, calc(100% - 40px));
+  margin: 12px auto 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--kad);
+  border: 1px solid var(--garis);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color .2s, box-shadow .2s;
+}
+.cari:focus-within {
+  border-color: rgba(var(--c2-rgb), .6);
+  box-shadow: 0 0 0 3px rgba(var(--c2-rgb), .16);
+}
+.cari__ikon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: var(--lemah);
+}
+.cari__medan {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--teks);
+  font: inherit;
+  font-size: .95rem;
+}
+.cari__medan::placeholder { color: var(--lemah); }
+.cari__medan:focus { outline: none; }
+/* Butang 'x' bawaan Safari/Chrome — kita ada butang sendiri */
+.cari__medan::-webkit-search-cancel-button { display: none; }
+
+.cari__buang {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  transition: background .2s;
+}
+.cari__buang:hover { background: rgba(255, 255, 255, .16); }
+.cari__buang svg { width: 14px; height: 14px; fill: var(--teks); }
+
+.cari-hasil {
+  margin: 26px auto 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--lemah);
+  text-align: center;
+}
+.cari-hasil b { color: var(--teks); }
+
+/* Item dan kategori yang tidak sepadan dengan carian. Perlu !important
+   kerana .kad dan .kategori sendiri menetapkan display. */
+.kad[hidden],
+.kategori[hidden],
+.chip[hidden],
+.cari[hidden],
+.cari-hasil[hidden],
+.cari__buang[hidden] { display: none !important; }
+
 .chips {
   display: flex;
   gap: 8px;
+  /* 'center' sahaja memotong chip pertama bila kategori banyak: lebihan
+     tumpah ke KIRI dan KANAN, tetapi scrollLeft tidak boleh jadi negatif,
+     jadi yang di kiri tidak akan dapat dicapai selama-lamanya. 'safe'
+     menjatuhkannya ke flex-start sebaik sahaja ia melimpah. Baris pertama
+     kekal sebagai sandaran untuk pelayar lama. */
   justify-content: center;
+  justify-content: safe center;
   flex-wrap: nowrap;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 20px;
   scrollbar-width: none;
   margin-top: 12px;
   padding: 2px 20px;
