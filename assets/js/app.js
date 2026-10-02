@@ -15,6 +15,7 @@ const App = (() => {
   let CART = Store.muatCart();
   let draf = null;            // item yang sedang dipilih dalam sheet
   let caraOrder = 'pickup';
+  let cari = '';              // teks carian menu, kosong = papar semua
   const pelanggan = { nama: '', email: '', telefon: '', alamat: '', nota: '' };
   let saluranPilih = 0;   // saluran Bayarcash yang dipilih pelanggan
 
@@ -204,8 +205,13 @@ const App = (() => {
       ? '<span class="lencana">Popular</span>'
       : '';
 
+    /* Teks carian disiapkan di sini sekali, bukan dikira semula setiap kali
+       pelanggan menaip satu huruf. */
+    const teksCari = `${item.nama} ${item.desc || ''}`.toLowerCase();
+
     return `
-      <article class="kad${item.habis ? ' habis' : ''}" data-id="${esc(item.id)}">
+      <article class="kad${item.habis ? ' habis' : ''}" data-id="${esc(item.id)}"
+               data-cari="${esc(teksCari)}">
         ${lencana}
         ${gambar}
         <div class="kad__isi">
@@ -220,8 +226,19 @@ const App = (() => {
       </article>`;
   }
 
+  /* Di bawah ini, carian lebih mengganggu daripada membantu — kedai dengan
+     lapan item tidak perlu kotak carian memenuhi skrin. */
+  const AMBANG_CARI = 15;
+
   function paparMenu() {
     const wadah = $('#menu');
+
+    const bolehCari = C.menu.length >= AMBANG_CARI;
+    $('#cari').hidden = !bolehCari;
+    if (!bolehCari && cari) {
+      cari = '';
+      $('#medanCari').value = '';
+    }
 
     if (!C.menu.length) {
       wadah.innerHTML = `
@@ -250,6 +267,75 @@ const App = (() => {
 
     animasiMasuk();
     intaiKategori();
+    tapisMenu();
+    ukurJalur();
+  }
+
+  /* ============================ CARIAN MENU ==============================
+     Menu sebenar sebuah kedai makan boleh mencecah ratusan item dalam puluhan
+     kategori. Scroll sahaja tidak mencukupi di situ: pelanggan yang sudah
+     tahu dia mahu "tomyam udang" tidak patut melepasi 30 kategori dahulu.
+
+     Tapisan dibuat dengan menyembunyikan kad yang sudah ada dalam DOM, bukan
+     dengan membina semula menu setiap kali satu huruf ditaip. Membina semula
+     975 kad pada setiap ketukan kekunci akan tersekat-sekat pada telefon
+     murah — dan telefon murah itulah yang kebanyakan pelanggan pakai.
+     ==================================================================== */
+
+  function tapisMenu() {
+    const q = cari.trim().toLowerCase();
+    const mencari = q !== '';
+    let jumpaItem = 0;
+    let jumpaKategori = 0;
+
+    const chipIkutKategori = {};
+    $$('.chip').forEach((c) => {
+      chipIkutKategori[(c.getAttribute('href') || '').slice(1)] = c;
+    });
+
+    $$('.kategori').forEach((sek) => {
+      const namaKat = (sek.querySelector('.kategori__nama') || {}).textContent || '';
+      /* Menaip nama kategori memaparkan seluruh kategori itu — "bingsu"
+         patut membuka semua bingsu, bukan hanya yang ada perkataan itu
+         dalam namanya. */
+      const kategoriPadan = mencari && namaKat.toLowerCase().includes(q);
+      let adaDalam = 0;
+
+      sek.querySelectorAll('.kad').forEach((kad) => {
+        const padan = !mencari || kategoriPadan || (kad.dataset.cari || '').includes(q);
+        kad.hidden = !padan;
+        if (padan) {
+          adaDalam++;
+          /* Kad yang muncul hasil carian tidak melalui scroll, jadi animasi
+             masuknya tidak akan dicetuskan — tunjukkan terus. */
+          kad.classList.add('masuk');
+        }
+      });
+
+      sek.hidden = adaDalam === 0;
+      if (adaDalam) {
+        jumpaKategori++;
+        jumpaItem += adaDalam;
+      }
+
+      const chip = chipIkutKategori[sek.id];
+      if (chip) chip.hidden = adaDalam === 0;
+    });
+
+    $('#btnBuangCari').hidden = !mencari;
+
+    const hasil = $('#cariHasil');
+    hasil.hidden = !mencari;
+    if (mencari) {
+      hasil.innerHTML = jumpaItem
+        ? `<b>${jumpaItem}</b> item dalam <b>${jumpaKategori}</b> kategori`
+        : `Tiada menu sepadan dengan "<b>${esc(cari.trim())}</b>" — cuba perkataan lain`;
+    }
+  }
+
+  function tetapCari(teks) {
+    cari = String(teks || '');
+    tapisMenu();
   }
 
   /* Kad muncul beransur bila di-scroll.
@@ -286,11 +372,26 @@ const App = (() => {
           $$('.chip').forEach((c) =>
             c.classList.toggle('aktif', c.getAttribute('href') === '#' + m.target.id)
           );
+          chipAktifKeTengah();
         });
       },
       { rootMargin: '-30% 0px -60% 0px' }
     );
     $$('.kategori').forEach((s) => io.observe(s));
+  }
+
+  /* Dengan 30-an kategori, chip yang aktif selalunya berada di luar skrin —
+     lencana "anda di sini" yang tidak dapat dilihat tidak memberitahu apa-apa.
+     Hanya jalur chip yang digerakkan, bukan halaman, supaya kedudukan scroll
+     pelanggan tidak terusik. */
+  function chipAktifKeTengah() {
+    const jalur = $('#chips');
+    const aktif = jalur && jalur.querySelector('.chip.aktif');
+    if (!aktif) return;
+    jalur.scrollTo({
+      left: aktif.offsetLeft - (jalur.clientWidth - aktif.offsetWidth) / 2,
+      behavior: 'smooth',
+    });
   }
 
   let kiraTerakhir = -1;
@@ -634,6 +735,15 @@ const App = (() => {
     let tinggi = 0;
     document.querySelectorAll('.jalur-tutup').forEach((j) => { tinggi += j.offsetHeight; });
     document.documentElement.style.setProperty('--tinggi-jalur', tinggi + 'px');
+
+    /* Jalur carian dan chip kategori boleh membalut kepada baris kedua pada
+       skrin sempit, jadi tinggi bar melekat itu berubah. Ia menentukan
+       scroll-margin kategori — kalau diteka, tajuk kategori tersembunyi di
+       belakang bar setiap kali pelanggan menekan chip. */
+    const bar = document.getElementById('bar');
+    if (bar) {
+      document.documentElement.style.setProperty('--tinggi-bar', bar.offsetHeight + 'px');
+    }
   }
 
   /* ============================ MOD OFFLINE =============================
@@ -1009,8 +1119,27 @@ const App = (() => {
       $$('.chip').forEach((c) => c.classList.toggle('aktif', c === chip));
     });
 
+    $('#medanCari').addEventListener('input', (e) => tetapCari(e.target.value));
+
+    $('#btnBuangCari').addEventListener('click', () => {
+      $('#medanCari').value = '';
+      tetapCari('');
+      $('#medanCari').focus();
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') tutupSheet();
+      if (e.key !== 'Escape') return;
+      /* Sheet yang terbuka didahulukan; carian hanya dikosongkan bila tiada
+         apa-apa lain untuk ditutup. */
+      if (document.querySelector('.sheet.buka')) {
+        tutupSheet();
+        return;
+      }
+      if (document.querySelector('.ed.buka')) return;   // panel editor urus sendiri
+      if (cari) {
+        $('#medanCari').value = '';
+        tetapCari('');
+      }
     });
   }
 
