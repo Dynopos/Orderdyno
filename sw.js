@@ -18,13 +18,24 @@
      · Harga tetap dikira semula di server semasa bayaran, jadi menu lama
        dalam cache tidak boleh menjadi harga yang dibayar.
 
-   Aset statik guna "hidang dahulu, kemas kini di belakang". Tiada langkah
-   build dalam projek ini, jadi tiada nama fail bercap versi — cara ini
-   memastikan perubahan sampai pada lawatan berikutnya tanpa memaksa
-   pelanggan menunggu rangkaian setiap kali.
+     · CSS dan JS guna "rangkaian dahulu" atas sebab yang sama. Dahulu ia
+       "hidang dahulu, kemas kini di belakang", dan itu memecahkan laman
+       selepas setiap deploy: halaman (navigasi) diambil segar dari rangkaian
+       sementara CSS dihidangkan dari cache lama. Pelanggan mendapat HTML
+       baharu dengan gaya lama — kotak carian putih tanpa gaya, susun atur
+       yang pecah. Tiada langkah build di sini, jadi tiada nama fail bercap
+       versi yang boleh membezakan keduanya; satu-satunya jalan ialah
+       memastikan HTML dan asetnya datang dari tempat yang sama.
+
+     · Imej masih "hidang dahulu" — ia tidak pernah berubah tanpa nama baharu,
+       dan ia yang paling berat.
+
+   Cache kekal sebagai sandaran offline untuk semuanya.
    ========================================================================== */
 
-const VERSI = 'orderdyno-v1';
+/* Naikkan nombor ini bila strategi cache berubah — 'activate' membuang semua
+   cache versi lama, jadi salinan basi tidak boleh hidup melepasi deploy. */
+const VERSI = 'orderdyno-v2';
 const RANGKA = VERSI + '-rangka';
 
 /* Cukup untuk membuka laman dan memaparkan menu tanpa talian */
@@ -112,6 +123,11 @@ self.addEventListener('fetch', (e) => {
   }
 
   if (url.pathname.includes('/assets/')) {
-    e.respondWith(cacheDahulu(perminta));
+    /* Imej tidak berubah tanpa nama baharu, jadi ia selamat dihidangkan dari
+       cache serta-merta. CSS dan JS mesti sepadan dengan HTML yang baru
+       diambil dari rangkaian — kalau tidak, deploy memberi pelanggan halaman
+       baharu dengan gaya lama. */
+    const imej = /\.(png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(url.pathname);
+    e.respondWith(imej ? cacheDahulu(perminta) : rangkaianDahulu(perminta));
   }
 });

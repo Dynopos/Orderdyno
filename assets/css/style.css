@@ -425,8 +425,10 @@ button { cursor: pointer; border: 0; background: none; }
 }
 .cari__medan::placeholder { color: var(--lemah); }
 .cari__medan:focus { outline: none; }
-/* Butang 'x' bawaan Safari/Chrome — kita ada butang sendiri */
-.cari__medan::-webkit-search-cancel-button { display: none; }
+/* Butang 'x' bawaan Safari/Chrome muncul biru terang di atas latar gelap.
+   Buang di mana-mana sahaja medan carian digunakan. */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration { display: none; }
 
 .cari__buang {
   flex: none;
@@ -1220,6 +1222,32 @@ textarea.medan { resize: vertical; min-height: 74px; }
 .ed-item__isi { flex: 1; min-width: 0; }
 .ed-item__nama { font-size: .9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ed-item__harga { font-size: .78rem; color: var(--lemah); }
+.ed-item__habis { color: #ff9db3; font-weight: 800; }
+
+/* Item yang ditanda habis — kekal boleh dibaca, tetapi jelas berbeza */
+.ed-item--habis { opacity: .55; border-style: dashed; }
+.ed-item--habis .ed-item__gambar { filter: grayscale(1); }
+
+.mini--stok.aktif {
+  color: #150a20;
+  background: #ff9db3;
+  border-color: #ff9db3;
+}
+.mini--stok.aktif:hover { background: #ffb3c4; }
+
+.ed-cari { margin-bottom: 16px; }
+.ed-item[hidden], .ed-blok[hidden], .btn-tambah-baris[hidden] { display: none !important; }
+
+.ed-item__aksi { display: flex; gap: 6px; flex: none; }
+
+/* Lima butang pada satu baris tidak muat pada telefon — namanya terhimpit
+   jadi satu huruf. Pada skrin sempit butang turun ke baris sendiri, jadi
+   nama item dapat seluruh lebar. */
+@media (max-width: 560px) {
+  .ed-item { flex-wrap: wrap; row-gap: 10px; }
+  .ed-item__isi { flex: 1 1 120px; }
+  .ed-item__aksi { flex: 1 1 100%; justify-content: flex-end; }
+}
 
 /* Lencana status dalam tab Bayaran */
 .pil-status {

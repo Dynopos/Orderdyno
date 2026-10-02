@@ -15,6 +15,7 @@ const Editor = (() => {
   let el = null;             // elemen panel
   let tab = 'kedai';
   let itemEdit = null;       // id item yang sedang dibuka dalam borang
+  let cariEdit = '';         // tapisan senarai menu dalam tab Menu
   let masaSimpan = null;
 
   /* --- Keadaan tab "Bayaran" (tidak disimpan bersama menu) --------------- */
@@ -234,6 +235,8 @@ const Editor = (() => {
 
   /* ============================ TAB: MENU ================================ */
 
+  const lencanaHabis = (m) => (m.habis ? ' · <span class="ed-item__habis">habis</span>' : '');
+
   function tabMenu() {
     if (itemEdit) return borangItem();
 
@@ -241,7 +244,7 @@ const Editor = (() => {
       .map((kat, ki) => {
         const item = C.menu.filter((m) => m.kategori === kat.id);
         return `
-        <div class="ed-blok">
+        <div class="ed-blok" data-cari-kat="${esc(kat.nama.toLowerCase())}">
           <div class="ed-blok__kepala">
             <input class="medan" data-kat-nama="${ki}" value="${esc(kat.nama)}" placeholder="Nama kategori" style="flex:1">
             <button class="mini" type="button" data-aksi="kat-naik" data-i="${ki}" title="Naik" ${ki === 0 ? 'disabled' : ''}>↑</button>
@@ -264,16 +267,23 @@ const Editor = (() => {
                         ? `${App.wang(Math.min.apply(null, m.pilihan.map((p) => p.harga)))} – ${App.wang(Math.max.apply(null, m.pilihan.map((p) => p.harga)))}`
                         : App.wang(m.pilihan.length ? m.pilihan[0].harga : m.harga);
                     return `
-                <div class="ed-item">
+                <div class="ed-item${m.habis ? ' ed-item--habis' : ''}"
+                     data-cari="${esc(`${m.nama} ${m.desc || ''}`.toLowerCase())}">
                   <div class="ed-item__gambar">${gambar}</div>
                   <div class="ed-item__isi">
-                    <div class="ed-item__nama">${esc(m.nama)}${m.habis ? ' · <span style="color:#ff9db3">habis</span>' : ''}</div>
+                    <div class="ed-item__nama">${esc(m.nama)}${lencanaHabis(m)}</div>
                     <div class="ed-item__harga">${harga}</div>
                   </div>
-                  <button class="mini" type="button" data-aksi="item-naik" data-i="${idx}" title="Naik" ${mi === 0 ? 'disabled' : ''}>↑</button>
-                  <button class="mini" type="button" data-aksi="item-turun" data-i="${idx}" title="Turun" ${mi === item.length - 1 ? 'disabled' : ''}>↓</button>
-                  <button class="mini" type="button" data-aksi="item-edit" data-id="${esc(m.id)}" title="Edit">✎</button>
-                  <button class="mini mini--bahaya" type="button" data-aksi="item-buang" data-i="${idx}" title="Buang">✕</button>
+                  <div class="ed-item__aksi">
+                    <button class="mini mini--stok${m.habis ? ' aktif' : ''}" type="button"
+                            data-aksi="item-habis" data-i="${idx}"
+                            title="${m.habis ? 'Tandakan ada stok semula' : 'Tandakan habis stok'}"
+                            aria-pressed="${m.habis ? 'true' : 'false'}">${m.habis ? '✓' : '⊘'}</button>
+                    <button class="mini" type="button" data-aksi="item-naik" data-i="${idx}" title="Naik" ${mi === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="mini" type="button" data-aksi="item-turun" data-i="${idx}" title="Turun" ${mi === item.length - 1 ? 'disabled' : ''}>↓</button>
+                    <button class="mini" type="button" data-aksi="item-edit" data-id="${esc(m.id)}" title="Edit">✎</button>
+                    <button class="mini mini--bahaya" type="button" data-aksi="item-buang" data-i="${idx}" title="Buang">✕</button>
+                  </div>
                 </div>`;
                   })
                   .join('')
@@ -301,7 +311,25 @@ const Editor = (() => {
         <button class="btn-kecil" type="button" data-aksi="muat-contoh">🍛 Muat menu contoh</button>
       </div>`;
 
+    /* Menandakan satu item habis tidak berguna kalau mencarinya mengambil
+       masa lebih lama daripada memasak. Carian muncul sebaik menu cukup
+       panjang untuk itu menjadi masalah. */
+    const bilHabis = C.menu.filter((m) => m.habis).length;
+    const cari =
+      C.menu.length < 15
+        ? ''
+        : `
+      <div class="ed-cari">
+        <input class="medan" id="edCariMenu" type="search" value="${esc(cariEdit)}"
+               placeholder="Cari item untuk tanda habis…" autocomplete="off"
+               autocapitalize="off" spellcheck="false" aria-label="Cari item menu">
+        <p class="f__nota" id="edCariNota" style="margin:8px 2px 0">
+          ${bilHabis ? `<b>${bilHabis}</b> item ditanda habis` : 'Tekan ⊘ pada mana-mana item untuk tanda habis stok'}
+        </p>
+      </div>`;
+
     return `
+      ${cari}
       ${kategori}
       <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah">＋ Tambah kategori</button>
       ${contoh}`;
@@ -1037,6 +1065,33 @@ const Editor = (() => {
     const jumpa = TAB.find((t) => t.id === tab) || TAB[0];
     $p('.ed__badan').innerHTML = jumpa.render();
     $$p('.ed__tab button').forEach((b) => b.classList.toggle('aktif', b.dataset.tab === tab));
+    tapisSenaraiMenu();
+  }
+
+  /* Tapis senarai menu dalam panel, sama cara seperti carian pelanggan:
+     sembunyikan baris yang sudah ada, bukan render semula. Pemilik kedai
+     yang sedang menaip tidak patut kehilangan kursornya setiap huruf. */
+  function tapisSenaraiMenu() {
+    const q = cariEdit.trim().toLowerCase();
+    const mencari = q !== '';
+
+    $$p('.ed-blok[data-cari-kat]').forEach((blok) => {
+      const katPadan = mencari && blok.dataset.cariKat.includes(q);
+      let adaDalam = 0;
+
+      blok.querySelectorAll('.ed-item').forEach((baris) => {
+        const padan = !mencari || katPadan || (baris.dataset.cari || '').includes(q);
+        baris.hidden = !padan;
+        if (padan) adaDalam++;
+      });
+
+      /* Butang "Tambah item" disembunyikan semasa mencari — ia milik
+         kategori, bukan hasil carian, dan menekannya di situ mengelirukan. */
+      const tambah = blok.querySelector('[data-aksi="item-tambah"]');
+      if (tambah) tambah.hidden = mencari;
+
+      blok.hidden = mencari && adaDalam === 0;
+    });
   }
 
   /* ============================ PERISTIWA ================================ */
@@ -1072,6 +1127,13 @@ const Editor = (() => {
         const [hari, medan] = t.dataset.waktuJam.split('.');
         C.waktuBuka.hari[hari][medan] = t.value || (medan === 'buka' ? '10:00' : '22:00');
         terap(false);                  // jangan render: elak hilang fokus
+        return;
+      }
+
+      // Carian senarai menu — tapis sahaja, jangan render semula
+      if (t.id === 'edCariMenu') {
+        cariEdit = t.value;
+        tapisSenaraiMenu();
         return;
       }
 
@@ -1204,6 +1266,35 @@ const Editor = (() => {
           });
           itemEdit = id;
           terap();
+          break;
+        }
+        /* Habis stok dengan satu tekan. Dahulu ia memerlukan buka item, cari
+           kotak semak, tanda, kembali — empat langkah untuk sesuatu yang
+           berlaku pada tengah waktu sibuk. Baris itu dikemas kini di tempat
+           dan bukan melalui render semula, supaya carian dan kedudukan
+           scroll pemilik kekal. */
+        case 'item-habis': {
+          const it = C.menu[i];
+          if (!it) break;
+          it.habis = !it.habis;
+
+          const baris = btn.closest('.ed-item');
+          baris.classList.toggle('ed-item--habis', it.habis);
+          btn.classList.toggle('aktif', it.habis);
+          btn.textContent = it.habis ? '✓' : '⊘';
+          btn.title = it.habis ? 'Tandakan ada stok semula' : 'Tandakan habis stok';
+          btn.setAttribute('aria-pressed', it.habis ? 'true' : 'false');
+          baris.querySelector('.ed-item__nama').innerHTML = esc(it.nama) + lencanaHabis(it);
+
+          const nota = $p('#edCariNota');
+          if (nota) {
+            const bil = C.menu.filter((x) => x.habis).length;
+            nota.innerHTML = bil
+              ? `<b>${bil}</b> item ditanda habis`
+              : 'Tekan ⊘ pada mana-mana item untuk tanda habis stok';
+          }
+
+          terap(false);
           break;
         }
         case 'item-edit':
