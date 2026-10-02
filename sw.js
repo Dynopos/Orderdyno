@@ -35,20 +35,25 @@
 
 /* Naikkan nombor ini bila strategi cache berubah — 'activate' membuang semua
    cache versi lama, jadi salinan basi tidak boleh hidup melepasi deploy. */
-const VERSI = 'orderdyno-v2';
+const VERSI = 'orderdyno-v3';
 const RANGKA = VERSI + '-rangka';
 
 /* Cukup untuk membuka laman dan memaparkan menu tanpa talian */
+/* Mesti sepadan dengan ?v=N pada index.html. Alamat yang berubah setiap kali
+   fail berubah bermakna cache lama tidak mungkin dipadankan langsung — itu
+   perlindungan yang tidak bergantung pada service worker berkelakuan betul. */
+const ASET_VERSI = '?v=3';
+
 const PRACACHE = [
   './',
   './index.html',
-  './assets/css/style.css',
-  './assets/js/config.js',
-  './assets/js/contoh-menu.js',
-  './assets/js/store.js',
-  './assets/js/bayar.js',
-  './assets/js/app.js',
-  './assets/js/editor.js',
+  './assets/css/style.css' + ASET_VERSI,
+  './assets/js/config.js' + ASET_VERSI,
+  './assets/js/contoh-menu.js' + ASET_VERSI,
+  './assets/js/store.js' + ASET_VERSI,
+  './assets/js/bayar.js' + ASET_VERSI,
+  './assets/js/app.js' + ASET_VERSI,
+  './assets/js/editor.js' + ASET_VERSI,
   /* Ikon aplikasi — mesti ada tanpa talian juga. */
   './assets/img/lambang.png',
   './assets/img/ikon-192.png',
