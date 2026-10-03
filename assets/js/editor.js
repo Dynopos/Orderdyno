@@ -16,6 +16,17 @@ const Editor = (() => {
   let tab = 'kedai';
   let itemEdit = null;       // id item yang sedang dibuka dalam borang
   let cariEdit = '';         // tapisan senarai menu dalam tab Menu
+
+  /* Ada suntingan yang belum diterbitkan?
+     Panel ini menyimpan ke localStorage pada setiap ketukan kekunci, dan
+     memberitahu pemilik "Semua perubahan disimpan ✓" — sedangkan pelanggan
+     masih nampak versi lama sehingga menu diterbitkan. Pemilik kedai yang
+     memadam item, menutup panel, dan mengimbas QR sendiri akan melihat item
+     itu masih ada, dan menyangka sistem rosak.
+
+     Amaran tentang keadaan itu dahulunya hanya wujud dalam tab "Bayaran" —
+     tab yang pemilik kedai tiada sebab untuk membukanya. */
+  let belumTerbit = false;
   let masaSimpan = null;
 
   /* --- Keadaan tab "Bayaran" (tidak disimpan bersama menu) --------------- */
@@ -107,8 +118,18 @@ const Editor = (() => {
     App.gunaConfig(Store.klon(C));
     tunjukStatus('Menyimpan…');
     clearTimeout(masaSimpan);
-    masaSimpan = setTimeout(() => tunjukStatus('Semua perubahan disimpan ✓', true), 450);
+    /* "Disimpan dalam pelayar ini" — bukan "disimpan" sahaja. Perbezaan itu
+       yang menentukan sama ada pelanggan nampak perubahan ini. */
+    masaSimpan = setTimeout(() => tunjukStatus('Disimpan dalam pelayar ini ✓', true), 450);
+    belumTerbit = true;
+    lukisJalurTerbit();
     if (renderPanel !== false) renderBadan();
+  }
+
+  /* Jalur amaran dalam kaki panel, kelihatan pada SETIAP tab. */
+  function lukisJalurTerbit() {
+    const jalur = $p('.ed__belum');
+    if (jalur) jalur.hidden = !belumTerbit;
   }
 
   function tunjukStatus(teks, siap) {
@@ -252,6 +273,12 @@ const Editor = (() => {
             <button class="mini mini--bahaya" type="button" data-aksi="kat-buang" data-i="${ki}" title="Buang kategori">✕</button>
           </div>
 
+          <!-- Di ATAS senarai, bukan di bawahnya. Kategori Minuman Sejuk
+               Alisya ada 98 item; butang di hujung bermakna menatal melepasi
+               kesemuanya setiap kali hendak menambah satu. -->
+          <button class="btn-tambah-baris btn-tambah-baris--atas" type="button"
+                  data-aksi="item-tambah" data-kat="${esc(kat.id)}">＋ Tambah item</button>
+
           ${
             item.length
               ? item
@@ -287,10 +314,8 @@ const Editor = (() => {
                 </div>`;
                   })
                   .join('')
-              : '<p class="f__nota" style="margin:0 0 10px">Belum ada item dalam kategori ini.</p>'
+              : '<p class="f__nota" style="margin:0">Belum ada item dalam kategori ini.</p>'
           }
-
-          <button class="btn-tambah-baris" type="button" data-aksi="item-tambah" data-kat="${esc(kat.id)}">＋ Tambah item</button>
         </div>`;
       })
       .join('');
@@ -330,8 +355,9 @@ const Editor = (() => {
 
     return `
       ${cari}
+      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah"
+              style="margin-bottom:18px">＋ Tambah kategori</button>
       ${kategori}
-      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah">＋ Tambah kategori</button>
       ${contoh}`;
   }
 
@@ -812,6 +838,11 @@ const Editor = (() => {
       bcMesejOk = false;
       bcMesej = e.message || 'Gagal';
     }
+    /* Menu sudah sampai kepada pelanggan — jalur amaran boleh turun. */
+    if (aksi === 'menu' && bcMesejOk) {
+      belumTerbit = false;
+      lukisJalurTerbit();
+    }
     bcSibuk = '';
     await bcSegarkan();
   }
@@ -1044,7 +1075,7 @@ const Editor = (() => {
         <div class="ed__kepala">
           <div>
             <h2>Edit Menu Anda</h2>
-            <p>Semua perubahan disimpan automatik dalam pelayar ini</p>
+            <p>Disimpan automatik dalam pelayar ini · pelanggan nampak selepas anda terbitkan</p>
           </div>
           <button class="bulat-tutup" type="button" data-aksi="tutup" aria-label="Tutup">✕</button>
         </div>
@@ -1052,6 +1083,10 @@ const Editor = (() => {
           ${TAB.map((t) => `<button type="button" data-tab="${t.id}">${t.nama}</button>`).join('')}
         </div>
         <div class="ed__badan"></div>
+        <div class="ed__belum" hidden>
+          <span>Perubahan ini <b>belum sampai kepada pelanggan</b>. Ia hanya tersimpan dalam pelayar ini.</span>
+          <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="pergi-terbit">Terbitkan</button>
+        </div>
         <div class="ed__kaki">
           <span class="ed__status">Sedia untuk diedit</span>
           <button class="btn-kecil btn-kecil--utama" type="button" data-aksi="tutup">Selesai</button>
@@ -1204,7 +1239,22 @@ const Editor = (() => {
 
       switch (aksi) {
         case 'tutup':
+          /* Menutup panel dengan suntingan yang belum diterbitkan ialah
+             bagaimana pemilik kedai kehilangan kerjanya tanpa sedar. */
+          if (belumTerbit &&
+              !confirm('Perubahan anda belum diterbitkan — pelanggan masih nampak menu lama.\n\nTutup juga?')) {
+            break;
+          }
           tutup();
+          break;
+
+        case 'pergi-terbit':
+          tab = 'bayar';
+          renderBadan();
+          setTimeout(() => {
+            const blok = $$p('.ed-blok').find((b) => /Terbitkan menu/.test(b.textContent));
+            if (blok) blok.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }, 60);
           break;
 
         /* --- Logo --- */
