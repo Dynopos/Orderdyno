@@ -1494,3 +1494,7 @@ body.tiada-talian .btn-edit { top: calc(16px + var(--tinggi-jalur, 0px)); }
 .ed__belum[hidden] { display: none !important; }
 .ed__belum span { flex: 1 1 200px; min-width: 0; }
 .ed__belum b { color: #fff; }
+
+/* Butang "Tambah item" kini di atas senarai — beri ia ruang bernafas dari
+   item pertama supaya ia tidak kelihatan sebahagian daripada baris itu. */
+.btn-tambah-baris--atas { margin-bottom: 12px; }

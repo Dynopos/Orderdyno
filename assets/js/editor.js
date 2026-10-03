@@ -273,6 +273,12 @@ const Editor = (() => {
             <button class="mini mini--bahaya" type="button" data-aksi="kat-buang" data-i="${ki}" title="Buang kategori">✕</button>
           </div>
 
+          <!-- Di ATAS senarai, bukan di bawahnya. Kategori Minuman Sejuk
+               Alisya ada 98 item; butang di hujung bermakna menatal melepasi
+               kesemuanya setiap kali hendak menambah satu. -->
+          <button class="btn-tambah-baris btn-tambah-baris--atas" type="button"
+                  data-aksi="item-tambah" data-kat="${esc(kat.id)}">＋ Tambah item</button>
+
           ${
             item.length
               ? item
@@ -308,10 +314,8 @@ const Editor = (() => {
                 </div>`;
                   })
                   .join('')
-              : '<p class="f__nota" style="margin:0 0 10px">Belum ada item dalam kategori ini.</p>'
+              : '<p class="f__nota" style="margin:0">Belum ada item dalam kategori ini.</p>'
           }
-
-          <button class="btn-tambah-baris" type="button" data-aksi="item-tambah" data-kat="${esc(kat.id)}">＋ Tambah item</button>
         </div>`;
       })
       .join('');
@@ -351,8 +355,9 @@ const Editor = (() => {
 
     return `
       ${cari}
+      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah"
+              style="margin-bottom:18px">＋ Tambah kategori</button>
       ${kategori}
-      <button class="btn-tambah-baris" type="button" data-aksi="kat-tambah">＋ Tambah kategori</button>
       ${contoh}`;
   }
 
