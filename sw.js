@@ -35,14 +35,14 @@
 
 /* Naikkan nombor ini bila strategi cache berubah — 'activate' membuang semua
    cache versi lama, jadi salinan basi tidak boleh hidup melepasi deploy. */
-const VERSI = 'orderdyno-v3';
+const VERSI = 'orderdyno-v4';
 const RANGKA = VERSI + '-rangka';
 
 /* Cukup untuk membuka laman dan memaparkan menu tanpa talian */
 /* Mesti sepadan dengan ?v=N pada index.html. Alamat yang berubah setiap kali
    fail berubah bermakna cache lama tidak mungkin dipadankan langsung — itu
    perlindungan yang tidak bergantung pada service worker berkelakuan betul. */
-const ASET_VERSI = '?v=3';
+const ASET_VERSI = '?v=4';
 
 const PRACACHE = [
   './',
