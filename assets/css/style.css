@@ -1475,3 +1475,26 @@ body.tiada-talian .btn-edit { top: calc(16px + var(--tinggi-jalur, 0px)); }
   background: rgba(255, 255, 255, .05);
   border: 1px solid var(--garis);
 }
+
+/* Jalur "belum diterbitkan" dalam kaki panel editor. Ia kelihatan pada
+   SETIAP tab, kerana amaran yang hanya wujud dalam tab Bayaran tidak pernah
+   dibaca oleh pemilik kedai yang sedang mengedit menu. */
+.ed__belum {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  font-size: .85rem;
+  line-height: 1.45;
+  color: #ffd9a8;
+  background: rgba(255, 150, 60, .13);
+  border-top: 1px solid rgba(255, 150, 60, .3);
+}
+.ed__belum[hidden] { display: none !important; }
+.ed__belum span { flex: 1 1 200px; min-width: 0; }
+.ed__belum b { color: #fff; }
+
+/* Butang "Tambah item" kini di atas senarai — beri ia ruang bernafas dari
+   item pertama supaya ia tidak kelihatan sebahagian daripada baris itu. */
+.btn-tambah-baris--atas { margin-bottom: 12px; }
